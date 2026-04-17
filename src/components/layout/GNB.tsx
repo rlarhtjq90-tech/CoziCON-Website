@@ -56,19 +56,19 @@ export default function GNB() {
           ))}
         </ul>
 
-        {/* 로그인 — 스크롤 시 등장 */}
-        <div
-          className={`
-            hidden laptop:flex items-center
-            transition-all duration-300 ease-in-out
-            ${scrolled ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'}
-          `}
-        >
+        {/* 로그인 — 항상 표시 */}
+        <div className="flex items-center gap-3">
           <a
             href="#contact"
             className="text-p14 font-medium text-ink-600 hover:text-primary transition-colors"
           >
             로그인
+          </a>
+          <a
+            href="#contact"
+            className="text-p14 font-medium px-4 py-2 rounded-md bg-primary text-white hover:bg-primary/90 transition-colors"
+          >
+            회원가입
           </a>
         </div>
 
