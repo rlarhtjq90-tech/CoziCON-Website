@@ -12,7 +12,7 @@ const AUDIENCES = [
       '계약·세금계산서 자동화',
       '공사 이력 및 평점 시스템',
     ],
-    cta: '원청사로 시작하기',
+    cta: '종합건설사로 시작하기',
     cardBg: 'bg-white border border-ink-200',
     ctaStyle:
       'bg-primary text-white shadow-btn-glow hover:bg-primary-600',
@@ -30,7 +30,7 @@ const AUDIENCES = [
       '낙찰 후 계약 원스톱 처리',
       '실적 포트폴리오 자동 누적',
     ],
-    cta: '하도급사로 시작하기',
+    cta: '전문건설사로 시작하기',
     cardBg: 'bg-gradient-blue56',
     ctaStyle: 'bg-white text-primary hover:bg-primary-100',
     textColor: 'text-white',

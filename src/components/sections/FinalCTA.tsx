@@ -28,13 +28,13 @@ export default function FinalCTA() {
               href="#contact"
               className="inline-flex items-center justify-center rounded-full bg-white text-primary-500 px-8 py-4 text-p16 font-semibold shadow-card-md hover:bg-primary-100 transition-colors"
             >
-              원청사로 시작하기
+              종합건설사로 시작하기
             </a>
             <a
               href="#contact"
               className="inline-flex items-center justify-center rounded-full border-2 border-white/40 text-white px-8 py-4 text-p16 font-semibold hover:border-white/80 hover:bg-white/10 transition-all"
             >
-              하도급사로 시작하기
+              전문건설사로 시작하기
             </a>
           </div>
 
