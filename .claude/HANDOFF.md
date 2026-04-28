@@ -1,20 +1,23 @@
 # HANDOFF
-**agent:** claude | **project:** CoziCON-Website | **branch:** main | **commit:** (up to date with origin/main)
+**agent:** claude | **project:** CoziCON-Website | **branch:** main | **commit:** bdb86fd
 **created:** 2026-04-28 | **status:** active
 
 ## Context
-Vercel 배포가 목표였으나 CLI 인증 문제로 완료되지 않았다. Vercel 플러그인은 설치됐으며 Claude Code 재시작 후 플러그인을 통한 배포가 가능하다.
+KISCON 건설면허 인증 UI와 API 라우트는 완성됐으나, 실제 국토교통부 API를 호출하려면 data.go.kr API 키가 필요하다. 현재 Mock 데이터로 동작 중.
 
 ## Immediate Next Steps
-- [ ] Claude Code 재시작 → Vercel 플러그인 로드 확인
-- [ ] Vercel 플러그인으로 로그인 및 CoziCON-Website 배포
-- [ ] 배포 후 vercel.app URL 확인 및 기존 Vercel 프로젝트와 연동 여부 확인
+- [ ] data.go.kr 로그인 → 종합건설 API 활용신청 (https://www.data.go.kr/data/15000659/openapi.do)
+- [ ] data.go.kr → 전문건설 API 활용신청 (https://www.data.go.kr/data/15000660/openapi.do)
+- [ ] 마이페이지 → 오픈API → 일반 인증키(Decoding) 복사
+- [ ] .env.local에 CONSTRUCTION_API_KEY=<키> 추가
+- [ ] Vercel 환경변수에도 동일 키 등록 후 재배포
 
 ## Active Files
-- C:\Users\PC\Desktop\halfdone\projects\brand-website\CoziCON-Website\package.json
-- C:\Users\PC\Desktop\halfdone\projects\brand-website\CoziCON-Website\next.config.js
+- src/components/sections/SignupStart.tsx
+- src/app/api/verify-license/route.ts
+- .env.local (생성 필요)
 
 ## Current State / Blockers
-Vercel CLI 토큰 저장 경로 불일치 문제 (로그인은 완료되나 PowerShell 세션 간 토큰이 공유되지 않음).
-Vercel 플러그인(`vercel-plugin@vercel`) 설치 완료 — Claude Code 재시작 필수.
-Node.js: `C:\Users\PC\AppData\Local\nodejs\node-v20.19.1-win-x64` (사용자 PATH에 등록됨)
+API 키 없음 → Mock 데이터 반환 중 (isMock: true, "테스트 데이터" 배지 표시).
+배포 URL: https://cozi-con-website-lvsh.vercel.app/
+Node.js: C:\Users\PC\AppData\Local\nodejs\node-v20.19.1-win-x64
