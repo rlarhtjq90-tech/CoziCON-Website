@@ -2,16 +2,28 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** 개발 중 — Vercel 배포 완료, KISCON API 키 등록 완료 (실제 동작 확인 필요)
+- **상태:** 배포 완료 — 면허 조회 GongsiReg 워크어라운드 적용, 실 데이터 연동 미완성
 - **주요 기능:**
-  - 랜딩 페이지 전체 섹션 (WorkType, SignupStart, Process, DualAudience, VerifySection, Features, Statistics, FinalCTA)
-  - SignupStart: 종합건설사/전문건설사 선택 → 사업자번호 입력 → KISCON 건설면허 조회 → 인증 완료
-  - /api/verify-license: 국토교통부 공공데이터포털 KISCON API 연동 (Mock 폴백 포함)
-  - .env.local 생성 완료, Vercel 환경변수 CONSTRUCTION_API_KEY 등록 완료
-- **알려진 이슈:** 재배포 후 isMock: true → false 전환 여부 미확인 (다음 세션에서 확인 필요)
+  - 랜딩 페이지 전체 섹션 구현 및 Vercel 배포
+  - VerifySection: 사업자등록증 업로드 → OCR → 사업자번호 입력 → 면허 조회
+  - /api/verify-license: KISCON GongsiReg 날짜조회 + bizno 필터링 (Mock 폴백 포함)
+  - GET /api/verify-license: 연결 진단 엔드포인트
+  - Vercel 서울 리전(icn1) 설정, API 키 이중인코딩 방지 처리
+- **알려진 이슈:**
+  - KISCON ConAdminInfoSvc1은 공시 목록 API → 사업자번호 직접 조회 불가
+  - GongsiReg 날짜 범위 필터링은 2010년 이전 등록사 누락 가능
+  - 근본 해결: data.go.kr에서 **국토교통부\_건설업등록정보서비스** 별도 신청 필요
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-04-29 (세션 2)
+- 면허 조회 오류 원인 진단: Vercel 해외 서버 + 잘못된 API 엔드포인트
+- Vercel 서울 리전(icn1) 설정, vercel.json 추가, API 키 이중인코딩 수정
+- GET /api/verify-license 진단 엔드포인트 추가 (API 연결 상태 실시간 확인)
+- KISCON API 문서(docx) 분석 → GongsiReg 오퍼레이션 확인 및 적용
+- 핵심 발견: KISCON ConAdminInfoSvc1은 공시 목록 API (bizno 직접 조회 불가)
+- 임시 해결: GongsiReg 날짜 범위 조회 후 ncrMasterNum으로 bizno 필터링 구현
 
 ### 2026-04-29
 - data.go.kr 키스콘 건설업체정보 서비스 활용신청 및 API 키 발급
