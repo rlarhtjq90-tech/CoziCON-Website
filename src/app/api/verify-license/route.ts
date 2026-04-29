@@ -42,73 +42,58 @@ const MOCK: Record<LicenseType, LicenseItem[]> = {
   ],
 }
 
-// ── KISCON ConAdminInfoSvc1 엔드포인트 ────────────────────────────────────
-// 종합·전문 모두 같은 서비스에서 lcnsCl(면허구분코드)로 구분
-// 오퍼레이션: getConBizIfo1 (사업자번호로 업체·면허정보 조회)
+// ── KISCON ConAdminInfoSvc1 ─────────────────────────────────────────────────
+// GongsiReg: 건설업체 등록 공시 목록 (날짜 범위 조회 후 bizno 필터링)
+// 응답 필드: ncrGsKname(업체명), ncrMasterNum(사업자번호),
+//           ncrItemName(등록업종), ncrItemregno(업종등록번호), ncrGsDate(등록일자)
 
 const BASE_URL = 'https://apis.data.go.kr/1613000/ConAdminInfoSvc1'
-
-// lcnsCl 코드: 1=종합, 2=전문 (실제 코드는 XML 응답 확인 후 보정)
-const LICENSE_CL: Record<LicenseType, string> = {
-  general:   '1',
-  specialty: '2',
-}
-
-// ── XML 파서 ────────────────────────────────────────────────────────────────
 
 function extractTag(xml: string, tag: string): string {
   const match = xml.match(new RegExp(`<${tag}>([\\s\\S]*?)<\\/${tag}>`))
   return match ? match[1].trim() : ''
 }
 
-// KISCON API 응답 필드 파싱
-// 실제 필드명은 GET /api/verify-license 진단으로 xmlSnippet 확인 후 보정
-function parseKisconItems(xml: string): LicenseItem[] {
-  const blocks = xml.match(/<item>[\s\S]*?<\/item>/g) ?? []
-  return blocks.map((block): LicenseItem => {
-    // 등록일: rgndt 또는 lcnsDt (YYYYMMDD)
-    const rawDate = extractTag(block, 'rgndt') || extractTag(block, 'lcnsDt')
-    const registeredAt =
-      rawDate.length === 8
-        ? `${rawDate.slice(0, 4)}-${rawDate.slice(4, 6)}-${rawDate.slice(6, 8)}`
-        : rawDate
-
-    return {
-      // 업체명: bzentyNm 또는 corpNm
-      companyName:  extractTag(block, 'bzentyNm')  || extractTag(block, 'corpNm'),
-      // 면허번호: lcnsNo
-      licenseNo:    extractTag(block, 'lcnsNo'),
-      // 업종명: lcnsCnstrtnbizNm 또는 bsnsDivNm
-      bizCategory:  extractTag(block, 'lcnsCnstrtnbizNm') || extractTag(block, 'bsnsDivNm'),
-      registeredAt,
-    }
-  })
+function formatDate(raw: string): string {
+  if (raw.length === 8) return `${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}`
+  return raw
 }
 
-// API 키 정규화 (인코딩 키·디코딩 키 모두 처리)
-function normalizeApiKey(key: string): string {
-  try {
-    return encodeURIComponent(decodeURIComponent(key))
-  } catch {
-    return encodeURIComponent(key)
+// GongsiReg XML에서 특정 사업자번호에 해당하는 item 파싱
+function parseGongsiItems(xml: string, cleanBizno: string): LicenseItem[] {
+  const blocks = xml.match(/<item>[\s\S]*?<\/item>/g) ?? []
+  const matched: LicenseItem[] = []
+
+  for (const block of blocks) {
+    const bizno = extractTag(block, 'ncrMasterNum').replace(/-/g, '')
+    if (bizno !== cleanBizno) continue
+
+    // 철회된 공시는 제외
+    const flag = extractTag(block, 'ncrGsFlag')
+    if (flag === '철회') continue
+
+    matched.push({
+      companyName:  extractTag(block, 'ncrGsKname'),
+      licenseNo:    extractTag(block, 'ncrItemregno') || '-',
+      bizCategory:  extractTag(block, 'ncrItemName'),
+      registeredAt: formatDate(extractTag(block, 'ncrGsDate')),
+    })
   }
+
+  return matched
+}
+
+function normalizeApiKey(key: string): string {
+  try { return encodeURIComponent(decodeURIComponent(key)) }
+  catch { return encodeURIComponent(key) }
+}
+
+// 오늘 기준 날짜 문자열 (YYYYMMDD)
+function today(): string {
+  return new Date().toISOString().slice(0, 10).replace(/-/g, '')
 }
 
 // ── GET: 연결 진단 (/api/verify-license) ───────────────────────────────────
-
-// 후보 오퍼레이션명 목록 — 올바른 것을 자동으로 찾아냄
-const CANDIDATE_OPS = [
-  'getConBizIfo1',   'getConBizIfo',
-  'getConLcnsIfo1',  'getConLcnsIfo',
-  'getConAdmnIfo1',  'getConAdmnIfo',
-  'getConInfo1',     'getConInfo',
-  'getBzentyInfo1',  'getBzentyList1',
-  'getConBizList1',  'getConBizList',
-  'getConList1',     'getConList',
-  'getConBizInfoList1', 'getConBizInfoList',
-  'getLcnsInfo1',    'getLcnsInfo',
-  'getConAdminInfo1','getConAdminInfo',
-]
 
 export async function GET(): Promise<NextResponse> {
   const apiKey = process.env.CONSTRUCTION_API_KEY
@@ -117,37 +102,28 @@ export async function GET(): Promise<NextResponse> {
     hasApiKey:    !!apiKey,
     apiKeyLength: apiKey?.length ?? 0,
     apiKeyPreview: apiKey ? `${apiKey.slice(0, 6)}...${apiKey.slice(-4)}` : null,
+    operation:    'GongsiReg',
     baseUrl:      BASE_URL,
     timestamp:    new Date().toISOString(),
   }
 
-  if (!apiKey) return NextResponse.json(info)
-
-  const key = normalizeApiKey(apiKey)
-  const opResults: Record<string, unknown> = {}
-
-  for (const op of CANDIDATE_OPS) {
-    const url = `${BASE_URL}/${op}?serviceKey=${key}&pageNo=1&numOfRows=1`
+  if (apiKey) {
+    const url = `${BASE_URL}/GongsiReg?serviceKey=${normalizeApiKey(apiKey)}&pageNo=1&numOfRows=1&sDate=20240101&eDate=${today()}`
     try {
-      const res  = await fetch(url, {
-        headers: { Accept: 'application/xml' },
-        signal:  AbortSignal.timeout(6000),
-      })
+      const res  = await fetch(url, { headers: { Accept: 'application/xml' }, signal: AbortSignal.timeout(10000) })
       const body = await res.text()
-      opResults[op] = {
-        status:     res.status,
-        resultCode: extractTag(body, 'resultCode') || '(없음)',
-        resultMsg:  extractTag(body, 'resultMsg')  || '(없음)',
-        snippet:    body.slice(0, 200),
-      }
-      // 200 또는 XML resultCode가 있으면 올바른 오퍼레이션 → 중단
-      if (res.status === 200 || extractTag(body, 'resultCode')) break
+      info.apiConnectivity = 'ok'
+      info.httpStatus      = res.status
+      info.resultCode      = extractTag(body, 'resultCode') || '(없음)'
+      info.resultMsg       = extractTag(body, 'resultMsg')  || '(없음)'
+      info.totalCount      = extractTag(body, 'totalCount') || '(없음)'
+      info.xmlSnippet      = body.slice(0, 400)
     } catch (err) {
-      opResults[op] = { error: err instanceof Error ? err.message : String(err) }
+      info.apiConnectivity = 'failed'
+      info.connectError    = err instanceof Error ? `${err.name}: ${err.message}` : String(err)
     }
   }
 
-  info.operationProbe = opResults
   return NextResponse.json(info)
 }
 
@@ -155,29 +131,24 @@ export async function GET(): Promise<NextResponse> {
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   let body: { bizno?: string; licenseType?: LicenseType }
-  try {
-    body = await req.json()
-  } catch {
+  try { body = await req.json() }
+  catch {
     return NextResponse.json<VerifyErrorResponse>(
-      { success: false, message: '잘못된 요청 형식입니다.' },
-      { status: 400 },
+      { success: false, message: '잘못된 요청 형식입니다.' }, { status: 400 },
     )
   }
 
   const { bizno, licenseType } = body
-
   if (!bizno || !licenseType) {
     return NextResponse.json<VerifyErrorResponse>(
-      { success: false, message: '사업자등록번호와 면허 유형을 입력해주세요.' },
-      { status: 400 },
+      { success: false, message: '사업자등록번호와 면허 유형을 입력해주세요.' }, { status: 400 },
     )
   }
 
   const cleanBizno = bizno.replace(/-/g, '')
   if (!/^\d{10}$/.test(cleanBizno)) {
     return NextResponse.json<VerifyErrorResponse>(
-      { success: false, message: '사업자등록번호 형식이 올바르지 않습니다. (XXX-XX-XXXXX)' },
-      { status: 400 },
+      { success: false, message: '사업자등록번호 형식이 올바르지 않습니다. (XXX-XX-XXXXX)' }, { status: 400 },
     )
   }
 
@@ -189,28 +160,25 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     })
   }
 
-  // KISCON ConAdminInfoSvc1 호출
-  // bzno: 사업자등록번호, lcnsCl: 면허구분 (종합=1, 전문=2)
-  const params  = new URLSearchParams({
-    pageNo:    '1',
-    numOfRows: '20',
-    bzno:      cleanBizno,
-    lcnsCl:    LICENSE_CL[licenseType],
-  })
-  const fullUrl = `${BASE_URL}/getConBizIfo1?serviceKey=${normalizeApiKey(apiKey)}&${params.toString()}`
+  const key = normalizeApiKey(apiKey)
+
+  // GongsiReg: 최근 15년치 조회 후 사업자번호 필터링
+  // numOfRows=100으로 한 번에 최대한 많이 가져옴
+  const eDate = today()
+  const sDate = '20100101'
+  const url = `${BASE_URL}/GongsiReg?serviceKey=${key}&pageNo=1&numOfRows=100&sDate=${sDate}&eDate=${eDate}`
 
   try {
-    const res = await fetch(fullUrl, {
+    const res = await fetch(url, {
       headers: { Accept: 'application/xml' },
       signal: AbortSignal.timeout(15000),
     })
 
     const xml = await res.text()
-    console.log('[verify-license] raw XML:', xml.slice(0, 800))
+    console.log('[verify-license] GongsiReg status:', res.status, 'snippet:', xml.slice(0, 200))
 
     if (!res.ok) {
-      console.error('[verify-license] HTTP error:', res.status, xml.slice(0, 200))
-      // HTTP 오류 → mock fallback
+      console.error('[verify-license] HTTP error:', res.status)
       return NextResponse.json<VerifyResponse>({
         success: true, bizno: cleanBizno, licenseType,
         items: MOCK[licenseType], isMock: true,
@@ -218,18 +186,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
 
     const resultCode = extractTag(xml, 'resultCode')
-    const resultMsg  = extractTag(xml, 'resultMsg')
-
     if (resultCode && resultCode !== '00') {
-      console.error('[verify-license] API error:', resultCode, resultMsg)
-      // API 오류 → mock fallback
+      console.error('[verify-license] API error:', resultCode, extractTag(xml, 'resultMsg'))
       return NextResponse.json<VerifyResponse>({
         success: true, bizno: cleanBizno, licenseType,
         items: MOCK[licenseType], isMock: true,
       })
     }
 
-    const items = parseKisconItems(xml)
+    const items = parseGongsiItems(xml, cleanBizno)
 
     if (items.length === 0) {
       return NextResponse.json<VerifyErrorResponse>(
@@ -243,9 +208,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     })
 
   } catch (err) {
-    const debugMsg = err instanceof Error ? `${err.name}: ${err.message}` : String(err)
-    console.error('[verify-license] fetch error:', debugMsg)
-    // 네트워크 오류 → mock fallback
+    const isTimeout = err instanceof Error && err.name === 'TimeoutError'
+    console.error('[verify-license] error:', err)
     return NextResponse.json<VerifyResponse>({
       success: true, bizno: cleanBizno, licenseType,
       items: MOCK[licenseType], isMock: true,
