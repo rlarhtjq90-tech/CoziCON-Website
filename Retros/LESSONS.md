@@ -6,6 +6,15 @@
 
 ## Deployment
 
+### NEXTAUTH_URL은 실제 배포 URL 확인 후 즉시 설정 #coding #next-auth
+Vercel 프로젝트가 새로 생성되거나 이름이 바뀌면 배포 URL이 달라짐.
+NEXTAUTH_URL을 구 URL로 방치하면 로그인 요청이 전부 실패함.
+배포 직후 Vercel Deployments 탭에서 실제 URL을 확인하고 환경변수를 즉시 업데이트해야 함.
+
+### npm install 시 메이저 버전 명시 필수 (Prisma 등) #coding #tooling
+`npm install prisma`로 설치하면 최신 메이저(현재 v7)가 설치되어 schema 포맷이 완전히 바뀔 수 있음.
+안정적인 Next.js 14 환경에서는 `prisma@5`처럼 메이저 버전을 고정해서 설치해야 함.
+
 ### Vercel CLI 한글 계정명 버그 #coding #vercel
 Vercel CLI v52에서 계정명에 한글 등 비ASCII 문자가 포함되면 HTTP 헤더 인코딩 오류 발생.
 `git push`로 GitHub 연동 자동 배포를 트리거하거나, Vercel REST API + 개인 토큰으로 우회.

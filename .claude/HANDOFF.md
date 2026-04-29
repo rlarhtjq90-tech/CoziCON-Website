@@ -1,24 +1,24 @@
 # HANDOFF
-**agent:** claude | **project:** CoziCON-Website | **branch:** main | **commit:** 79e3b7d
-**created:** 2026-04-29 12:30 | **status:** active
+**agent:** claude | **project:** CoziCON-Website | **branch:** main | **commit:** 1c5e129
+**created:** 2026-04-29 | **status:** active
 
 ## Context
-면허 조회 기능의 실제 API 연동이 미완성. KISCON ConAdminInfoSvc1은 사업자번호 직접 조회가 불가능한 공시 목록 API임을 확인했고, GongsiReg + bizno 필터링 워크어라운드를 배포했으나 정확도 한계 존재.
+NextAuth + Prisma + Neon 인증 시스템 구현 완료 후 배포했으나, NEXTAUTH_URL이 구 프로젝트 주소로 설정되어 로그인 에러 발생 중. URL 수정 후 재배포하면 해결된다.
 
 ## Immediate Next Steps
-- [ ] data.go.kr에서 **국토교통부_건설업등록정보서비스(종합/전문)** 활용신청 → 승인 후 코드 반영
-  - 종합: `https://apis.data.go.kr/1613000/ConstBizInforService/getConstBizList` (파라미터: `bizno`)
-  - 전문: `https://apis.data.go.kr/1613000/ConstSpecBizInforService/getConstSpecBizList` (파라미터: `bizno`)
-- [ ] GongsiReg 워크어라운드 실 테스트 (실제 사업자번호로 isMock: false 나오는지 확인)
-- [ ] 국토교통부 서비스 승인 후 route.ts를 원래 ConstBizInforService 방식으로 복구
+- [ ] Vercel 환경변수에서 NEXTAUTH_URL을 `https://cozi-con-website-2ano.vercel.app` 으로 수정
+- [ ] 수정 후 Vercel에서 Redeploy 트리거 (또는 빈 커밋 push)
+- [ ] /signup → /login → /dashboard 플로우 전체 테스트
+- [ ] data.go.kr 국토교통부_건설업등록정보서비스 승인 후 면허 조회 API 정식 연동
 
 ## Active Files
-- `src/app/api/verify-license/route.ts` — API 라우트 (GongsiReg 워크어라운드 구현체)
-- `vercel.json` — Vercel 서울 리전(icn1) 설정
+- `src/app/login/page.tsx`
+- `src/app/signup/page.tsx`
+- `src/app/dashboard/page.tsx`
+- `src/lib/auth.ts`
+- `prisma/schema.prisma`
 
 ## Current State / Blockers
-배포 URL: https://cozi-con-website-lvsh.vercel.app/
-진단 URL: https://cozi-con-website-lvsh.vercel.app/api/verify-license
-CONSTRUCTION_API_KEY: Vercel 환경변수 등록됨 (64자, 1fe3ab...8ddc)
-GongsiReg 연결은 성공하나 bizno 필터링 특성상 결과 누락 가능성 있음
-Vercel CLI: 한글 계정명 버그로 직접 사용 불가 → git push로 배포 우회
+NEXTAUTH_URL=https://cozi-con-website-lvsh.vercel.app 으로 설정되어 있으나 실제 프로젝트는 cozi-con-website-2ano.
+Vercel 대시보드 Settings → Environment Variables 에서 NEXTAUTH_URL 값만 수정하면 해결.
+Vercel CLI는 한글 계정명(김고섭) 버그로 직접 사용 불가 — 대시보드에서 직접 수정 필요.
