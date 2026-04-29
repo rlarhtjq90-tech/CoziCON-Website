@@ -59,7 +59,7 @@ export default function GNB() {
         {/* 로그인 — 항상 표시 */}
         <div className="hidden laptop:flex items-center">
           <a
-            href="#contact"
+            href="/login"
             className="text-p14 font-medium text-ink-600 hover:text-primary transition-colors"
           >
             로그인

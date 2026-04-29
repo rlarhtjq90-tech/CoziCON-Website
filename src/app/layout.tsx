@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import Providers from './Providers'
 
 export const metadata: Metadata = {
   title: 'CoziCON | 건설 입찰 플랫폼',
@@ -17,7 +18,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko">
-      <body className="font-pretendard antialiased">{children}</body>
+      <body className="font-pretendard antialiased">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   )
 }
