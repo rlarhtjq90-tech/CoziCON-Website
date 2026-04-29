@@ -1,23 +1,21 @@
 # HANDOFF
-**agent:** claude | **project:** CoziCON-Website | **branch:** main | **commit:** bdb86fd
-**created:** 2026-04-28 | **status:** active
+**agent:** claude | **project:** CoziCON-Website | **branch:** main | **commit:** e23262b
+**created:** 2026-04-29 | **status:** active
 
 ## Context
-KISCON 건설면허 인증 UI와 API 라우트는 완성됐으나, 실제 국토교통부 API를 호출하려면 data.go.kr API 키가 필요하다. 현재 Mock 데이터로 동작 중.
+KISCON API 키 발급 및 Vercel 환경변수 등록까지 완료했으나, 재배포 후 실제 API 동작(isMock: false) 여부가 확인되지 않은 상태로 세션 종료.
 
 ## Immediate Next Steps
-- [ ] data.go.kr 로그인 → 종합건설 API 활용신청 (https://www.data.go.kr/data/15000659/openapi.do)
-- [ ] data.go.kr → 전문건설 API 활용신청 (https://www.data.go.kr/data/15000660/openapi.do)
-- [ ] 마이페이지 → 오픈API → 일반 인증키(Decoding) 복사
-- [ ] .env.local에 CONSTRUCTION_API_KEY=<키> 추가
-- [ ] Vercel 환경변수에도 동일 키 등록 후 재배포
+- [ ] 사이트에서 실제 사업자번호 입력 후 isMock: false 확인 (테스트 데이터 배지 없어야 함)
+- [ ] 실패 시: Vercel 대시보드 → Deployments → 빌드 로그에서 CONSTRUCTION_API_KEY 로드 여부 확인
+- [ ] 확인 완료 후 다음 기능 개발 진행
 
 ## Active Files
 - src/components/sections/SignupStart.tsx
 - src/app/api/verify-license/route.ts
-- .env.local (생성 필요)
+- .env.local (CONSTRUCTION_API_KEY 설정됨 — gitignore에 포함)
 
 ## Current State / Blockers
-API 키 없음 → Mock 데이터 반환 중 (isMock: true, "테스트 데이터" 배지 표시).
+API 테스트 결과: isMock: true (재배포 직후 테스트 — 배포 완료 전이었을 가능성 있음)
 배포 URL: https://cozi-con-website-lvsh.vercel.app/
-Node.js: C:\Users\PC\AppData\Local\nodejs\node-v20.19.1-win-x64
+Vercel CLI 버그: 한글 계정명으로 인해 CLI 직접 사용 불가 (git push로 우회)
