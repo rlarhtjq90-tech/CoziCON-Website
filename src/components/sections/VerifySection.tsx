@@ -398,8 +398,8 @@ export default function VerifySection() {
                       </p>
                     </div>
                     {state.result.isMock && (
-                      <span className="shrink-0 rounded-full bg-amber-100 text-amber-700 text-p12 font-semibold px-2.5 py-1">
-                        데모 데이터
+                      <span className="shrink-0 rounded-full bg-amber-100 text-amber-700 text-p12 font-semibold px-2.5 py-1" title="실제 API 연동 전 샘플 데이터입니다">
+                        샘플 데이터
                       </span>
                     )}
                   </div>
