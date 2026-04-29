@@ -96,37 +96,58 @@ function normalizeApiKey(key: string): string {
 
 // ── GET: 연결 진단 (/api/verify-license) ───────────────────────────────────
 
+// 후보 오퍼레이션명 목록 — 올바른 것을 자동으로 찾아냄
+const CANDIDATE_OPS = [
+  'getConBizIfo1',
+  'getConBizIfo',
+  'getConLcnsIfo1',
+  'getConLcnsIfo',
+  'getConAdmnIfo1',
+  'getConAdmnIfo',
+  'getConInfo1',
+  'getConInfo',
+  'getBzentyInfo1',
+  'getBzentyList1',
+]
+
 export async function GET(): Promise<NextResponse> {
   const apiKey = process.env.CONSTRUCTION_API_KEY
   const info: Record<string, unknown> = {
-    region:        process.env.VERCEL_REGION ?? 'local',
-    hasApiKey:     !!apiKey,
-    apiKeyLength:  apiKey?.length ?? 0,
+    region:       process.env.VERCEL_REGION ?? 'local',
+    hasApiKey:    !!apiKey,
+    apiKeyLength: apiKey?.length ?? 0,
     apiKeyPreview: apiKey ? `${apiKey.slice(0, 6)}...${apiKey.slice(-4)}` : null,
-    endpoint:      `${BASE_URL}/getConBizIfo1`,
-    timestamp:     new Date().toISOString(),
+    baseUrl:      BASE_URL,
+    timestamp:    new Date().toISOString(),
   }
 
-  if (apiKey) {
-    // 테스트: 실제 사업자번호 없이 오퍼레이션 호출 → XML 구조 확인
-    const testUrl = `${BASE_URL}/getConBizIfo1?serviceKey=${normalizeApiKey(apiKey)}&pageNo=1&numOfRows=1&bzno=0000000000`
+  if (!apiKey) return NextResponse.json(info)
+
+  const key = normalizeApiKey(apiKey)
+  const opResults: Record<string, unknown> = {}
+
+  for (const op of CANDIDATE_OPS) {
+    const url = `${BASE_URL}/${op}?serviceKey=${key}&pageNo=1&numOfRows=1`
     try {
-      const res = await fetch(testUrl, {
+      const res  = await fetch(url, {
         headers: { Accept: 'application/xml' },
-        signal: AbortSignal.timeout(10000),
+        signal:  AbortSignal.timeout(6000),
       })
-      const xml = await res.text()
-      info.apiConnectivity = 'ok'
-      info.httpStatus      = res.status
-      info.resultCode      = extractTag(xml, 'resultCode') || '(없음)'
-      info.resultMsg       = extractTag(xml, 'resultMsg')  || '(없음)'
-      info.xmlSnippet      = xml.slice(0, 600)   // 필드명 확인용 전체 스니펫
+      const body = await res.text()
+      opResults[op] = {
+        status:     res.status,
+        resultCode: extractTag(body, 'resultCode') || '(없음)',
+        resultMsg:  extractTag(body, 'resultMsg')  || '(없음)',
+        snippet:    body.slice(0, 200),
+      }
+      // 200이거나 resultCode가 있으면 올바른 오퍼레이션
+      if (res.status !== 500) break
     } catch (err) {
-      info.apiConnectivity = 'failed'
-      info.connectError    = err instanceof Error ? `${err.name}: ${err.message}` : String(err)
+      opResults[op] = { error: err instanceof Error ? err.message : String(err) }
     }
   }
 
+  info.operationProbe = opResults
   return NextResponse.json(info)
 }
 
