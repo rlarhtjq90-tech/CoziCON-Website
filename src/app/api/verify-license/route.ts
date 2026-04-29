@@ -98,16 +98,16 @@ function normalizeApiKey(key: string): string {
 
 // 후보 오퍼레이션명 목록 — 올바른 것을 자동으로 찾아냄
 const CANDIDATE_OPS = [
-  'getConBizIfo1',
-  'getConBizIfo',
-  'getConLcnsIfo1',
-  'getConLcnsIfo',
-  'getConAdmnIfo1',
-  'getConAdmnIfo',
-  'getConInfo1',
-  'getConInfo',
-  'getBzentyInfo1',
-  'getBzentyList1',
+  'getConBizIfo1',   'getConBizIfo',
+  'getConLcnsIfo1',  'getConLcnsIfo',
+  'getConAdmnIfo1',  'getConAdmnIfo',
+  'getConInfo1',     'getConInfo',
+  'getBzentyInfo1',  'getBzentyList1',
+  'getConBizList1',  'getConBizList',
+  'getConList1',     'getConList',
+  'getConBizInfoList1', 'getConBizInfoList',
+  'getLcnsInfo1',    'getLcnsInfo',
+  'getConAdminInfo1','getConAdminInfo',
 ]
 
 export async function GET(): Promise<NextResponse> {
@@ -140,8 +140,8 @@ export async function GET(): Promise<NextResponse> {
         resultMsg:  extractTag(body, 'resultMsg')  || '(없음)',
         snippet:    body.slice(0, 200),
       }
-      // 200이거나 resultCode가 있으면 올바른 오퍼레이션
-      if (res.status !== 500) break
+      // 200 또는 XML resultCode가 있으면 올바른 오퍼레이션 → 중단
+      if (res.status === 200 || extractTag(body, 'resultCode')) break
     } catch (err) {
       opResults[op] = { error: err instanceof Error ? err.message : String(err) }
     }
