@@ -13,12 +13,15 @@
   - VerifySection: 사업자번호 → 면허 조회 (KISCON GongsiReg 워크어라운드)
 - **알려진 이슈:**
   - NEXTAUTH_URL이 구 프로젝트 주소로 설정 → 로그인 에러 발생 중
-  - Vercel 프로젝트명: cozi-con-website-2ano (배포 URL 변경됨)
   - 해결: NEXTAUTH_URL을 https://cozi-con-website-2ano.vercel.app 으로 수정 후 재배포 필요
+  - 커스텀 도메인 cozicon.co.kr 미연결 — 가비아 등 한국 레지스트라에서 구매 후 Vercel 연결 필요
   - KISCON 근본 해결: data.go.kr 국토교통부_건설업등록정보서비스 별도 신청 필요
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-04-30
+- cozicon.co.kr 커스텀 도메인 설정 논의 — .co.kr은 가비아 등 한국 레지스트라 구매 필요 (미완료)
 
 ### 2026-04-29 (세션 3)
 - GNB 로그인 버튼 스크롤 무관 항상 표시로 고정, /login 페이지 연결
