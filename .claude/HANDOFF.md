@@ -1,25 +1,22 @@
 # HANDOFF
-**agent:** claude | **project:** CoziCON-Website | **branch:** main | **commit:** e0b417f
+**agent:** claude | **project:** CoziCON-Website | **branch:** main | **commit:** 44a92da
 **created:** 2026-04-30 | **status:** active
 
 ## Context
-인증 시스템 배포 완료됐으나 로그인 에러 미해결, 커스텀 도메인 cozicon.co.kr 연결도 미완료 상태.
+이메일 OTP 회원가입 구현 완료 및 Gmail SMTP 전환까지 완료. Vercel 환경변수 설정만 남은 상태로 세션 종료.
 
 ## Immediate Next Steps
-- [ ] Vercel 환경변수에서 NEXTAUTH_URL을 `https://cozi-con-website-2ano.vercel.app` 으로 수정 → Redeploy
-- [ ] /signup → /login → /dashboard 플로우 전체 테스트
-- [ ] 가비아(gabia.com)에서 `cozicon.co.kr` 도메인 구매
-- [ ] 구매 후 Vercel Settings → Domains → `cozicon.co.kr` 추가 → DNS 설정
-- [ ] data.go.kr 국토교통부_건설업등록정보서비스 승인 후 면허 조회 API 정식 연동
+- [ ] Vercel 대시보드에서 `GMAIL_USER`(발신 Gmail 주소), `GMAIL_APP_PASSWORD`(앱 비밀번호 16자리) 추가
+- [ ] 추가 후 재배포 (빈 커밋 push 또는 Vercel Redeploy 버튼)
+- [ ] /signup 페이지에서 타 이메일 주소로 인증코드 수신 테스트
+- [ ] 가비아에서 cozicon.co.kr 도메인 구매 후 Vercel 연결 (장기 과제)
+- [ ] data.go.kr 국토교통부 건설업등록정보서비스 승인 후 면허 조회 정식 연동 (장기 과제)
 
 ## Active Files
-- `src/app/login/page.tsx`
-- `src/app/signup/page.tsx`
-- `src/app/dashboard/page.tsx`
-- `src/lib/auth.ts`
-- `prisma/schema.prisma`
+- `src/app/api/auth/send-verification/route.ts` — Gmail SMTP 발송 로직
+- `src/app/signup/page.tsx` — 3단계 OTP 인증 UI
 
 ## Current State / Blockers
-1. 로그인 에러: NEXTAUTH_URL=구 주소 → Vercel 환경변수에서 수정만 하면 해결
-2. 도메인: cozicon.co.kr 미구매 상태 — 가비아에서 구매 후 Vercel에 추가
-Vercel CLI는 한글 계정명 버그로 사용 불가 — 모든 설정은 Vercel 대시보드에서 직접 진행.
+Vercel에 GMAIL_USER, GMAIL_APP_PASSWORD 미설정 → 이메일 발송 불가.
+앱 비밀번호 발급: https://myaccount.google.com/apppasswords (2단계 인증 켜져 있어야 함)
+설정 완료 후 재배포하면 Gmail, Naver, 회사메일 등 모든 이메일로 인증코드 수신 가능.

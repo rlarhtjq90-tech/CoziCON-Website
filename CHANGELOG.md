@@ -2,23 +2,28 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** 배포 완료 — 인증 시스템 구현됨, 로그인 에러 해결 중
+- **상태:** 배포 완료 — 이메일 OTP 회원가입 구현, Gmail SMTP 전환 완료 (환경변수 설정 대기 중)
 - **주요 기능:**
-  - 랜딩 페이지 전체 섹션 구현 및 Vercel 배포
-  - GNB 로그인 버튼 항상 표시, /login 페이지 연결
-  - 로그인/회원가입/대시보드 페이지 (NextAuth v4 + Prisma + Neon)
-  - /api/auth/[...nextauth]: NextAuth 핸들러
-  - /api/auth/register: 회원가입 API (bcrypt 해시)
-  - /dashboard: 로그인 필수 보호 라우트 (middleware)
-  - VerifySection: 사업자번호 → 면허 조회 (KISCON GongsiReg 워크어라운드)
+  - 랜딩 페이지: 공종별 입찰 → 프로세스 → 대상별 소개 → 핵심 기능 → 통계 → CTA
+  - FinalCTA "종합/전문건설사로 시작하기" → /login 연결
+  - 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
+  - 이메일 OTP 인증 회원가입 (3단계, 3분 타이머, Gmail SMTP)
+  - /api/auth/send-verification: OTP 생성·발송
+  - /api/auth/verify-code: OTP 검증
+  - /api/auth/register: 코드 재검증 + emailVerified 설정 후 계정 생성
 - **알려진 이슈:**
-  - NEXTAUTH_URL이 구 프로젝트 주소로 설정 → 로그인 에러 발생 중
-  - 해결: NEXTAUTH_URL을 https://cozi-con-website-2ano.vercel.app 으로 수정 후 재배포 필요
-  - 커스텀 도메인 cozicon.co.kr 미연결 — 가비아 등 한국 레지스트라에서 구매 후 Vercel 연결 필요
-  - KISCON 근본 해결: data.go.kr 국토교통부_건설업등록정보서비스 별도 신청 필요
+  - Vercel 환경변수 GMAIL_USER, GMAIL_APP_PASSWORD 미설정 → 이메일 발송 불가
+  - 설정 후 재배포 필요
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-04-30 (세션 5)
+- 랜딩 첫 페이지에서 "무료로 시작하기" 버튼, SignupStart(회원가입), VerifySection(건설업 면허인증) 제거
+- FinalCTA 종합/전문건설사 버튼 → /login 페이지 연결
+- 회원가입에 이메일 OTP 인증 추가: 3단계 UI(이메일→코드→폼) + 3분 카운트다운 타이머
+- 이메일 발송: Resend(샌드박스 제한) → Gmail SMTP(nodemailer)로 전환
+- Vercel 환경변수 GMAIL_USER, GMAIL_APP_PASSWORD 설정 필요 (미완료)
 
 ### 2026-04-30
 - cozicon.co.kr 커스텀 도메인 설정 논의 — .co.kr은 가비아 등 한국 레지스트라 구매 필요 (미완료)

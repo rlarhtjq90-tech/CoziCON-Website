@@ -19,6 +19,18 @@ NEXTAUTH_URL을 구 URL로 방치하면 로그인 요청이 전부 실패함.
 Vercel CLI v52에서 계정명에 한글 등 비ASCII 문자가 포함되면 HTTP 헤더 인코딩 오류 발생.
 `git push`로 GitHub 연동 자동 배포를 트리거하거나, Vercel REST API + 개인 토큰으로 우회.
 
+## Email
+
+### Resend 무료 플랜은 샌드박스 — 본인 계정 이메일로만 발송 가능 #coding #email
+Resend에서 도메인 인증 없이 `onboarding@resend.dev`를 발신 주소로 쓰면 샌드박스 모드.
+샌드박스에서는 Resend 가입 계정 이메일 외에는 수신 불가 → 실사용 불가.
+도메인 없는 환경에서 모든 이메일로 발송하려면 Gmail/Naver SMTP(nodemailer)를 써야 함.
+
+### Gmail SMTP 앱 비밀번호는 2단계 인증 활성화 후에만 발급 가능 #coding #email
+Google 계정 → myaccount.google.com/apppasswords 에서 앱 비밀번호 발급.
+2단계 인증이 꺼져 있으면 앱 비밀번호 메뉴 자체가 노출되지 않음.
+nodemailer 설정 시 `pass`에는 일반 비밀번호가 아닌 16자리 앱 비밀번호를 사용해야 함.
+
 ## External API
 
 ### data.go.kr 공공API URL은 변경될 수 있음 #coding #external-api
