@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { Resend } from 'resend'
+import nodemailer from 'nodemailer'
 import { prisma } from '@/lib/db'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-const FROM = process.env.RESEND_FROM_EMAIL ?? 'CoziCON <noreply@cozicon.kr>'
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASSWORD,
+  },
+})
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,12 +26,11 @@ export async function POST(req: NextRequest) {
     const otp = String(Math.floor(100000 + Math.random() * 900000))
     const expires = new Date(Date.now() + 3 * 60 * 1000)
 
-    // 기존 토큰 삭제 후 새로 생성 (재발송 지원)
     await prisma.verificationToken.deleteMany({ where: { identifier: email } })
     await prisma.verificationToken.create({ data: { identifier: email, token: otp, expires } })
 
-    await resend.emails.send({
-      from: FROM,
+    await transporter.sendMail({
+      from: `CoziCON <${process.env.GMAIL_USER}>`,
       to: email,
       subject: '[CoziCON] 이메일 인증번호',
       html: `
