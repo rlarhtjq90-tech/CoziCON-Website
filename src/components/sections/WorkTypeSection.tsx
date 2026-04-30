@@ -35,12 +35,6 @@ export default function WorkTypeSection() {
               ))}
             </ul>
 
-            <a
-              href="#contact"
-              className="inline-flex items-center justify-center rounded-full bg-primary-500 text-white px-8 py-3.5 text-p16 font-semibold shadow-btn-glow hover:bg-primary-600 transition-colors mt-2"
-            >
-              무료로 시작하기 →
-            </a>
           </div>
 
           {/* Right: Accordion */}
