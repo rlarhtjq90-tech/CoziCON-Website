@@ -26,6 +26,14 @@ Resend에서 도메인 인증 없이 `onboarding@resend.dev`를 발신 주소로
 샌드박스에서는 Resend 가입 계정 이메일 외에는 수신 불가 → 실사용 불가.
 도메인 없는 환경에서 모든 이메일로 발송하려면 Gmail/Naver SMTP(nodemailer)를 써야 함.
 
+### Gmail 앱 비밀번호 공백 제거는 붙여넣기 후 공백만 지울 것 #coding #email
+앱 비밀번호(`wlju dofm niyp zxzp`)를 직접 타이핑하면 오타 위험이 있음.
+반드시 원본을 복사 후 공백만 제거(`wljudofmniypzxzp`)해서 Vercel에 입력해야 함.
+
+### catch 블록에 반드시 에러 로깅 추가 #coding #debugging
+`catch { return 500 }` 패턴은 Vercel Function Logs에서 실제 원인을 숨김.
+`catch (err) { console.error(err) }` 한 줄만 추가해도 원인 진단 속도가 크게 빨라짐.
+
 ### Gmail SMTP 앱 비밀번호는 2단계 인증 활성화 후에만 발급 가능 #coding #email
 Google 계정 → myaccount.google.com/apppasswords 에서 앱 비밀번호 발급.
 2단계 인증이 꺼져 있으면 앱 비밀번호 메뉴 자체가 노출되지 않음.
