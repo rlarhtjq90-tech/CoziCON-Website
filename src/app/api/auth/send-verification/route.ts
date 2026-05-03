@@ -2,20 +2,17 @@ import { NextRequest, NextResponse } from 'next/server'
 import nodemailer from 'nodemailer'
 import { prisma } from '@/lib/db'
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD,
-  },
-})
-
 export async function POST(req: NextRequest) {
   try {
     const { email } = await req.json()
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json({ error: '올바른 이메일 주소를 입력해주세요.' }, { status: 400 })
+    }
+
+    if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
+      console.error('GMAIL_USER 또는 GMAIL_APP_PASSWORD 환경변수가 설정되지 않았습니다.')
+      return NextResponse.json({ error: '이메일 발송 서비스가 설정되지 않았습니다. 관리자에게 문의해주세요.' }, { status: 500 })
     }
 
     const existing = await prisma.user.findUnique({ where: { email } })
@@ -28,6 +25,14 @@ export async function POST(req: NextRequest) {
 
     await prisma.verificationToken.deleteMany({ where: { identifier: email } })
     await prisma.verificationToken.create({ data: { identifier: email, token: otp, expires } })
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD,
+      },
+    })
 
     await transporter.sendMail({
       from: `CoziCON <${process.env.GMAIL_USER}>`,
