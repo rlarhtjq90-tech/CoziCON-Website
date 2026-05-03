@@ -2,20 +2,24 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** Day 0 인프라 세팅 완료 — dev 브랜치 생성, Sentry 설치, .env.example 전체 정리
+- **상태:** Day 0 인프라 완료 — Sentry DSN Vercel 등록 및 재배포까지 완료
 - **주요 기능:**
   - 랜딩 페이지: 공종별 입찰 → 프로세스 → 대상별 소개 → 핵심 기능 → 통계 → CTA
   - FinalCTA "종합/전문건설사로 시작하기" → /login 연결
   - 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
   - 이메일 OTP 인증 회원가입 (3단계, 3분 타이머, Gmail SMTP)
-  - @sentry/nextjs 설치 + sentry.{client,server,edge}.config.ts + withSentryConfig 연동
+  - @sentry/nextjs 설치 + DSN/AUTH_TOKEN/ORG/PROJECT Vercel 환경변수 등록 완료
 - **알려진 이슈:**
-  - Sentry DSN 미등록 — sentry.io에서 DSN 복사 후 Vercel 환경변수 등록 필요
   - Neon DB dev/prod 분리 미완료
-  - 국세청 사업자등록 진위확인 API 신청 필요 (data.go.kr)
+  - 국세청 사업자등록 진위확인 API 신청 필요 (data.go.kr, 1~3일 승인)
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-04 (세션 8 — Sentry 연동 완료)
+- Chrome 브라우저 자동화로 Sentry DSN 추출 및 Organization Token 생성 (CoziCON Vercel CI/CD, org:ci 스코프)
+- Vercel 환경변수 4개 추가: `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_ORG=cozi-con`, `SENTRY_PROJECT=javascript-nextjs`, `SENTRY_AUTH_TOKEN`
+- Vercel Production 재배포 트리거 — Sentry 에러 캡처 활성화
 
 ### 2026-05-03 (세션 7 — Day 0 인프라)
 - 건설입찰플랫폼 4주 계획 분석 및 현재 구현 상태 갭 분석 (Week 1 Day 1부터 시작 확인)
