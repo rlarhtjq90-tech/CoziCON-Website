@@ -49,6 +49,16 @@ Vercel 환경변수 페이지에 "Link Shared Variable"과 "Add Environment Vari
 Vercel의 "paste .env contents in Key input" 기능은 전체 파일을 파싱하지 못하고 마지막 줄이 key가 되는 버그 있음.
 React controlled input에는 `Object.getOwnPropertyDescriptor(el.__proto__, 'value').set`으로 네이티브 setter를 호출해야 React 상태가 업데이트됨.
 
+### Chrome CDP 시작 시 기존 프로세스 종료 + 임시 프로필 필수 #coding #browser-automation
+기존 Chrome이 살아있으면 `--remote-debugging-port` 플래그가 무시되고 기존 인스턴스로 합류되어 CDP 포트가 안 열림.
+`Stop-Process -Name chrome -Force` 후 `--user-data-dir=임시경로`로 신규 인스턴스를 강제 생성해야 함.
+또한 Playwright connectOverCDP는 `localhost` 대신 `127.0.0.1`을 써야 Windows IPv6 ECONNREFUSED를 피할 수 있음.
+
+### Claude in Chrome 브라우저 도구는 Claude Desktop 전용, CLI 미지원 #coding #browser-automation
+Claude in Chrome 확장(v1.0.69)은 Anthropic bridge(`wss://bridge.claudeusercontent.com`)를 통해 Claude Desktop 앱과 연결됨.
+CLI(터미널) 세션에서는 MCP 브라우저 도구(browser_screenshot 등)가 주입되지 않음.
+CLI에서 Chrome 자동화가 필요하면 Playwright CDP 또는 커스텀 Chrome 확장(manifest v3 + scripting API)으로 대체해야 함.
+
 ### 로그인 세션이 필요한 사이트 자동화는 CDP로 기존 Chrome에 붙는 것이 최선 #coding #browser-automation
 Playwright로 새 브라우저 인스턴스를 열면 쿠키/세션이 없어 로그인부터 자동화해야 함.
 `chromium.connectOverCDP('http://localhost:9222')`로 `chrome.exe --remote-debugging-port=9222`로 실행된 기존 브라우저에 붙으면 사람이 로그인한 세션을 그대로 재사용 가능.
