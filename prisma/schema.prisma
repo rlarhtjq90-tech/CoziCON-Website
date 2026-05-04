@@ -8,6 +8,26 @@ datasource db {
   directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
+// =============================================
+// Enums
+// =============================================
+
+enum UserType {
+  GENERAL_CONTRACTOR   // 종합건설사
+  SPECIALTY_CONTRACTOR // 전문건설사
+  OWNER                // 발주사
+}
+
+enum VerificationResult {
+  VALID
+  INVALID
+  ERROR
+}
+
+// =============================================
+// NextAuth 기본 모델
+// =============================================
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -15,9 +35,16 @@ model User {
   emailVerified DateTime?
   password      String?
   image         String?
+  userType      UserType?
+  companyId     String?
   createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
   accounts      Account[]
   sessions      Session[]
+  company       Company?              @relation(fields: [companyId], references: [id])
+  termsConsents TermsConsent[]
+  verifications CompanyVerification[]
 }
 
 model Account {
@@ -52,4 +79,73 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+// =============================================
+// 회사 정보
+// =============================================
+
+model Company {
+  id        String   @id @default(cuid())
+  bizNo     String   @unique
+  name      String
+  ceoName   String?
+  address   String?
+  phone     String?
+  type      UserType
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users         User[]
+  licenses      License[]
+  verifications CompanyVerification[]
+}
+
+// =============================================
+// 건설업 면허
+// =============================================
+
+model License {
+  id          String    @id @default(cuid())
+  companyId   String
+  licenseType String
+  grade       String?
+  licenseNo   String?
+  issuedAt    DateTime?
+  expiresAt   DateTime?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+// =============================================
+// 사업자등록 진위확인 이력
+// =============================================
+
+model CompanyVerification {
+  id           String             @id @default(cuid())
+  companyId    String
+  bizNo        String
+  result       VerificationResult
+  responseData Json?
+  verifiedAt   DateTime           @default(now())
+  verifiedBy   String?
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [verifiedBy], references: [id])
+}
+
+// =============================================
+// 약관 동의 기록
+// =============================================
+
+model TermsConsent {
+  id           String   @id @default(cuid())
+  userId       String
+  termsVersion String
+  agreedAt     DateTime @default(now())
+  ipAddress    String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
