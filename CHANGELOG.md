@@ -2,19 +2,30 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** Day 0 인프라 완료 — Sentry DSN Vercel 등록 및 재배포까지 완료
+- **상태:** Day 0 진행 중 — 국세청 API 신청 폼 자동 입력 완료 (버튼 클릭 대기), Claude in Chrome 페어링 완료
 - **주요 기능:**
   - 랜딩 페이지: 공종별 입찰 → 프로세스 → 대상별 소개 → 핵심 기능 → 통계 → CTA
   - FinalCTA "종합/전문건설사로 시작하기" → /login 연결
   - 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
-  - 이메일 OTP 인증 회원가입 (3단계, 3분 타이머, Gmail SMTP)
+  - 이메일 OTP 인증 회원가입 (3단계, 3분 타이머, Gmail SMTP) — Gmail 정상 작동 확인
   - @sentry/nextjs 설치 + DSN/AUTH_TOKEN/ORG/PROJECT Vercel 환경변수 등록 완료
+  - Playwright CDP + JS 직접 주입 기반 Chrome 자동화 스크립트 구축
 - **알려진 이슈:**
+  - 국세청 API 신청 폼 입력 완료 — Chrome에서 "활용신청" 버튼 클릭 필요 (자동승인)
+  - Claude Code 재시작 후 Claude in Chrome 확장 연동 확인 필요
   - Neon DB dev/prod 분리 미완료
-  - 국세청 사업자등록 진위확인 API 신청 필요 (data.go.kr, 1~3일 승인)
+  - Supabase Storage 미생성
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-04 (세션 9 — 국세청 API 자동화 + Claude in Chrome 페어링)
+- Gmail SMTP 정상 동작 확인 (`/api/auth/send-verification` POST 테스트 → `{success: true}`)
+- 국세청 사업자등록정보 진위확인 API (data.go.kr publicDataPk=15081808) 신청 자동화 구축
+  - Playwright 단독 → CDP 연결(기존 로그인 세션 재사용) → JS 직접 주입 방식으로 단계적 발전
+  - `apply-cdp.js`: `page.evaluate()`로 hidden 필드 포함 전체 폼 자동 입력 완료
+- Anthropic "Claude in Chrome (Beta)" 확장(v1.0.69) 설치 및 pairing.html에서 Claude Code와 페어링 완료
+- Day 0 잔여: 국세청 신청 버튼 클릭(수동), Neon DB dev/prod 분리, Supabase Storage 생성
 
 ### 2026-05-04 (세션 8 — Sentry 연동 완료)
 - Chrome 브라우저 자동화로 Sentry DSN 추출 및 Organization Token 생성 (CoziCON Vercel CI/CD, org:ci 스코프)

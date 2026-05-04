@@ -49,6 +49,16 @@ Vercel 환경변수 페이지에 "Link Shared Variable"과 "Add Environment Vari
 Vercel의 "paste .env contents in Key input" 기능은 전체 파일을 파싱하지 못하고 마지막 줄이 key가 되는 버그 있음.
 React controlled input에는 `Object.getOwnPropertyDescriptor(el.__proto__, 'value').set`으로 네이티브 setter를 호출해야 React 상태가 업데이트됨.
 
+### 로그인 세션이 필요한 사이트 자동화는 CDP로 기존 Chrome에 붙는 것이 최선 #coding #browser-automation
+Playwright로 새 브라우저 인스턴스를 열면 쿠키/세션이 없어 로그인부터 자동화해야 함.
+`chromium.connectOverCDP('http://localhost:9222')`로 `chrome.exe --remote-debugging-port=9222`로 실행된 기존 브라우저에 붙으면 사람이 로그인한 세션을 그대로 재사용 가능.
+사전에 Chrome을 `--remote-debugging-port=9222` 플래그로 시작해둬야 함.
+
+### hidden 필드는 Playwright fill/click 대신 JS 직접 주입으로 처리 #coding #browser-automation
+Playwright의 `fill()`, `click()`, `selectOption()`은 요소가 visible해야 동작하며 hidden/invisible 필드에서 TimeoutError 발생.
+`page.evaluate()`로 `element.value = val; element.dispatchEvent(new Event('input', {bubbles:true}))`를 주입하면 visibility 체크 없이 값 설정 가능.
+React/Vue 등 프레임워크 이벤트 시스템도 bubbles:true 이벤트를 dispatch해야 상태가 반영됨.
+
 ## External API
 
 ### data.go.kr 공공API URL은 변경될 수 있음 #coding #external-api
