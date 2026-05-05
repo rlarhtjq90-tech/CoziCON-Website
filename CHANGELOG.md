@@ -2,7 +2,7 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** Day 4 완료 + NTS API 수정 중 — dev 브랜치, Vercel 배포 대기
+- **상태:** Day 4 완료, NTS API 실사 검증 미해결 — dev 브랜치(57db2b3) 배포됨
 - **주요 기능:**
   - 랜딩 페이지, 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
   - 회원가입 4단계: 이메일 OTP(Gmail SMTP) → 유형선택 → 정보입력 + 약관동의
@@ -15,6 +15,7 @@
   - 대시보드: PENDING/승인대기/정상 상태별 배너
   - JWT 세션에 userType, status, companyId 포함
 - **알려진 이슈:**
+  - NTS API 15초 타임아웃 미해결 — 승인된 키, 올바른 요청 형식(b_no+start_dt)에도 응답 없음
   - NTS API `p_nm` Korean encoding 미해결 — 현재 `p_nm` 제외, `b_no+start_dt`만으로 진위확인
   - E2E 전체 플로우 미검증 (verify-biz → verify-license → admin 승인)
   - Vercel `ADMIN_EMAILS` 환경변수 등록 필요 (rlarhtjq90@gmail.com)
@@ -22,6 +23,11 @@
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-06 (세션 16 — NTS API 실사 검증 시도)
+- `cozi-con-website-2ano`가 실제 배포 프로젝트임 확인 (`cozi-con-website`는 별개 프로젝트)
+- dev 브랜치 신버전(57db2b3, 개업일자 필드 포함)이 `cozi-con-website-2ano`에 Ready 상태 확인
+- NTS API 실사 테스트(사업자번호 823-87-01344): 승인된 키, 올바른 형식(b_no+start_dt)에도 15초 타임아웃 발생 — `DOMException [TimeoutError]` (Vercel Function Log 확인) — 원인 미해결
 
 ### 2026-05-05 (세션 15 — NTS API start_dt 수정)
 - NTS 사업자 진위확인 API 디버깅: `start_dt`(개업일자) 없으면 `REQUEST_DATA_MALFORMED` 반환, `p_nm` Korean encoding은 항상 `������`로 깨져 `valid: "02"` 고정

@@ -95,6 +95,13 @@ Claude Code Bash 툴은 TTY가 없는 비대화형 환경이라 `prisma migrate 
 Next.js dev 서버는 `.env.local` → `.env` 순으로 로드하지만, 독립 `node` 스크립트는 Prisma가 `.env`만 읽음.
 서버와 스크립트의 DB 쿼리 결과가 다르게 보이는 원인이 될 수 있음. 스크립트에서 `.env.local`을 읽으려면 수동 파싱 필요.
 
+## Deployment
+
+### Vercel 프로젝트명은 자동 생성 suffix 포함 전체명으로 확인할 것 #coding #vercel
+Vercel은 동일 이름 프로젝트 충돌 시 `-xxxx` suffix를 붙여 새 프로젝트를 생성함 (예: `cozi-con-website-2ano`).
+Vercel CLI나 GitHub Deployments 탭에서 보이는 짧은 이름과 실제 프로젝트명이 다를 수 있음.
+빌드 로그 확인 전에 반드시 Vercel 대시보드에서 실제 프로젝트명(URL 포함)을 먼저 확인해야 함.
+
 ## External API
 
 ### 국세청 NTS validate API는 start_dt 없으면 항상 REQUEST_DATA_MALFORMED #coding #external-api #nts
@@ -106,6 +113,11 @@ Next.js dev 서버는 `.env.local` → `.env` 순으로 로드하지만, 독립 
 국세청 NTS API `p_nm`(대표자명)에 UTF-8 한글을 보내도 응답에서 `������`로 반환되어 매칭이 항상 `valid: "02"`.
 encoding/charset 변환 시도(EUC-KR, Unicode escape 등)가 모두 실패할 경우,
 해당 필드를 제거하고 다른 식별자 조합(`b_no + start_dt`)으로 진위확인 범위를 좁히는 것이 가장 실용적.
+
+### Vercel Function Log External APIs 섹션으로 서버사이드 외부 API 타임아웃 진단 #coding #vercel #debugging
+Vercel Function Log의 "External APIs" 섹션은 함수에서 호출한 외부 HTTP 요청의 URL과 응답 시간을 보여줌.
+`DOMException [TimeoutError]`와 Execution Duration이 `maxDuration`에 근접하면 외부 API 무응답이 원인.
+로컬에서 재현이 어려운 서버사이드 타임아웃 문제는 이 섹션으로 가장 빠르게 진단 가능.
 
 ### data.go.kr 공공API URL은 변경될 수 있음 #coding #external-api
 공공데이터포털의 개별 API 직접 URL(`/data/{id}/openapi.do`)은 삭제되거나 변경될 수 있음.
