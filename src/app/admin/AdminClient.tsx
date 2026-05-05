@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { CheckCircle2, XCircle, Building2 } from 'lucide-react'
+import { CheckCircle2, XCircle, Building2, AlertCircle } from 'lucide-react'
 
 interface AdminUser {
   id: string
@@ -18,26 +18,37 @@ interface AdminUser {
 export default function AdminClient({ initialUsers }: { initialUsers: AdminUser[] }) {
   const [users, setUsers] = useState(initialUsers)
   const [processing, setProcessing] = useState<string | null>(null)
+  const [actionError, setActionError] = useState<string | null>(null)
 
   async function handleApprove(userId: string) {
     setProcessing(userId)
+    setActionError(null)
     const res = await fetch('/api/admin/approve', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId }),
     })
-    if (res.ok) setUsers((prev) => prev.filter((u) => u.id !== userId))
+    if (res.ok) {
+      setUsers((prev) => prev.filter((u) => u.id !== userId))
+    } else {
+      setActionError('승인 처리에 실패했습니다. 다시 시도해주세요.')
+    }
     setProcessing(null)
   }
 
   async function handleReject(userId: string) {
     setProcessing(userId)
+    setActionError(null)
     const res = await fetch('/api/admin/reject', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId }),
     })
-    if (res.ok) setUsers((prev) => prev.filter((u) => u.id !== userId))
+    if (res.ok) {
+      setUsers((prev) => prev.filter((u) => u.id !== userId))
+    } else {
+      setActionError('반려 처리에 실패했습니다. 다시 시도해주세요.')
+    }
     setProcessing(null)
   }
 
@@ -59,6 +70,13 @@ export default function AdminClient({ initialUsers }: { initialUsers: AdminUser[
       <main className="container-content py-12">
         <h1 className="text-t4 font-bold text-ink-700 mb-2">승인 대기</h1>
         <p className="text-p15 text-ink-400 mb-8">{users.length}건 대기 중</p>
+
+        {actionError && (
+          <div className="mb-4 flex items-start gap-2 px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-p14 text-red-600">
+            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+            <span>{actionError}</span>
+          </div>
+        )}
 
         {users.length === 0 ? (
           <div className="bg-white rounded-2xl p-12 text-center shadow-card-md">
