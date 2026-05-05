@@ -49,13 +49,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       body: JSON.stringify({
         businesses: [{
           b_no: cleanBizNo,
-          start_dt: '',
           p_nm: ceoName.trim(),
-          p_nm2: '',
-          b_nm: '',
-          corp_no: '',
-          b_sector: '',
-          b_type: '',
         }],
       }),
       signal: AbortSignal.timeout(15000),
