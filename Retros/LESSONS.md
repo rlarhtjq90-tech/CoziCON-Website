@@ -97,6 +97,16 @@ Next.js dev 서버는 `.env.local` → `.env` 순으로 로드하지만, 독립 
 
 ## External API
 
+### 국세청 NTS validate API는 start_dt 없으면 항상 REQUEST_DATA_MALFORMED #coding #external-api #nts
+`/api/nts-businessman/v1/validate`에 `b_no`와 `p_nm`만 보내면 HTTP 500 `REQUEST_DATA_MALFORMED` 반환.
+공식 문서에 optional로 표기된 `start_dt`(개업일자, YYYYMMDD)가 사실상 required임.
+폼에서 개업일자를 입력받거나, 더미 `start_dt`를 포함해야 요청이 통과됨.
+
+### 공공API에 한글을 JSON으로 보내도 서버에서 깨지면 해당 필드를 제외할 것 #coding #external-api
+국세청 NTS API `p_nm`(대표자명)에 UTF-8 한글을 보내도 응답에서 `������`로 반환되어 매칭이 항상 `valid: "02"`.
+encoding/charset 변환 시도(EUC-KR, Unicode escape 등)가 모두 실패할 경우,
+해당 필드를 제거하고 다른 식별자 조합(`b_no + start_dt`)으로 진위확인 범위를 좁히는 것이 가장 실용적.
+
 ### data.go.kr 공공API URL은 변경될 수 있음 #coding #external-api
 공공데이터포털의 개별 API 직접 URL(`/data/{id}/openapi.do`)은 삭제되거나 변경될 수 있음.
 고정 URL 대신 사이트 검색(`키스콘 건설업체정보` 등 키워드)으로 최신 URL을 찾아야 함.

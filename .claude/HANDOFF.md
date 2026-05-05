@@ -1,21 +1,20 @@
 # HANDOFF
-**agent:** claude | **project:** CoziCON-Website | **branch:** dev | **commit:** 3ee76e7
+**agent:** claude | **project:** CoziCON-Website | **branch:** dev | **commit:** 57db2b3
 **created:** 2026-05-05 | **status:** active
 
 ## Context
-Day 4 구현(건설업등록증 인증 + 관리자 승인 큐) 완료 후 wrap-up. Vercel 환경변수 ADMIN_EMAILS를 Chrome으로 입력까지 했으나 Save를 누르지 않은 상태에서 세션 종료.
+NTS 사업자 진위확인 API 수정 완료 (start_dt 추가, p_nm 제거). Vercel 재배포 후 실제 데이터로 검증 필요. Day 5 회사 프로필 페이지 구현 대기 중.
 
 ## Immediate Next Steps
-- [ ] Chrome에서 Vercel `cozi-con-website-2ano` 환경변수 패널이 열려 있으면 Save 클릭 (ADMIN_EMAILS=rlarhtjq90@gmail.com), 닫혀 있으면 재입력 후 저장
-- [ ] Vercel 배포 후 재배포 트리거 (환경변수 반영을 위한 Redeploy 필요)
-- [ ] E2E 시나리오 검증: 회원가입 → /verify-biz → /verify-license → 대시보드 "관리자 승인 대기" → /admin 승인 → 대시보드 "인증 완료"
+- [ ] Vercel 재배포 완료 후 씨티이앤씨 데이터로 NTS API 실 검증: 사업자번호 `823-87-01344`, 개업일자 `2018-12-15` → `valid: "01"` 확인
+- [ ] Vercel `ADMIN_EMAILS=rlarhtjq90@gmail.com,black_0802@naver.com` 환경변수 등록 (미등록 상태)
+- [ ] E2E 전체 플로우 검증: 회원가입 → /verify-biz → /verify-license → /admin 승인
+- [ ] Day 5 구현: 회사 프로필 페이지 (상호, 대표자, 주소, 연락처, 면허종목, 시공능력평가액, 주력지역, 시공실적, 로고 업로드)
 
 ## Active Files
-- `src/app/verify-license/page.tsx` + `VerifyLicenseClient.tsx`
-- `src/app/admin/page.tsx` + `AdminClient.tsx`
-- `src/app/api/license/verify/route.ts`
-- `src/app/api/admin/approve/route.ts`, `reject/route.ts`
+- `src/app/api/verify-biz/route.ts` — start_dt 추가, p_nm 제거
+- `src/app/verify-biz/page.tsx` — 개업일자 입력 필드 추가
 
 ## Current State / Blockers
-Vercel ADMIN_EMAILS 미등록 → /admin 접속 시 모든 계정 차단 (isAdmin 항상 false).
-Chrome 탭에 `cozi-con-website-2ano` 환경변수 입력 패널이 열려 있을 수 있음.
+NTS API p_nm Korean encoding 미해결 — 현재 b_no+start_dt만으로 진위확인 (대표자명 미검증).
+씨티이앤씨: b_no=8238701344, start_dt=20181215 → valid: "01" 예상이나 배포 후 확인 필요.
