@@ -1,22 +1,24 @@
 # HANDOFF
-**agent:** claude | **project:** CoziCON-Website | **branch:** dev | **commit:** 88646db
-**created:** 2026-05-05 09:30 | **status:** active
+**agent:** claude | **project:** CoziCON-Website | **branch:** dev | **commit:** 9adf910
+**created:** 2026-05-05 11:30 | **status:** active
 
 ## Context
-Day 2 가입 플로우 분기 코드 구현 완료. `.env.local` Gmail 자격증명이 플레이스홀더라 OTP 이메일 발송이 실패하여 end-to-end 테스트를 완료하지 못함.
+Day 3 사업자 인증 기능을 구현하고 dev 브랜치에 push했으나 Vercel Preview 빌드가 전부 failure 상태. 로컬 빌드는 정상이나 Vercel 측 오류 원인 미확인.
 
 ## Immediate Next Steps
-- [ ] `.env.local`에 실제 `GMAIL_USER`와 `GMAIL_APP_PASSWORD` 입력 후 OTP 발송 테스트
-- [ ] `/signup` 4스텝 플로우 end-to-end 테스트 (종합/전문건설사 각각 가입 완료 확인)
-- [ ] Day 2 완료 커밋 후 Day 3 시작: 사업자등록증 업로드 + 국세청 API 연동
+- [ ] Vercel 빌드 실패 원인 파악 — Vercel 대시보드 Build Logs 직접 확인 (`dpl_961nF9E9mEzHuBXyUFbtufjTqRV7`)
+- [ ] 빌드 수정 후 재배포 → `/verify-biz` 페이지 E2E 테스트
+- [ ] Vercel 환경변수 추가: `NTS_API_KEY` (국세청), `BLOB_READ_WRITE_TOKEN` (Vercel Blob)
+- [ ] Day 4: 건설업등록증 업로드 + 관리자 승인 큐 페이지
 
 ## Active Files
-- `src/app/signup/page.tsx` — 4스텝 가입 UI (email→OTP→유형→폼)
-- `src/app/api/auth/register/route.ts` — userType, status, TermsConsent 저장
-- `src/app/api/auth/send-verification/route.ts` — Gmail OTP 발송 (GMAIL_* env 필요)
-- `prisma/schema.prisma` — UserStatus enum + User.status 추가됨
+- `src/app/verify-biz/page.tsx`
+- `src/app/api/verify-biz/route.ts`
+- `src/app/api/upload/biz-doc/route.ts`
+- `src/app/api/company/setup/route.ts`
+- `prisma/schema.prisma`
 
 ## Current State / Blockers
-Gmail SMTP 인증 실패: `535 Username and Password not accepted`
-→ `.env.local`의 `GMAIL_USER`와 `GMAIL_APP_PASSWORD`가 플레이스홀더 값
-→ 실제 Gmail 앱 비밀번호로 교체 필요 (Google 계정 → 보안 → 2단계인증 → 앱 비밀번호)
+Vercel 빌드 모두 failure. 로컬 `next build`는 성공. `@vercel/blob` 추가가 유일한 새 의존성.
+Vercel 대시보드 → Build Logs 탭 → 빨간 줄 확인 필요.
+CLI: `npx vercel login` 후 `npx vercel inspect dpl_961nF9E9mEzHuBXyUFbtufjTqRV7 --logs`

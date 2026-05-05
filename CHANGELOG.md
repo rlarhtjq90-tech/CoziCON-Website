@@ -2,23 +2,30 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** Day 1 완료 / Day 2 구현 완료 (미테스트) — 가입 플로우 분기 구현, Gmail SMTP 자격증명 설정 필요
+- **상태:** Day 3 구현 완료 (dev 브랜치) — Vercel 빌드 실패 중, 원인 미확인
 - **주요 기능:**
-  - 랜딩 페이지: 공종별 입찰 → 프로세스 → 대상별 소개 → 핵심 기능 → 통계 → CTA
-  - 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
-  - 회원가입 4단계: 이메일 OTP → 유형선택(종합/전문건설사) → 정보입력 + 약관동의
+  - 랜딩 페이지, 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
+  - 회원가입 4단계: 이메일 OTP(Gmail SMTP) → 유형선택 → 정보입력 + 약관동의
   - 전문건설사 면허 종목 23종 다중선택 UI
-  - DB: UserStatus enum (PENDING/ACTIVE/REJECTED/SUSPENDED) + User.status 필드
-  - TermsConsent: 가입 시 약관 동의 IP·시각 기록
-  - @sentry/nextjs DSN Vercel 등록 완료
+  - DB: Company(businessVerified, bizDocUrl), CompanyVerification, TermsConsent
+  - 사업자 인증 페이지 `/verify-biz`: 국세청 진위확인 → 사업자등록증 업로드 → Company 등록
+  - 대시보드: PENDING/승인대기/정상 상태별 배너
+  - JWT 세션에 userType, status, companyId 포함
 - **알려진 이슈:**
-  - .env.local Gmail 자격증명 플레이스홀더 → OTP 발송 불가 (GMAIL_USER, GMAIL_APP_PASSWORD 실제값 필요)
-  - Day 2 end-to-end 테스트 미완료
+  - Vercel 빌드 실패 (dev 브랜치 push 후 모든 Preview 환경 failure) — 원인 미확인
+  - NTS_API_KEY 미설정 → 국세청 API 테스트 모드로 동작
+  - BLOB_READ_WRITE_TOKEN 미설정 → 파일 업로드 없이 진행
   - Neon DB dev/prod 분리 미완료
-  - Supabase Storage 미생성
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-05 (세션 13 — Day 2 블로커 해결 + Day 3 사업자 인증 구현)
+- Gmail SMTP 환경변수 확인 → OTP 발송/검증/가입 전체 플로우 API 테스트 통과
+- Day 3 구현: 국세청 NTS 사업자 진위확인 API(`/api/verify-biz`), Vercel Blob 파일 업로드(`/api/upload/biz-doc`), Company 등록(`/api/company/setup`), `/verify-biz` 페이지, 대시보드 상태 배너
+- Prisma 스키마 `Company`에 `businessVerified`, `bizDocUrl` 추가 + `prisma db push` 반영
+- JWT 세션에 `userType`, `status`, `companyId` 포함하도록 `auth.ts` + 타입 확장
+- Vercel 배포 실패 미해결 — `claude-in-chrome` MCP 연결 불가로 빌드 로그 확인 중단
 
 ### 2026-05-05 (세션 12 — Day 1 완료 확인 + Day 2 가입 플로우 분기 구현)
 - Prisma 스키마에 `UserStatus` enum (PENDING/ACTIVE/REJECTED/SUSPENDED) + `User.status` 필드 추가, `prisma db push`로 Neon DB 반영

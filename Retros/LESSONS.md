@@ -6,6 +6,12 @@
 
 ## Deployment
 
+### Vercel 빌드 실패 시 로컬 성공해도 의심할 것 — 새 의존성이 원인일 수 있음 #coding #vercel
+로컬 `next build`가 통과해도 Vercel 빌드는 실패할 수 있음. 새 npm 패키지 추가 직후 실패하면 해당 패키지의 Vercel 환경 호환성을 먼저 확인. `npx vercel inspect <deployment-id> --logs` (Vercel CLI 로그인 필요) 또는 Vercel 대시보드 Build Logs 탭이 가장 빠른 진단 경로.
+
+### claude-in-chrome MCP는 `claude --chrome`로 시작한 세션에서만 활성화 #coding #tooling
+Chrome에 Claude 확장이 설치돼 있어도, Claude Code 세션이 `--chrome` 플래그 없이 시작됐으면 `claude-in-chrome` MCP 서버가 주입되지 않음. Chrome 자동화가 필요하면 세션 시작 시 `claude --chrome`을 사용하거나, CDP(remote-debugging-port) 방식으로 대체.
+
 ### NEXTAUTH_URL은 실제 배포 URL 확인 후 즉시 설정 #coding #next-auth
 Vercel 프로젝트가 새로 생성되거나 이름이 바뀌면 배포 URL이 달라짐.
 NEXTAUTH_URL을 구 URL로 방치하면 로그인 요청이 전부 실패함.
