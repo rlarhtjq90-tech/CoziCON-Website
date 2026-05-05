@@ -42,16 +42,16 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    const url = `https://api.odcloud.kr/api/nts-businessman/v1/validate?serviceKey=${encodeURIComponent(normalizeApiKey(apiKey))}`
+    const rawKey = normalizeApiKey(apiKey)
+    const encodedKey = encodeURIComponent(rawKey)
+    const url = `https://api.odcloud.kr/api/nts-businessman/v1/validate?serviceKey=${encodedKey}`
+    const reqBody = JSON.stringify({ businesses: [{ b_no: cleanBizNo, p_nm: ceoName.trim() }] })
+    console.log('[verify-biz] key prefix:', apiKey.slice(0, 8), '| rawKey prefix:', rawKey.slice(0, 8))
+    console.log('[verify-biz] body:', reqBody)
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({
-        businesses: [{
-          b_no: cleanBizNo,
-          p_nm: ceoName.trim(),
-        }],
-      }),
+      body: reqBody,
       signal: AbortSignal.timeout(15000),
     })
 
