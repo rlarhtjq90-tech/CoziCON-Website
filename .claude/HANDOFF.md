@@ -1,24 +1,21 @@
 # HANDOFF
-**agent:** claude | **project:** CoziCON-Website | **branch:** dev | **commit:** 9adf910
-**created:** 2026-05-05 11:30 | **status:** active
+**agent:** claude | **project:** CoziCON-Website | **branch:** dev | **commit:** 3ee76e7
+**created:** 2026-05-05 | **status:** active
 
 ## Context
-Day 3 사업자 인증 기능을 구현하고 dev 브랜치에 push했으나 Vercel Preview 빌드가 전부 failure 상태. 로컬 빌드는 정상이나 Vercel 측 오류 원인 미확인.
+Day 4 구현(건설업등록증 인증 + 관리자 승인 큐) 완료 후 wrap-up. Vercel 환경변수 ADMIN_EMAILS를 Chrome으로 입력까지 했으나 Save를 누르지 않은 상태에서 세션 종료.
 
 ## Immediate Next Steps
-- [ ] Vercel 빌드 실패 원인 파악 — Vercel 대시보드 Build Logs 직접 확인 (`dpl_961nF9E9mEzHuBXyUFbtufjTqRV7`)
-- [ ] 빌드 수정 후 재배포 → `/verify-biz` 페이지 E2E 테스트
-- [ ] Vercel 환경변수 추가: `NTS_API_KEY` (국세청), `BLOB_READ_WRITE_TOKEN` (Vercel Blob)
-- [ ] Day 4: 건설업등록증 업로드 + 관리자 승인 큐 페이지
+- [ ] Chrome에서 Vercel `cozi-con-website-2ano` 환경변수 패널이 열려 있으면 Save 클릭 (ADMIN_EMAILS=rlarhtjq90@gmail.com), 닫혀 있으면 재입력 후 저장
+- [ ] Vercel 배포 후 재배포 트리거 (환경변수 반영을 위한 Redeploy 필요)
+- [ ] E2E 시나리오 검증: 회원가입 → /verify-biz → /verify-license → 대시보드 "관리자 승인 대기" → /admin 승인 → 대시보드 "인증 완료"
 
 ## Active Files
-- `src/app/verify-biz/page.tsx`
-- `src/app/api/verify-biz/route.ts`
-- `src/app/api/upload/biz-doc/route.ts`
-- `src/app/api/company/setup/route.ts`
-- `prisma/schema.prisma`
+- `src/app/verify-license/page.tsx` + `VerifyLicenseClient.tsx`
+- `src/app/admin/page.tsx` + `AdminClient.tsx`
+- `src/app/api/license/verify/route.ts`
+- `src/app/api/admin/approve/route.ts`, `reject/route.ts`
 
 ## Current State / Blockers
-Vercel 빌드 모두 failure. 로컬 `next build`는 성공. `@vercel/blob` 추가가 유일한 새 의존성.
-Vercel 대시보드 → Build Logs 탭 → 빨간 줄 확인 필요.
-CLI: `npx vercel login` 후 `npx vercel inspect dpl_961nF9E9mEzHuBXyUFbtufjTqRV7 --logs`
+Vercel ADMIN_EMAILS 미등록 → /admin 접속 시 모든 계정 차단 (isAdmin 항상 false).
+Chrome 탭에 `cozi-con-website-2ano` 환경변수 입력 패널이 열려 있을 수 있음.
