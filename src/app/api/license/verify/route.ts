@@ -32,32 +32,38 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   const { selectedLicenses, licenseDocUrl } = body
 
+  if (!Array.isArray(selectedLicenses)) {
+    return NextResponse.json({ error: '잘못된 요청입니다.' }, { status: 400 })
+  }
+
   try {
     // 기존 면허 비활성화 후 새로 저장
-    await prisma.license.updateMany({
-      where: { companyId: session.user.companyId },
-      data: { isActive: false },
+    await prisma.$transaction(async (tx) => {
+      await tx.license.updateMany({
+        where: { companyId: session.user.companyId! },
+        data: { isActive: false },
+      })
+
+      if (selectedLicenses.length > 0) {
+        await tx.license.createMany({
+          data: selectedLicenses.map((l) => ({
+            companyId: session.user.companyId!,
+            licenseType: l.licenseType,
+            licenseNo: l.licenseNo || null,
+            issuedAt: l.issuedAt ? new Date(l.issuedAt) : null,
+            isActive: true,
+          })),
+        })
+      }
+
+      // 건설업등록증 URL이 있으면 Company에 저장
+      if (licenseDocUrl) {
+        await tx.company.update({
+          where: { id: session.user.companyId! },
+          data: { bizDocUrl: licenseDocUrl },
+        })
+      }
     })
-
-    if (selectedLicenses.length > 0) {
-      await prisma.license.createMany({
-        data: selectedLicenses.map((l) => ({
-          companyId: session.user.companyId!,
-          licenseType: l.licenseType,
-          licenseNo: l.licenseNo || null,
-          issuedAt: l.issuedAt ? new Date(l.issuedAt) : null,
-          isActive: true,
-        })),
-      })
-    }
-
-    // 건설업등록증 URL이 있으면 Company에 저장
-    if (licenseDocUrl) {
-      await prisma.company.update({
-        where: { id: session.user.companyId },
-        data: { bizDocUrl: licenseDocUrl },
-      })
-    }
 
     return NextResponse.json({ success: true })
   } catch (err) {
