@@ -42,7 +42,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    const url = `https://api.odcloud.kr/api/nts-businessman/v1/validate?serviceKey=${normalizeApiKey(apiKey)}`
+    const url = `https://api.odcloud.kr/api/nts-businessman/v1/validate?serviceKey=${encodeURIComponent(normalizeApiKey(apiKey))}`
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
@@ -62,8 +62,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     })
 
     if (!res.ok) {
-      console.error('[verify-biz] HTTP error:', res.status)
-      return NextResponse.json({ valid: true, isMock: true, message: '(API 오류 — 테스트 통과 처리)' })
+      const errBody = await res.text().catch(() => '')
+      console.error('[verify-biz] HTTP error:', res.status, errBody)
+      return NextResponse.json({ valid: true, isMock: true, message: `(API 오류 ${res.status} — 테스트 통과 처리)` })
     }
 
     const json = await res.json()
