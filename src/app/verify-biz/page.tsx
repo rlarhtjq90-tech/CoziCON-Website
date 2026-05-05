@@ -90,7 +90,7 @@ export default function VerifyBizPage() {
     setSubmitting(false)
 
     if (!res.ok) { setError(data.error ?? '등록에 실패했습니다.'); return }
-    router.push('/dashboard?verified=1')
+    router.push('/verify-license')
   }
 
   const canVerify = bizNo.replace(/\D/g, '').length === 10 && ceoName.trim()
