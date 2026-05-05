@@ -23,7 +23,9 @@ export default async function AdminPage() {
   const serialized = pendingUsers.map((u) => ({
     ...u,
     createdAt: u.createdAt.toISOString(),
-    company: u.company ? { ...u.company } : null,
+    company: u.company
+      ? { name: u.company.name, bizNo: u.company.bizNo, type: u.company.type, bizDocUrl: u.company.bizDocUrl }
+      : null,
   }))
 
   return <AdminClient initialUsers={serialized} />
