@@ -1,24 +1,22 @@
 # HANDOFF
-**agent:** claude | **project:** CoziCON-Website | **branch:** dev | **commit:** 52cd1c2
-**created:** 2026-05-04 | **status:** active
+**agent:** claude | **project:** CoziCON-Website | **branch:** dev | **commit:** 88646db
+**created:** 2026-05-05 09:30 | **status:** active
 
 ## Context
-Day 0 인프라 세팅 중. 국세청 API 신청 완료(자동승인 대기). claude --chrome 방식(Claude in Chrome 확장)으로 MLIT API 신청 자동화 방법 확립. Chrome 확장 설치만 남음.
+Day 2 가입 플로우 분기 코드 구현 완료. `.env.local` Gmail 자격증명이 플레이스홀더라 OTP 이메일 발송이 실패하여 end-to-end 테스트를 완료하지 못함.
 
 ## Immediate Next Steps
-- [ ] "Claude in Chrome" 확장 Chrome 웹스토어에서 설치 → `claude --chrome` 으로 browser-task.md 실행해 MLIT API 신청
-- [ ] data.go.kr 마이페이지에서 국세청 API 승인 확인 → NTS_API_KEY Vercel 환경변수 등록
-- [ ] Neon DB dev 브랜치 생성 → dev DATABASE_URL을 .env.local + Vercel Preview 등록
-- [ ] Supabase 프로젝트 생성 → SUPABASE_URL / ANON_KEY / SERVICE_ROLE_KEY Vercel 등록
-- [ ] Prisma migrate dev (dev DB 스키마 적용) → Day 1 스키마 확장 시작
+- [ ] `.env.local`에 실제 `GMAIL_USER`와 `GMAIL_APP_PASSWORD` 입력 후 OTP 발송 테스트
+- [ ] `/signup` 4스텝 플로우 end-to-end 테스트 (종합/전문건설사 각각 가입 완료 확인)
+- [ ] Day 2 완료 커밋 후 Day 3 시작: 사업자등록증 업로드 + 국세청 API 연동
 
 ## Active Files
-- `C:\Users\PC\Desktop\halfdone\projects\brand-website\browser-task.md` — claude --chrome 실행 태스크
-- `C:\Users\PC\Desktop\halfdone\projects\brand-website\cozicon-automator\` — Chrome 확장 (로드 필요)
-- `CoziCON-Website\.env.local` — CONSTRUCTION_API_KEY만 있음
-- `CoziCON-Website/prisma/schema.prisma` — Day 1 확장 대상
+- `src/app/signup/page.tsx` — 4스텝 가입 UI (email→OTP→유형→폼)
+- `src/app/api/auth/register/route.ts` — userType, status, TermsConsent 저장
+- `src/app/api/auth/send-verification/route.ts` — Gmail OTP 발송 (GMAIL_* env 필요)
+- `prisma/schema.prisma` — UserStatus enum + User.status 추가됨
 
 ## Current State / Blockers
-- claude --chrome 사용 전 "Claude in Chrome" 확장 설치 필요 (Chrome 웹스토어)
-- NTS_API_KEY, Neon dev URL, Supabase 키는 사용자 직접 발급 필요
-- 배포 URL: https://cozi-con-website-2ano.vercel.app
+Gmail SMTP 인증 실패: `535 Username and Password not accepted`
+→ `.env.local`의 `GMAIL_USER`와 `GMAIL_APP_PASSWORD`가 플레이스홀더 값
+→ 실제 Gmail 앱 비밀번호로 교체 필요 (Google 계정 → 보안 → 2단계인증 → 앱 비밀번호)

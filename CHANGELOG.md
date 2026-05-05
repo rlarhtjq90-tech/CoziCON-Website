@@ -2,22 +2,29 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** Day 0 진행 중 — 국세청 API 활용신청 버튼 클릭 완료 (처리상태: 신청 / 자동승인 대기), cozicon-automator Chrome 확장 제작 완료 (로드 대기)
+- **상태:** Day 1 완료 / Day 2 구현 완료 (미테스트) — 가입 플로우 분기 구현, Gmail SMTP 자격증명 설정 필요
 - **주요 기능:**
   - 랜딩 페이지: 공종별 입찰 → 프로세스 → 대상별 소개 → 핵심 기능 → 통계 → CTA
-  - FinalCTA "종합/전문건설사로 시작하기" → /login 연결
   - 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
-  - 이메일 OTP 인증 회원가입 (3단계, 3분 타이머, Gmail SMTP) — Gmail 정상 작동 확인
-  - @sentry/nextjs 설치 + DSN/AUTH_TOKEN/ORG/PROJECT Vercel 환경변수 등록 완료
-  - cozicon-automator Chrome 확장: manifest.json + popup.html + popup.js (미로드)
+  - 회원가입 4단계: 이메일 OTP → 유형선택(종합/전문건설사) → 정보입력 + 약관동의
+  - 전문건설사 면허 종목 23종 다중선택 UI
+  - DB: UserStatus enum (PENDING/ACTIVE/REJECTED/SUSPENDED) + User.status 필드
+  - TermsConsent: 가입 시 약관 동의 IP·시각 기록
+  - @sentry/nextjs DSN Vercel 등록 완료
 - **알려진 이슈:**
-  - 국세청 API 마이페이지에서 최종 승인 확인 필요 (자동승인)
-  - Claude in Chrome 브라우저 도구는 CLI 세션 미지원 — Claude Desktop 전용
+  - .env.local Gmail 자격증명 플레이스홀더 → OTP 발송 불가 (GMAIL_USER, GMAIL_APP_PASSWORD 실제값 필요)
+  - Day 2 end-to-end 테스트 미완료
   - Neon DB dev/prod 분리 미완료
   - Supabase Storage 미생성
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-05 (세션 12 — Day 1 완료 확인 + Day 2 가입 플로우 분기 구현)
+- Prisma 스키마에 `UserStatus` enum (PENDING/ACTIVE/REJECTED/SUSPENDED) + `User.status` 필드 추가, `prisma db push`로 Neon DB 반영
+- `signup/page.tsx` 4스텝 플로우 구현: 이메일 → OTP → 유형선택(종합/전문건설사 카드) → 정보입력 + 약관동의
+- 전문건설사 면허 종목 23종 다중선택 체크박스 + `register` API에 `userType`, `status: PENDING`, `TermsConsent` 저장 추가
+- 이슈: `.env.local` Gmail 자격증명이 플레이스홀더라 OTP 발송 실패 — 실제 GMAIL_USER/APP_PASSWORD 입력 필요
 
 ### 2026-05-04 (세션 10 — 국세청 API 신청 완료 + Chrome 확장 자동화)
 - Chrome CDP 모드 시작 자동화: `127.0.0.1` IPv6 버그 수정, 임시 프로필(`chrome-cdp-profile`)로 profile lock 우회

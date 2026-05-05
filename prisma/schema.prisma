@@ -18,6 +18,13 @@ enum UserType {
   OWNER                // 발주사
 }
 
+enum UserStatus {
+  PENDING   // 서류 미제출 / 승인 대기
+  ACTIVE    // 정상 사용
+  REJECTED  // 반려
+  SUSPENDED // 정지
+}
+
 enum VerificationResult {
   VALID
   INVALID
@@ -36,9 +43,10 @@ model User {
   password      String?
   image         String?
   userType      UserType?
+  status        UserStatus @default(PENDING)
   companyId     String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
 
   accounts      Account[]
   sessions      Session[]
