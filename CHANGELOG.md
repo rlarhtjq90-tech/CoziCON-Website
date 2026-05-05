@@ -2,22 +2,36 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** Day 0 진행 중 — 국세청 API 활용신청 버튼 클릭 완료 (처리상태: 신청 / 자동승인 대기), cozicon-automator Chrome 확장 제작 완료 (로드 대기)
+- **상태:** Day 3 구현 완료 (dev 브랜치) — Vercel 빌드 실패 중, 원인 미확인
 - **주요 기능:**
-  - 랜딩 페이지: 공종별 입찰 → 프로세스 → 대상별 소개 → 핵심 기능 → 통계 → CTA
-  - FinalCTA "종합/전문건설사로 시작하기" → /login 연결
-  - 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
-  - 이메일 OTP 인증 회원가입 (3단계, 3분 타이머, Gmail SMTP) — Gmail 정상 작동 확인
-  - @sentry/nextjs 설치 + DSN/AUTH_TOKEN/ORG/PROJECT Vercel 환경변수 등록 완료
-  - cozicon-automator Chrome 확장: manifest.json + popup.html + popup.js (미로드)
+  - 랜딩 페이지, 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
+  - 회원가입 4단계: 이메일 OTP(Gmail SMTP) → 유형선택 → 정보입력 + 약관동의
+  - 전문건설사 면허 종목 23종 다중선택 UI
+  - DB: Company(businessVerified, bizDocUrl), CompanyVerification, TermsConsent
+  - 사업자 인증 페이지 `/verify-biz`: 국세청 진위확인 → 사업자등록증 업로드 → Company 등록
+  - 대시보드: PENDING/승인대기/정상 상태별 배너
+  - JWT 세션에 userType, status, companyId 포함
 - **알려진 이슈:**
-  - 국세청 API 마이페이지에서 최종 승인 확인 필요 (자동승인)
-  - Claude in Chrome 브라우저 도구는 CLI 세션 미지원 — Claude Desktop 전용
+  - Vercel 빌드 실패 (dev 브랜치 push 후 모든 Preview 환경 failure) — 원인 미확인
+  - NTS_API_KEY 미설정 → 국세청 API 테스트 모드로 동작
+  - BLOB_READ_WRITE_TOKEN 미설정 → 파일 업로드 없이 진행
   - Neon DB dev/prod 분리 미완료
-  - Supabase Storage 미생성
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-05 (세션 13 — Day 2 블로커 해결 + Day 3 사업자 인증 구현)
+- Gmail SMTP 환경변수 확인 → OTP 발송/검증/가입 전체 플로우 API 테스트 통과
+- Day 3 구현: 국세청 NTS 사업자 진위확인 API(`/api/verify-biz`), Vercel Blob 파일 업로드(`/api/upload/biz-doc`), Company 등록(`/api/company/setup`), `/verify-biz` 페이지, 대시보드 상태 배너
+- Prisma 스키마 `Company`에 `businessVerified`, `bizDocUrl` 추가 + `prisma db push` 반영
+- JWT 세션에 `userType`, `status`, `companyId` 포함하도록 `auth.ts` + 타입 확장
+- Vercel 배포 실패 미해결 — `claude-in-chrome` MCP 연결 불가로 빌드 로그 확인 중단
+
+### 2026-05-05 (세션 12 — Day 1 완료 확인 + Day 2 가입 플로우 분기 구현)
+- Prisma 스키마에 `UserStatus` enum (PENDING/ACTIVE/REJECTED/SUSPENDED) + `User.status` 필드 추가, `prisma db push`로 Neon DB 반영
+- `signup/page.tsx` 4스텝 플로우 구현: 이메일 → OTP → 유형선택(종합/전문건설사 카드) → 정보입력 + 약관동의
+- 전문건설사 면허 종목 23종 다중선택 체크박스 + `register` API에 `userType`, `status: PENDING`, `TermsConsent` 저장 추가
+- 이슈: `.env.local` Gmail 자격증명이 플레이스홀더라 OTP 발송 실패 — 실제 GMAIL_USER/APP_PASSWORD 입력 필요
 
 ### 2026-05-04 (세션 10 — 국세청 API 신청 완료 + Chrome 확장 자동화)
 - Chrome CDP 모드 시작 자동화: `127.0.0.1` IPv6 버그 수정, 임시 프로필(`chrome-cdp-profile`)로 profile lock 우회
