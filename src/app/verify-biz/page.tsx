@@ -13,7 +13,6 @@ export default function VerifyBizPage() {
   const [bizNo, setBizNo] = useState('')
   const [companyName, setCompanyName] = useState('')
   const [ceoName, setCeoName] = useState('')
-  const [openDate, setOpenDate] = useState('')
 
   const [verifyState, setVerifyState] = useState<VerifyState>('idle')
   const [verifyMsg, setVerifyMsg] = useState('')
@@ -31,13 +30,6 @@ export default function VerifyBizPage() {
     return `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5)}`
   }
 
-  function formatOpenDate(value: string) {
-    const digits = value.replace(/\D/g, '').slice(0, 8)
-    if (digits.length <= 4) return digits
-    if (digits.length <= 6) return `${digits.slice(0, 4)}-${digits.slice(4)}`
-    return `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6)}`
-  }
-
   async function handleVerify() {
     setError('')
     setVerifyState('loading')
@@ -46,7 +38,7 @@ export default function VerifyBizPage() {
     const res = await fetch('/api/verify-biz', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ bizNo, ceoName, openDate }),
+      body: JSON.stringify({ bizNo, ceoName }),
     })
     const data = await res.json()
 
@@ -92,7 +84,7 @@ export default function VerifyBizPage() {
     const res = await fetch('/api/company/setup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ bizNo, companyName, ceoName, openDate, bizDocUrl, ntsVerified: true }),
+      body: JSON.stringify({ bizNo, companyName, ceoName, bizDocUrl, ntsVerified: true }),
     })
     const data = await res.json()
     setSubmitting(false)
@@ -101,7 +93,7 @@ export default function VerifyBizPage() {
     router.push('/dashboard?verified=1')
   }
 
-  const canVerify = bizNo.replace(/\D/g, '').length === 10 && ceoName.trim() && openDate.replace(/\D/g, '').length === 8
+  const canVerify = bizNo.replace(/\D/g, '').length === 10 && ceoName.trim()
 
   return (
     <div className="min-h-screen bg-brand-slate-100 flex items-center justify-center px-4 py-8">
@@ -157,20 +149,6 @@ export default function VerifyBizPage() {
                 onChange={(e) => { setCeoName(e.target.value); setVerifyState('idle') }}
                 placeholder="홍길동"
                 className="w-full px-4 py-3 border border-ink-300 rounded-lg text-p14 text-ink-700 placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
-              />
-            </div>
-
-            {/* 개업일 */}
-            <div>
-              <label className="block text-p14 font-medium text-ink-600 mb-1.5">
-                개업일 <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={openDate}
-                onChange={(e) => { setOpenDate(formatOpenDate(e.target.value)); setVerifyState('idle') }}
-                placeholder="2018-03-15"
-                className="w-full px-4 py-3 border border-ink-300 rounded-lg text-p14 text-ink-700 placeholder-ink-400 font-mono focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
               />
             </div>
 

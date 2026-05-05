@@ -8,7 +8,6 @@ interface SetupRequest {
   bizNo: string
   companyName: string
   ceoName: string
-  openDate: string
   bizDocUrl?: string | null
   ntsVerified: boolean
 }
@@ -25,7 +24,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: '잘못된 요청입니다.' }, { status: 400 })
   }
 
-  const { bizNo, companyName, ceoName, openDate, bizDocUrl, ntsVerified } = body
+  const { bizNo, companyName, ceoName, bizDocUrl, ntsVerified } = body
   const cleanBizNo = bizNo.replace(/-/g, '')
 
   if (!cleanBizNo || !companyName || !ceoName) {
@@ -69,7 +68,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         companyId: company.id,
         bizNo: cleanBizNo,
         result: 'VALID',
-        responseData: { source: 'nts', openDate, verifiedAt: new Date().toISOString() },
+        responseData: { source: 'nts', verifiedAt: new Date().toISOString() },
         verifiedBy: session.user.id,
       },
     })

@@ -11,7 +11,6 @@ interface NtsResult {
 interface VerifyBizRequest {
   bizNo: string     // 사업자번호 10자리
   ceoName: string   // 대표자명
-  openDate: string  // 개업일 YYYYMMDD
 }
 
 function normalizeApiKey(key: string): string {
@@ -25,7 +24,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: '잘못된 요청 형식입니다.' }, { status: 400 })
   }
 
-  const { bizNo, ceoName, openDate } = body
+  const { bizNo, ceoName } = body
   const cleanBizNo = bizNo.replace(/-/g, '')
 
   if (!cleanBizNo || !/^\d{10}$/.test(cleanBizNo)) {
@@ -34,11 +33,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   if (!ceoName?.trim()) {
     return NextResponse.json({ error: '대표자명을 입력해주세요.' }, { status: 400 })
   }
-  if (!openDate || !/^\d{8}$/.test(openDate.replace(/-/g, ''))) {
-    return NextResponse.json({ error: '개업일 형식이 올바르지 않습니다. (YYYY-MM-DD)' }, { status: 400 })
-  }
 
-  const cleanOpenDate = openDate.replace(/-/g, '')
   const apiKey = process.env.NTS_API_KEY
 
   // API 키 없으면 mock 응답 (개발/승인 대기 중)
@@ -54,7 +49,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       body: JSON.stringify({
         businesses: [{
           b_no: cleanBizNo,
-          start_dt: cleanOpenDate,
+          start_dt: '',
           p_nm: ceoName.trim(),
           p_nm2: '',
           b_nm: '',
@@ -81,7 +76,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const isValid = result.valid === '01'
     if (!isValid) {
       return NextResponse.json(
-        { valid: false, error: '사업자번호, 대표자명 또는 개업일이 일치하지 않습니다. 다시 확인해주세요.' },
+        { valid: false, error: '사업자번호 또는 대표자명이 일치하지 않습니다. 다시 확인해주세요.' },
         { status: 422 },
       )
     }
