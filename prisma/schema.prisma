@@ -46,7 +46,7 @@ model User {
   status        UserStatus @default(PENDING)
   companyId     String?
   createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  updatedAt     DateTime   @default(now()) @updatedAt
 
   accounts      Account[]
   sessions      Session[]
@@ -104,7 +104,7 @@ model Company {
   businessVerified Boolean  @default(false)
   bizDocUrl        String?
   createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  updatedAt        DateTime @default(now()) @updatedAt
 
   users         User[]
   licenses      License[]
