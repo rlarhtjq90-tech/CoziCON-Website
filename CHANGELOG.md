@@ -2,23 +2,33 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** Day 3 구현 완료 (dev 브랜치) — Vercel 빌드 실패 중, 원인 미확인
+- **상태:** Day 4 구현 완료 — dev → main 머지 완료, Vercel 빌드 정상
 - **주요 기능:**
   - 랜딩 페이지, 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
   - 회원가입 4단계: 이메일 OTP(Gmail SMTP) → 유형선택 → 정보입력 + 약관동의
   - 전문건설사 면허 종목 23종 다중선택 UI
-  - DB: Company(businessVerified, bizDocUrl), CompanyVerification, TermsConsent
-  - 사업자 인증 페이지 `/verify-biz`: 국세청 진위확인 → 사업자등록증 업로드 → Company 등록
+  - DB: Company, CompanyVerification, License, TermsConsent
+  - 사업자 인증 페이지 `/verify-biz`: 국세청 진위확인(2-factor: bizNo+ceoName) → 사업자등록증 업로드 → Company 등록 → `/verify-license` 리다이렉트
+  - 건설업등록증 인증 페이지 `/verify-license`: KISCON 면허 자동조회 + 체크박스 선택 + 파일 업로드 → License DB 저장
+  - 관리자 승인 큐 `/admin`: PENDING 사용자 목록 → 승인(ACTIVE)/반려(REJECTED) + 낙관적 업데이트
+  - API: `/api/license/verify`(트랜잭션), `/api/admin/approve`, `/api/admin/reject`(P2025 처리)
   - 대시보드: PENDING/승인대기/정상 상태별 배너
   - JWT 세션에 userType, status, companyId 포함
 - **알려진 이슈:**
-  - Vercel 빌드 실패 (dev 브랜치 push 후 모든 Preview 환경 failure) — 원인 미확인
+  - Vercel `ADMIN_EMAILS` 환경변수 미등록 (크롬 패널 입력 대기 — 다음 세션 최우선)
+  - E2E 전체 플로우 미검증 (verify-biz → verify-license → admin 승인)
   - NTS_API_KEY 미설정 → 국세청 API 테스트 모드로 동작
-  - BLOB_READ_WRITE_TOKEN 미설정 → 파일 업로드 없이 진행
   - Neon DB dev/prod 분리 미완료
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-05 (세션 14 — Vercel 빌드 수정 + Day 4 구현)
+- `updatedAt @default(now())` 누락으로 Vercel 빌드 실패 수정 (`prisma db push` 성공) + main 머지
+- `/verify-biz` 개업일(openDate) 필드 삭제 — NTS API 2-factor(bizNo+ceoName)로 유지
+- Day 4 구현: `/verify-license`(KISCON 면허 조회+등록), `/admin`(승인 큐), `/api/license/verify`(트랜잭션), `/api/admin/approve`, `/api/admin/reject`(P2025 처리), middleware 보호 추가
+- subagent-driven-development 방식으로 7개 태스크 구현 + 스펙/코드품질 2단계 리뷰 적용
+- dev → main 머지 완료 (commit d80bb29)
 
 ### 2026-05-05 (세션 13 — Day 2 블로커 해결 + Day 3 사업자 인증 구현)
 - Gmail SMTP 환경변수 확인 → OTP 발송/검증/가입 전체 플로우 API 테스트 통과

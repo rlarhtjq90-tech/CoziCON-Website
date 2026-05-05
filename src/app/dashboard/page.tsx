@@ -6,9 +6,16 @@ import Link from 'next/link'
 import LogoutButton from './LogoutButton'
 import { AlertTriangle, CheckCircle2, Clock } from 'lucide-react'
 
+function isAdmin(email: string | null | undefined): boolean {
+  if (!email) return false
+  const adminEmails = (process.env.ADMIN_EMAILS ?? '').split(',').map((e) => e.trim())
+  return adminEmails.includes(email)
+}
+
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions)
   if (!session) redirect('/login')
+  if (isAdmin(session.user?.email)) redirect('/admin')
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
