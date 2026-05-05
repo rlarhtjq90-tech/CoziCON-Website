@@ -94,15 +94,17 @@ model VerificationToken {
 // =============================================
 
 model Company {
-  id        String   @id @default(cuid())
-  bizNo     String   @unique
-  name      String
-  ceoName   String?
-  address   String?
-  phone     String?
-  type      UserType
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String   @id @default(cuid())
+  bizNo            String   @unique
+  name             String
+  ceoName          String?
+  address          String?
+  phone            String?
+  type             UserType
+  businessVerified Boolean  @default(false)
+  bizDocUrl        String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   users         User[]
   licenses      License[]
