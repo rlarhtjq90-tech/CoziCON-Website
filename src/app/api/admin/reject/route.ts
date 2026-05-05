@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import { Prisma } from '@prisma/client'
 
 function isAdmin(email: string | null | undefined): boolean {
   if (!email) return false
@@ -32,6 +33,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     })
     return NextResponse.json({ success: true })
   } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
+      return NextResponse.json({ error: '존재하지 않는 사용자입니다.' }, { status: 404 })
+    }
     console.error('[admin/reject] error:', err)
     return NextResponse.json({ error: '서버 오류가 발생했습니다.' }, { status: 500 })
   }
