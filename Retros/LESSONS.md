@@ -87,6 +87,11 @@ React/Vue 등 프레임워크 이벤트 시스템도 bubbles:true 이벤트를 d
 기존 행이 있는 테이블에 `@updatedAt`만 추가하면 `prisma db push`가 실패 — 기존 행의 null 처리 불가.
 `updatedAt DateTime @default(now()) @updatedAt` 형태로 항상 세트로 써야 함. 로컬 빌드가 정상이어도 Vercel 배포 시 블로커가 될 수 있음.
 
+### Windows dev 서버 실행 중 `prisma generate`는 EPERM으로 실패 #coding #prisma #windows
+`prisma db push`나 `prisma generate`는 내부적으로 query_engine-windows.dll.node를 rename함.
+dev 서버가 해당 DLL을 점유 중이면 EPERM 발생 — "Jest worker encountered 2 child process exceptions" 에러로 나타남.
+반드시 dev 서버를 완전 종료한 뒤 `npx prisma generate`를 단독 실행하고, 이후 서버를 재시작해야 함.
+
 ### `prisma migrate dev`는 비대화형 환경에서 실패 → `prisma db push` 사용 #coding #prisma
 Claude Code Bash 툴은 TTY가 없는 비대화형 환경이라 `prisma migrate dev`가 `Error: non-interactive` 로 실패함.
 개발 중 빠른 스키마 적용엔 `prisma db push`를 사용. 마이그레이션 파일이 필요하면 사용자가 터미널에서 직접 실행.
