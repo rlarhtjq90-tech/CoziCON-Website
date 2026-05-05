@@ -11,6 +11,7 @@ interface NtsResult {
 interface VerifyBizRequest {
   bizNo: string     // 사업자번호 10자리
   ceoName: string   // 대표자명
+  startDt: string   // 개업일자 YYYYMMDD
 }
 
 function normalizeApiKey(key: string): string {
@@ -24,14 +25,18 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: '잘못된 요청 형식입니다.' }, { status: 400 })
   }
 
-  const { bizNo, ceoName } = body
+  const { bizNo, ceoName, startDt } = body
   const cleanBizNo = bizNo.replace(/-/g, '')
+  const cleanStartDt = (startDt ?? '').replace(/-/g, '')
 
   if (!cleanBizNo || !/^\d{10}$/.test(cleanBizNo)) {
     return NextResponse.json({ error: '사업자등록번호는 10자리 숫자입니다.' }, { status: 400 })
   }
   if (!ceoName?.trim()) {
     return NextResponse.json({ error: '대표자명을 입력해주세요.' }, { status: 400 })
+  }
+  if (!cleanStartDt || !/^\d{8}$/.test(cleanStartDt)) {
+    return NextResponse.json({ error: '개업일자를 YYYYMMDD 형식으로 입력해주세요.' }, { status: 400 })
   }
 
   const apiKey = process.env.NTS_API_KEY
@@ -46,7 +51,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({ businesses: [{ b_no: cleanBizNo, p_nm: ceoName.trim() }] }),
+      body: JSON.stringify({ businesses: [{ b_no: cleanBizNo, start_dt: cleanStartDt }] }),
       signal: AbortSignal.timeout(15000),
     })
 
