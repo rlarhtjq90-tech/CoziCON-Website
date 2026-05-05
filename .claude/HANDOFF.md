@@ -1,21 +1,26 @@
 # HANDOFF
-**agent:** claude | **project:** CoziCON-Website | **branch:** dev | **commit:** 57db2b3
+**agent:** claude | **project:** CoziCON-Website | **branch:** dev | **commit:** 42d9e5b
 **created:** 2026-05-06 | **status:** active
 
 ## Context
-NTS 사업자등록정보 진위확인 API가 승인된 키와 올바른 요청 형식(b_no+start_dt)으로도 15초 내 응답하지 않아 실사 검증이 불가능한 상태. 현재 타임아웃 시 테스트 통과 처리로 폴백 중.
+Day 5 회사 프로필 페이지 코드 구현 완료. Prisma generate EPERM으로 dev 서버가 에러 상태 — 서버 재시작 후 브라우저 테스트 필요.
 
 ## Immediate Next Steps
-- [ ] data.go.kr 마이페이지 → 오픈API 활용신청 목록에서 NTS 사업자등록정보 진위확인 API 활용기간 확인 (만료 여부)
-- [ ] 타임아웃 해소 후 실사 검증 재시도 (사업자번호 823-87-01344, 개업일자 20181215)
-- [ ] Vercel `ADMIN_EMAILS=rlarhtjq90@gmail.com` 환경변수 등록
-- [ ] E2E 전체 플로우 검증 (verify-biz → verify-license → /admin 승인)
-- [ ] Day 5: 회사 프로필 페이지 구현
+- [ ] dev 서버 중지 → `npx prisma generate` 실행 → dev 서버 재시작
+- [ ] `http://localhost:3000/login` 로그인 → `/dashboard` → "회사 프로필" 카드 클릭 확인
+- [ ] `/company/profile` 에서 정보 수정(주소, 연락처, 주력지역 등) → 저장 동작 확인
+- [ ] 로고 업로드 버튼 동작 확인 (BLOB_READ_WRITE_TOKEN 없으면 skipped 처리)
+- [ ] 이상 없으면 dev → main 머지 + Vercel 배포
 
 ## Active Files
-- src/app/api/verify-biz/route.ts
-- src/app/verify-biz/page.tsx
+- src/app/company/profile/ProfileClient.tsx
+- src/app/company/profile/page.tsx
+- src/app/api/company/profile/route.ts
+- src/app/api/company/logo/route.ts
+- src/app/dashboard/page.tsx
+- prisma/schema.prisma
 
 ## Current State / Blockers
-NTS API 타임아웃: `DOMException [TimeoutError]`, Vercel Execution Duration 15.58s/20s. data.go.kr 로그인 필요 — 사용자가 직접 활용기간 확인해야 함.
-실제 Vercel 프로젝트: `cozi-con-website-2ano` (cozi-con-website 아님).
+Error: Jest worker encountered 2 child process exceptions, exceeding retry limit
+원인: dev 서버 실행 중 prisma db push의 generate 단계에서 query_engine-windows.dll.node 파일이 잠겨 rename 실패 (EPERM).
+해결: dev 서버 완전 종료 후 npx prisma generate 단독 실행.

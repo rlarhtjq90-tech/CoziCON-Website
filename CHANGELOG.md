@@ -2,27 +2,34 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** Day 4 완료, NTS API 실사 검증 미해결 — dev 브랜치(57db2b3) 배포됨
+- **상태:** Day 5 구현 완료(코드), Prisma generate EPERM 블로커 — dev 서버 재시작 후 테스트 필요
 - **주요 기능:**
   - 랜딩 페이지, 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
   - 회원가입 4단계: 이메일 OTP(Gmail SMTP) → 유형선택 → 정보입력 + 약관동의
   - 전문건설사 면허 종목 23종 다중선택 UI
   - DB: Company, CompanyVerification, License, TermsConsent
-  - 사업자 인증 페이지 `/verify-biz`: 개업일자(start_dt) 포함 NTS 진위확인 → 사업자등록증 업로드 → Company 등록 → `/verify-license` 리다이렉트
+  - 사업자 인증 페이지 `/verify-biz`: 개업일자(start_dt) 포함 NTS 진위확인 → 사업자등록증 업로드 → Company 등록
   - 건설업등록증 인증 페이지 `/verify-license`: KISCON 면허 자동조회 + 체크박스 선택 + 파일 업로드 → License DB 저장
   - 관리자 승인 큐 `/admin`: PENDING 사용자 목록 → 승인(ACTIVE)/반려(REJECTED) + 낙관적 업데이트
-  - API: `/api/license/verify`(트랜잭션), `/api/admin/approve`, `/api/admin/reject`(P2025 처리)
-  - 대시보드: PENDING/승인대기/정상 상태별 배너
-  - JWT 세션에 userType, status, companyId 포함
+  - 회사 프로필 페이지 `/company/profile`: 조회/수정, 로고 업로드, 주력지역, 시공실적, 보유장비/인력 (코드 완성, DB push 완료)
+  - Company 스키마 확장: logoUrl, constructionCapacity, mainRegions, constructionRecords, equipmentAndStaff, fax, website
+  - 대시보드에 "회사 프로필" 카드 추가
 - **알려진 이슈:**
-  - NTS API 15초 타임아웃 미해결 — 승인된 키, 올바른 요청 형식(b_no+start_dt)에도 응답 없음
-  - NTS API `p_nm` Korean encoding 미해결 — 현재 `p_nm` 제외, `b_no+start_dt`만으로 진위확인
+  - **[블로커]** Prisma generate EPERM — dev 서버 중지 후 `npx prisma generate` 실행 필요
+  - NTS API 15초 타임아웃 미해결
+  - NTS API `p_nm` Korean encoding 미해결 — 현재 `b_no+start_dt`만으로 진위확인
   - E2E 전체 플로우 미검증 (verify-biz → verify-license → admin 승인)
   - Vercel `ADMIN_EMAILS` 환경변수 등록 필요 (rlarhtjq90@gmail.com)
-  - Day 5 회사 프로필 페이지 미구현
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-06 (세션 17 — Day 5 회사 프로필 구현)
+- Company 스키마에 7개 필드 추가(logoUrl, constructionCapacity, mainRegions, constructionRecords, equipmentAndStaff, fax, website) + `prisma db push` 성공
+- 로고 업로드 API(`/api/company/logo`), 프로필 조회/수정 API(`/api/company/profile`) 생성
+- `/company/profile` 페이지 + `ProfileClient` (조회/수정 토글, 주력지역 멀티선택, 시공실적/장비/인력 동적 추가)
+- 대시보드에 회사 프로필 카드 연결, 미들웨어에 `/company` 경로 보호 추가
+- 블로커: Windows dev 서버 실행 중 `prisma generate` EPERM — 서버 재시작 필요
 
 ### 2026-05-06 (세션 16 — NTS API 실사 검증 시도)
 - `cozi-con-website-2ano`가 실제 배포 프로젝트임 확인 (`cozi-con-website`는 별개 프로젝트)
