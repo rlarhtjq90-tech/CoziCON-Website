@@ -26,7 +26,6 @@ export default function CreateNoticePage() {
   const [title, setTitle] = useState('')
   const [workTypes, setWorkTypes] = useState<string[]>([])
   const [regions, setRegions] = useState<string[]>([])
-  const [estimatedPrice, setEstimatedPrice] = useState('')
   const [deadline, setDeadline] = useState('')
   const [description, setDescription] = useState('')
   const [asDraft, setAsDraft] = useState(false)
@@ -104,7 +103,6 @@ export default function CreateNoticePage() {
         title,
         workTypes,
         regions,
-        estimatedPrice: estimatedPrice ? Number(estimatedPrice) : null,
         deadline,
         description,
         status: asDraft ? 'DRAFT' : 'OPEN',
@@ -209,23 +207,6 @@ export default function CreateNoticePage() {
                 </button>
               ))}
             </div>
-          </div>
-
-          {/* 예정가격 */}
-          <div>
-            <label className="block text-p14 font-medium text-ink-700 mb-1.5">예정가격 (원)</label>
-            <input
-              type="number"
-              value={estimatedPrice}
-              onChange={(e) => setEstimatedPrice(e.target.value)}
-              placeholder="예) 500000000"
-              className="w-full px-3 py-2.5 border border-ink-200 rounded-lg text-p15 focus:outline-none focus:border-primary"
-            />
-            {estimatedPrice && (
-              <p className="mt-1 text-p13 text-ink-400">
-                {Number(estimatedPrice).toLocaleString()}원
-              </p>
-            )}
           </div>
 
           {/* 마감일 */}

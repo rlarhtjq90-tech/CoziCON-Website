@@ -42,7 +42,6 @@ export default async function MyBidsPage() {
           workTypes: true,
           regions: true,
           deadline: true,
-          estimatedPrice: true,
           status: true,
         },
       },

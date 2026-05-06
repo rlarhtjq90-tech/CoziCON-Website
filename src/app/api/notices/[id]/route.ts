@@ -20,9 +20,7 @@ export async function GET(_req: NextRequest, { params }: Params): Promise<NextRe
     return NextResponse.json({ error: '공고를 찾을 수 없습니다.' }, { status: 404 })
   }
 
-  return NextResponse.json({
-    notice: { ...notice, estimatedPrice: notice.estimatedPrice?.toString() ?? null },
-  })
+  return NextResponse.json({ notice })
 }
 
 export async function PATCH(req: NextRequest, { params }: Params): Promise<NextResponse> {
@@ -52,13 +50,11 @@ export async function PATCH(req: NextRequest, { params }: Params): Promise<NextR
     return NextResponse.json({ error: '잘못된 요청입니다.' }, { status: 400 })
   }
 
-  const allowed = ['title', 'workTypes', 'regions', 'estimatedPrice', 'deadline', 'description', 'status'] as const
+  const allowed = ['title', 'workTypes', 'regions', 'deadline', 'description', 'status'] as const
   const data: Record<string, unknown> = {}
   for (const key of allowed) {
     if (key in body) {
-      if (key === 'estimatedPrice') {
-        data[key] = body[key] ? BigInt(body[key] as number) : null
-      } else if (key === 'deadline') {
+      if (key === 'deadline') {
         data[key] = new Date(body[key] as string)
       } else {
         data[key] = body[key]
@@ -72,7 +68,5 @@ export async function PATCH(req: NextRequest, { params }: Params): Promise<NextR
     include: { attachments: true },
   })
 
-  return NextResponse.json({
-    notice: { ...updated, estimatedPrice: updated.estimatedPrice?.toString() ?? null },
-  })
+  return NextResponse.json({ notice: updated })
 }

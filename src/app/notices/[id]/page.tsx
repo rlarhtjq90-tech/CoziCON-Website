@@ -7,14 +7,6 @@ import LogoutButton from '@/app/dashboard/LogoutButton'
 import { ArrowLeft, Paperclip, MapPin, Wrench, CalendarDays, Building2, Users } from 'lucide-react'
 import BidForm from './BidForm'
 
-function formatPrice(price: bigint | null) {
-  if (!price) return '비공개'
-  const n = Number(price)
-  if (n >= 100_000_000) return `${(n / 100_000_000).toFixed(1)}억원`
-  if (n >= 10_000) return `${(n / 10_000).toFixed(0)}만원`
-  return `${n.toLocaleString()}원`
-}
-
 type Params = { params: Promise<{ id: string }> }
 
 export default async function NoticeDetailPage({ params }: Params) {
@@ -96,12 +88,8 @@ export default async function NoticeDetailPage({ params }: Params) {
           <h1 className="text-t4 font-bold text-ink-700 mb-6">{notice.title}</h1>
 
           {/* 핵심 정보 */}
-          <div className="grid grid-cols-2 gap-4 mb-8">
-            <div className="bg-brand-slate-100 rounded-lg p-4">
-              <p className="text-p13 text-ink-400 mb-1">예정가격</p>
-              <p className="text-p16 font-semibold text-ink-700">{formatPrice(notice.estimatedPrice)}</p>
-            </div>
-            <div className="bg-brand-slate-100 rounded-lg p-4">
+          <div className="mb-8">
+            <div className="bg-brand-slate-100 rounded-lg p-4 inline-block">
               <p className="text-p13 text-ink-400 mb-1">마감일</p>
               <p className="text-p16 font-semibold text-ink-700">{deadlineLabel}</p>
             </div>

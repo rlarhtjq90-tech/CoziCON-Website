@@ -52,11 +52,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   type AttachmentInput = { fileName: string; fileUrl: string; fileSize?: number; mimeType?: string }
 
-  const { title, workTypes, regions, estimatedPrice, deadline, description, status, attachments } = body as {
+  const { title, workTypes, regions, deadline, description, status, attachments } = body as {
     title?: string
     workTypes?: string[]
     regions?: string[]
-    estimatedPrice?: number
     deadline?: string
     description?: string
     status?: string
@@ -72,7 +71,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       title,
       workTypes,
       regions,
-      estimatedPrice: estimatedPrice ? BigInt(estimatedPrice) : null,
       deadline: new Date(deadline),
       description: description ?? null,
       status: (status as 'DRAFT' | 'OPEN') ?? 'OPEN',
@@ -84,5 +82,5 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     },
   })
 
-  return NextResponse.json({ notice: { ...notice, estimatedPrice: notice.estimatedPrice?.toString() ?? null } }, { status: 201 })
+  return NextResponse.json({ notice }, { status: 201 })
 }

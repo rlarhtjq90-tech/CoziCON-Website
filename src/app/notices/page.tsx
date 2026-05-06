@@ -6,14 +6,6 @@ import Link from 'next/link'
 import LogoutButton from '@/app/dashboard/LogoutButton'
 import { ArrowLeft, Plus, Paperclip, MapPin, Wrench, CalendarDays } from 'lucide-react'
 
-function formatPrice(price: bigint | null) {
-  if (!price) return '비공개'
-  const n = Number(price)
-  if (n >= 100_000_000) return `${(n / 100_000_000).toFixed(1)}억원`
-  if (n >= 10_000) return `${(n / 10_000).toFixed(0)}만원`
-  return `${n.toLocaleString()}원`
-}
-
 function formatDeadline(date: Date) {
   const diff = Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
   const label = date.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })
@@ -120,9 +112,6 @@ export default async function NoticesPage() {
                     <div className="flex flex-col items-end gap-2 shrink-0">
                       <span className={`text-p13 font-medium px-2 py-0.5 rounded-full ${dl.color}`}>
                         {dl.badge}
-                      </span>
-                      <span className="text-p14 font-semibold text-ink-700">
-                        {formatPrice(notice.estimatedPrice)}
                       </span>
                     </div>
                   </div>
