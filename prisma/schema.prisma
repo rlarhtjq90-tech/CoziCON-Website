@@ -48,12 +48,13 @@ model User {
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @default(now()) @updatedAt
 
-  accounts      Account[]
-  sessions      Session[]
-  company       Company?              @relation(fields: [companyId], references: [id])
-  termsConsents TermsConsent[]
-  verifications CompanyVerification[]
-  bidNotices    BidNotice[]
+  accounts       Account[]
+  sessions       Session[]
+  company        Company?              @relation(fields: [companyId], references: [id])
+  termsConsents  TermsConsent[]
+  verifications  CompanyVerification[]
+  bidNotices     BidNotice[]
+  bidSubmissions BidSubmission[]
 }
 
 model Account {
@@ -114,10 +115,11 @@ model Company {
   createdAt            DateTime @default(now())
   updatedAt            DateTime @default(now()) @updatedAt
 
-  users         User[]
-  licenses      License[]
-  verifications CompanyVerification[]
-  bidNotices    BidNotice[]
+  users          User[]
+  licenses       License[]
+  verifications  CompanyVerification[]
+  bidNotices     BidNotice[]
+  bidSubmissions BidSubmission[]
 }
 
 // =============================================
@@ -183,6 +185,7 @@ model BidNotice {
   company     Company         @relation(fields: [companyId], references: [id])
   author      User            @relation(fields: [authorId], references: [id])
   attachments BidAttachment[]
+  submissions BidSubmission[]
 }
 
 model BidAttachment {
@@ -195,6 +198,35 @@ model BidAttachment {
   createdAt DateTime @default(now())
 
   notice BidNotice @relation(fields: [noticeId], references: [id], onDelete: Cascade)
+}
+
+// =============================================
+// 입찰 제출 시스템 (Phase 3)
+// =============================================
+
+enum BidSubmissionStatus {
+  SUBMITTED // 제출됨
+  REVIEWED  // 검토중
+  ACCEPTED  // 낙찰
+  REJECTED  // 탈락
+}
+
+model BidSubmission {
+  id            String              @id @default(cuid())
+  noticeId      String
+  companyId     String
+  bidderId      String
+  proposedPrice BigInt?
+  description   String?             @db.Text
+  status        BidSubmissionStatus @default(SUBMITTED)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @default(now()) @updatedAt
+
+  notice  BidNotice @relation(fields: [noticeId], references: [id])
+  company Company   @relation(fields: [companyId], references: [id])
+  bidder  User      @relation(fields: [bidderId], references: [id])
+
+  @@unique([noticeId, companyId])
 }
 
 // =============================================

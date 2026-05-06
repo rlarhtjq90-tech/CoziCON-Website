@@ -4,7 +4,8 @@ import { redirect, notFound } from 'next/navigation'
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
 import LogoutButton from '@/app/dashboard/LogoutButton'
-import { ArrowLeft, Paperclip, MapPin, Wrench, CalendarDays, Building2 } from 'lucide-react'
+import { ArrowLeft, Paperclip, MapPin, Wrench, CalendarDays, Building2, Users } from 'lucide-react'
+import BidForm from './BidForm'
 
 function formatPrice(price: bigint | null) {
   if (!price) return '비공개'
@@ -22,13 +23,20 @@ export default async function NoticeDetailPage({ params }: Params) {
 
   const { id } = await params
 
-  const notice = await prisma.bidNotice.findUnique({
-    where: { id },
-    include: {
-      company: { select: { name: true, address: true, phone: true } },
-      attachments: true,
-    },
-  })
+  const [notice, user] = await Promise.all([
+    prisma.bidNotice.findUnique({
+      where: { id },
+      include: {
+        company: { select: { name: true, address: true, phone: true } },
+        attachments: true,
+        _count: { select: { submissions: true } },
+      },
+    }),
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { userType: true, status: true, companyId: true },
+    }),
+  ])
 
   if (!notice) notFound()
 
@@ -37,6 +45,15 @@ export default async function NoticeDetailPage({ params }: Params) {
   const deadlineLabel = deadline.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })
 
   const isOwner = notice.authorId === session.user.id
+  const isContractor = user?.userType === 'GENERAL_CONTRACTOR' || user?.userType === 'SPECIALTY_CONTRACTOR'
+  const isOpen = notice.status === 'OPEN' && diff >= 0
+
+  // 이미 입찰했는지 확인
+  const mySubmission = user?.companyId && isContractor
+    ? await prisma.bidSubmission.findUnique({
+        where: { noticeId_companyId: { noticeId: id, companyId: user.companyId } },
+      })
+    : null
 
   return (
     <div className="min-h-screen bg-brand-slate-100">
@@ -161,17 +178,40 @@ export default async function NoticeDetailPage({ params }: Params) {
             </div>
           )}
 
-          {/* 작성자 액션 */}
-          {isOwner && (
-            <div className="border-t border-ink-100 pt-6 flex justify-end">
-              <Link
-                href={`/notices/${notice.id}/edit`}
-                className="px-4 py-2 border border-ink-200 rounded-lg text-p14 text-ink-500 hover:bg-ink-50 transition-colors"
-              >
-                공고 수정
-              </Link>
-            </div>
-          )}
+          <div className="border-t border-ink-100 pt-6 space-y-4">
+            {/* 발주사: 수정 + 입찰 현황 */}
+            {isOwner && (
+              <div className="flex items-center justify-between">
+                <Link
+                  href={`/notices/${notice.id}/bids`}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-brand-blue rounded-lg text-p14 font-medium hover:bg-blue-100 transition-colors"
+                >
+                  <Users className="w-4 h-4" />
+                  입찰 현황 ({notice._count.submissions}건)
+                </Link>
+                <Link
+                  href={`/notices/${notice.id}/edit`}
+                  className="px-4 py-2 border border-ink-200 rounded-lg text-p14 text-ink-500 hover:bg-ink-50 transition-colors"
+                >
+                  공고 수정
+                </Link>
+              </div>
+            )}
+
+            {/* 건설사: 입찰하기 폼 */}
+            {isContractor && isOpen && (
+              <BidForm
+                noticeId={notice.id}
+                alreadySubmitted={!!mySubmission}
+                submittedAt={mySubmission?.createdAt?.toISOString() ?? null}
+              />
+            )}
+
+            {/* 건설사 + 마감 */}
+            {isContractor && !isOpen && (
+              <p className="text-p14 text-ink-400 text-center py-2">마감된 공고입니다.</p>
+            )}
+          </div>
         </div>
       </main>
     </div>

@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
 import LogoutButton from './LogoutButton'
-import { AlertTriangle, CheckCircle2, Clock, Building2, FileText } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, Clock, Building2, FileText, Gavel } from 'lucide-react'
 
 function isAdmin(email: string | null | undefined): boolean {
   if (!email) return false
@@ -115,10 +115,40 @@ export default async function DashboardPage() {
             </p>
             <p className="mt-1 text-p12 text-primary font-medium">바로가기 →</p>
           </Link>
-          <div className="bg-white rounded-2xl p-6 shadow-card-md">
-            <p className="text-p14 text-ink-400 font-medium">관심 공고</p>
-            <p className="mt-2 text-t5 font-bold text-ink-700">준비 중</p>
-          </div>
+          {(user?.userType === 'GENERAL_CONTRACTOR' || user?.userType === 'SPECIALTY_CONTRACTOR') && (
+            <Link
+              href="/my-bids"
+              className="bg-white rounded-2xl p-6 shadow-card-md hover:shadow-card-lg transition-shadow group"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Gavel className="w-4 h-4 text-primary" />
+                </div>
+                <p className="text-p14 text-ink-400 font-medium">내 입찰</p>
+              </div>
+              <p className="text-p15 font-semibold text-ink-700 group-hover:text-primary transition-colors">
+                입찰 현황
+              </p>
+              <p className="mt-1 text-p12 text-primary font-medium">바로가기 →</p>
+            </Link>
+          )}
+          {user?.userType === 'OWNER' && (
+            <Link
+              href="/notices"
+              className="bg-white rounded-2xl p-6 shadow-card-md hover:shadow-card-lg transition-shadow group"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Gavel className="w-4 h-4 text-primary" />
+                </div>
+                <p className="text-p14 text-ink-400 font-medium">공고 관리</p>
+              </div>
+              <p className="text-p15 font-semibold text-ink-700 group-hover:text-primary transition-colors">
+                입찰 현황 확인
+              </p>
+              <p className="mt-1 text-p12 text-primary font-medium">바로가기 →</p>
+            </Link>
+          )}
         </div>
       </main>
     </div>
