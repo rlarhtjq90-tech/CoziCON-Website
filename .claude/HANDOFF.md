@@ -1,26 +1,20 @@
 # HANDOFF
-**agent:** claude | **project:** CoziCON-Website | **branch:** main | **commit:** 520c80a
+**agent:** claude | **project:** CoziCON-Website | **branch:** main | **commit:** 2e6a540
 **created:** 2026-05-06 | **status:** active
 
 ## Context
-Phase 2(입찰공고 시스템) 코드 구현 완료. 개발 서버 재시작 후 UI 검증 + Vercel 배포가 남아있음.
+Phase 3 입찰 제출 시스템과 첨부파일 업로드까지 구현 완료. 다음은 Vercel Blob 토큰 확인 및 중간 우선순위 작업 진행.
 
 ## Immediate Next Steps
-- [ ] 개발 서버 재시작(`npm run dev`) 후 로컬 로그인 → `/notices` → `/notices/create` UI 검증
-- [ ] GitHub 푸시 → Vercel 자동 배포 (Phase 2 프로덕션 반영)
-- [ ] 공고 첨부파일 업로드 기능 구현 (`/api/notices/[id]/attachments`, Supabase Storage 연동)
-- [ ] NTS API 15초 타임아웃 원인 조사 (Vercel Function 로그 확인)
-- [ ] `/company/profile` E2E 검증 (실제 사업자 인증 완료 계정으로 테스트)
+- [ ] Vercel 대시보드 → cozi-con-website-2ano → Settings → Environment Variables → `BLOB_READ_WRITE_TOKEN` 존재 여부 확인 (없으면 Storage → Blob 스토어 생성)
+- [ ] NTS API 15초 타임아웃 해결 (Vercel Function 로그 확인 → maxDuration 증가 또는 background job 전환)
+- [ ] 입찰 알림 구현 (입찰 접수/낙찰 시 이메일 알림)
+- [ ] Phase 4 기능 정의 (계약서 / 프로젝트 관리 등)
 
 ## Active Files
-- src/app/notices/page.tsx
-- src/app/notices/create/page.tsx
-- src/app/notices/[id]/page.tsx
-- src/app/api/notices/route.ts
-- src/app/api/notices/[id]/route.ts
-- prisma/schema.prisma
+- `src/app/api/upload/notice-attachment/route.ts`
+- `src/app/api/notices/route.ts`
+- `src/app/notices/create/page.tsx`
 
 ## Current State / Blockers
-- 로컬 dev 서버: NEXTAUTH_SECRET 추가 완료, 재시작 필요 (Ctrl+C → `npm run dev`)
-- Vercel 배포 미진행 — 현재 프로덕션은 Phase 1까지만 반영
-- 첨부파일 업로드 UI는 `/notices/create`에 미구현 (Phase 2.5 예정)
+`BLOB_READ_WRITE_TOKEN` 미설정 시 첨부파일이 mock URL(`__mock__/파일명`)로 저장됨 — 실제 파일 미저장. Vercel Blob 스토어 생성 후 토큰 주입 필요. Vercel MCP OAuth 인증 미완료(한글 사용자명 CLI 버그로 CLI 로그인 불가).

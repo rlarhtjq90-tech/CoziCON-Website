@@ -108,6 +108,10 @@ PowerShell은 `&`를 명령 연결자로 해석해 `sslmode=require&channel_bind
 dev 서버가 해당 DLL을 점유 중이면 EPERM 발생 — "Jest worker encountered 2 child process exceptions" 에러로 나타남.
 반드시 dev 서버를 완전 종료한 뒤 `npx prisma generate`를 단독 실행하고, 이후 서버를 재시작해야 함.
 
+### prisma db push 후 실행 중인 dev 서버는 반드시 재시작 #coding #prisma #next-js
+`prisma db push`가 `prisma generate`를 함께 실행해도, 이미 실행 중인 Next.js dev 서버는 메모리에 구버전 Prisma 클라이언트를 캐시하고 있음.
+새 모델(예: `prisma.bidSubmission`)에 접근하면 런타임 에러가 발생. `prisma db push` 실행 후 dev 서버를 반드시 재시작해야 함.
+
 ### `prisma migrate dev`는 비대화형 환경에서 실패 → `prisma db push` 사용 #coding #prisma
 Claude Code Bash 툴은 TTY가 없는 비대화형 환경이라 `prisma migrate dev`가 `Error: non-interactive` 로 실패함.
 개발 중 빠른 스키마 적용엔 `prisma db push`를 사용. 마이그레이션 파일이 필요하면 사용자가 터미널에서 직접 실행.

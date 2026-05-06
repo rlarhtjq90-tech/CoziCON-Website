@@ -2,26 +2,30 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** Phase 2 진입 — 입찰공고 시스템 코드 완성, UI 미검증 (개발 서버 재시작 필요)
+- **상태:** Phase 3 완료 — 입찰 제출 시스템 + 첨부파일 업로드 구현, 프로덕션 배포 완료
 - **주요 기능:**
   - 랜딩 페이지, 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
   - 회원가입 4단계: 이메일 OTP(Gmail SMTP) → 유형선택 → 정보입력 + 약관동의
   - 전문건설사 면허 종목 23종 다중선택 UI
-  - DB: Company, CompanyVerification, License, TermsConsent, BidNotice, BidAttachment
+  - DB: Company, CompanyVerification, License, TermsConsent, BidNotice, BidAttachment, BidSubmission
   - 사업자 인증 `/verify-biz`, 건설업등록증 인증 `/verify-license`, 관리자 승인 큐 `/admin`
   - 회사 프로필 페이지 `/company/profile`: 조회/수정, 로고 업로드, 주력지역, 시공실적, 보유장비/인력
-  - 입찰공고 게시판 `/notices` (목록/D-day 배지/예가 표시)
-  - 공고 작성 `/notices/create` (공종·지역 멀티선택, 예가, 마감일, 임시저장)
-  - 공고 상세 `/notices/[id]` (발주사 정보, 첨부파일, 작성자 수정 링크)
-  - API: GET/POST `/api/notices`, GET/PATCH `/api/notices/[id]`
-  - 대시보드에 "입찰공고" 바로가기 카드 추가
+  - 입찰공고 게시판 `/notices`, 공고 작성(파일 첨부 포함), 공고 상세
+  - 입찰 제출: 건설사 입찰폼, `/my-bids` 내 입찰 현황
+  - 발주사: `/notices/[id]/bids` 입찰 현황 + 낙찰/탈락/검토중 처리
+  - 첨부파일 업로드: Vercel Blob (PDF/DOC/HWP/이미지, 최대 20MB)
+  - 대시보드 유저 타입별 카드 분기 (건설사: 내 입찰, 발주사: 공고 관리)
 - **알려진 이슈:**
   - NTS API 15초 타임아웃 미해결 (실제 사업자 인증 시 실패 가능)
-  - 로컬 로그인 에러 수정 완료(NEXTAUTH_SECRET 추가), 개발 서버 재시작 후 UI 검증 필요
-  - Vercel 배포 미진행 (Phase 2 코드 프로덕션 미반영)
+  - `BLOB_READ_WRITE_TOKEN` Vercel 환경변수 미확인 (첨부파일 실제 저장 미검증)
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-06 (세션 20 — Phase 3 입찰 제출 + 첨부파일 업로드)
+- Phase 3 입찰 제출 시스템: BidSubmission 모델 추가(prisma db push), API(POST/GET /notices/[id]/bids, PATCH /bids/[bidId]), 건설사 입찰폼/my-bids, 발주사 입찰현황/낙찰처리
+- 공고 첨부파일 업로드: /api/upload/notice-attachment(Vercel Blob), /notices/create 파일 첨부 UI(즉시 업로드, PDF/DOC/HWP/이미지, 20MB)
+- dev 서버 중복 프로세스 트러블슈팅(포트 충돌 해결) + GitHub 푸시 → Vercel 자동 배포 확인
 
 ### 2026-05-06 (세션 19 — Phase 2 입찰공고 시스템 구현)
 - BidNotice/BidAttachment 스키마 설계 + `prisma db push` 반영
