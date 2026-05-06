@@ -53,6 +53,7 @@ model User {
   company       Company?              @relation(fields: [companyId], references: [id])
   termsConsents TermsConsent[]
   verifications CompanyVerification[]
+  bidNotices    BidNotice[]
 }
 
 model Account {
@@ -116,6 +117,7 @@ model Company {
   users         User[]
   licenses      License[]
   verifications CompanyVerification[]
+  bidNotices    BidNotice[]
 }
 
 // =============================================
@@ -151,6 +153,48 @@ model CompanyVerification {
 
   company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
   user    User?   @relation(fields: [verifiedBy], references: [id])
+}
+
+// =============================================
+// 입찰공고 시스템
+// =============================================
+
+enum BidStatus {
+  DRAFT     // 임시저장
+  OPEN      // 모집중
+  CLOSED    // 마감
+  CANCELLED // 취소
+}
+
+model BidNotice {
+  id             String    @id @default(cuid())
+  title          String
+  workTypes      String[]
+  regions        String[]
+  estimatedPrice BigInt?
+  deadline       DateTime
+  description    String?   @db.Text
+  status         BidStatus @default(DRAFT)
+  companyId      String
+  authorId       String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @default(now()) @updatedAt
+
+  company     Company         @relation(fields: [companyId], references: [id])
+  author      User            @relation(fields: [authorId], references: [id])
+  attachments BidAttachment[]
+}
+
+model BidAttachment {
+  id        String   @id @default(cuid())
+  noticeId  String
+  fileName  String
+  fileUrl   String
+  fileSize  Int?
+  mimeType  String?
+  createdAt DateTime @default(now())
+
+  notice BidNotice @relation(fields: [noticeId], references: [id], onDelete: Cascade)
 }
 
 // =============================================

@@ -2,25 +2,32 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** Phase 1 구현 완료 + 프로덕션 배포 완료 (dev → main 머지, Vercel Ready)
+- **상태:** Phase 2 진입 — 입찰공고 시스템 코드 완성, UI 미검증 (개발 서버 재시작 필요)
 - **주요 기능:**
   - 랜딩 페이지, 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
   - 회원가입 4단계: 이메일 OTP(Gmail SMTP) → 유형선택 → 정보입력 + 약관동의
   - 전문건설사 면허 종목 23종 다중선택 UI
-  - DB: Company, CompanyVerification, License, TermsConsent
-  - 사업자 인증 페이지 `/verify-biz`: 개업일자(start_dt) 포함 NTS 진위확인 → 사업자등록증 업로드 → Company 등록
-  - 건설업등록증 인증 페이지 `/verify-license`: KISCON 면허 자동조회 + 체크박스 선택 + 파일 업로드 → License DB 저장
-  - 관리자 승인 큐 `/admin`: PENDING 사용자 목록 → 승인(ACTIVE)/반려(REJECTED) + 낙관적 업데이트
+  - DB: Company, CompanyVerification, License, TermsConsent, BidNotice, BidAttachment
+  - 사업자 인증 `/verify-biz`, 건설업등록증 인증 `/verify-license`, 관리자 승인 큐 `/admin`
   - 회사 프로필 페이지 `/company/profile`: 조회/수정, 로고 업로드, 주력지역, 시공실적, 보유장비/인력
-  - Company 스키마 확장: logoUrl, constructionCapacity, mainRegions, constructionRecords, equipmentAndStaff, fax, website
-  - 대시보드에 "회사 프로필" 카드 추가
+  - 입찰공고 게시판 `/notices` (목록/D-day 배지/예가 표시)
+  - 공고 작성 `/notices/create` (공종·지역 멀티선택, 예가, 마감일, 임시저장)
+  - 공고 상세 `/notices/[id]` (발주사 정보, 첨부파일, 작성자 수정 링크)
+  - API: GET/POST `/api/notices`, GET/PATCH `/api/notices/[id]`
+  - 대시보드에 "입찰공고" 바로가기 카드 추가
 - **알려진 이슈:**
   - NTS API 15초 타임아웃 미해결 (실제 사업자 인증 시 실패 가능)
-  - NTS API `p_nm` Korean encoding 미해결 — 현재 `b_no+start_dt`만으로 진위확인
-  - `/company/profile` E2E 미검증 (실제 사업자 인증 완료 계정 필요)
+  - 로컬 로그인 에러 수정 완료(NEXTAUTH_SECRET 추가), 개발 서버 재시작 후 UI 검증 필요
+  - Vercel 배포 미진행 (Phase 2 코드 프로덕션 미반영)
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-06 (세션 19 — Phase 2 입찰공고 시스템 구현)
+- BidNotice/BidAttachment 스키마 설계 + `prisma db push` 반영
+- API 라우트: GET/POST `/api/notices`, GET/PATCH `/api/notices/[id]` (OWNER 권한 제한)
+- UI: `/notices` 게시판(D-day 배지, 예가 포맷), `/notices/create` 작성 폼, `/notices/[id]` 상세
+- 대시보드 "입찰공고" 카드 추가, `.env.local`에 NEXTAUTH_SECRET/URL 추가 (로컬 로그인 에러 수정)
 
 ### 2026-05-06 (세션 18 — 블로커 해결 + 프로덕션 배포)
 - Prisma EPERM 블로커 해결 (`npx prisma generate` 성공) + `npm install` 누락 패키지 설치
