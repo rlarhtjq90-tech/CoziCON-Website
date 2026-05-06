@@ -18,7 +18,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
   })
 
   if (!user?.companyId) return NextResponse.json({ error: '회사 정보가 없습니다.' }, { status: 403 })
-  if (user.userType === 'OWNER') return NextResponse.json({ error: '발주사는 입찰할 수 없습니다.' }, { status: 403 })
+  if (user.userType === 'GENERAL_CONTRACTOR') return NextResponse.json({ error: '종합건설사는 입찰할 수 없습니다.' }, { status: 403 })
   if (user.status !== 'ACTIVE') return NextResponse.json({ error: '승인된 계정만 입찰할 수 있습니다.' }, { status: 403 })
 
   const notice = await prisma.bidNotice.findUnique({ where: { id: noticeId } })

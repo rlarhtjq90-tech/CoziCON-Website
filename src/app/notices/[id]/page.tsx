@@ -45,7 +45,7 @@ export default async function NoticeDetailPage({ params }: Params) {
   const deadlineLabel = deadline.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })
 
   const isOwner = notice.authorId === session.user.id
-  const isContractor = user?.userType === 'GENERAL_CONTRACTOR' || user?.userType === 'SPECIALTY_CONTRACTOR'
+  const isContractor = user?.userType === 'SPECIALTY_CONTRACTOR'
   const isOpen = notice.status === 'OPEN' && diff >= 0
 
   // 이미 입찰했는지 확인
@@ -134,7 +134,7 @@ export default async function NoticeDetailPage({ params }: Params) {
             <div className="flex items-start gap-3">
               <Building2 className="w-4 h-4 text-ink-400 mt-0.5 shrink-0" />
               <div>
-                <span className="text-ink-400 text-p13 block mb-1">발주사</span>
+                <span className="text-ink-400 text-p13 block mb-1">종합건설사</span>
                 <p className="text-ink-700">{notice.company.name}</p>
                 {notice.company.address && <p className="text-p13 text-ink-400">{notice.company.address}</p>}
                 {notice.company.phone && <p className="text-p13 text-ink-400">{notice.company.phone}</p>}

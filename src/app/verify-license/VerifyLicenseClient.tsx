@@ -30,12 +30,9 @@ export default function VerifyLicenseClient({
   const [error, setError] = useState('')
   const fileRef = useRef<HTMLInputElement>(null)
 
-  const isOwner = userType === 'OWNER'
   const licenseType = userType === 'GENERAL_CONTRACTOR' ? 'general' : 'specialty'
 
   useEffect(() => {
-    if (isOwner) { setFetchState('skipped'); return }
-
     fetch('/api/verify-license', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -57,7 +54,7 @@ export default function VerifyLicenseClient({
         }
       })
       .catch(() => setFetchState('fail'))
-  }, [bizNo, licenseType, isOwner])
+  }, [bizNo, licenseType])
 
   function toggleSelect(idx: number) {
     setSelected((prev) => {
@@ -132,8 +129,7 @@ export default function VerifyLicenseClient({
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {!isOwner && (
-              <div>
+            <div>
                 <p className="text-p14 font-medium text-ink-600 mb-2">조회된 건설업 면허</p>
 
                 {fetchState === 'loading' && (
@@ -169,7 +165,6 @@ export default function VerifyLicenseClient({
                   </div>
                 )}
               </div>
-            )}
 
             <div>
               <label className="block text-p14 font-medium text-ink-600 mb-1.5">

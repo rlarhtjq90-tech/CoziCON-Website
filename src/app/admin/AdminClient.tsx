@@ -55,7 +55,6 @@ export default function AdminClient({ initialUsers }: { initialUsers: AdminUser[
   const typeLabel: Record<string, string> = {
     GENERAL_CONTRACTOR: '종합건설사',
     SPECIALTY_CONTRACTOR: '전문건설사',
-    OWNER: '발주사',
   }
 
   return (

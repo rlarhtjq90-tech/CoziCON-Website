@@ -36,8 +36,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     select: { userType: true, companyId: true },
   })
 
-  if (user?.userType !== 'OWNER') {
-    return NextResponse.json({ error: '발주사만 공고를 등록할 수 있습니다.' }, { status: 403 })
+  if (user?.userType !== 'GENERAL_CONTRACTOR') {
+    return NextResponse.json({ error: '종합건설사만 공고를 등록할 수 있습니다.' }, { status: 403 })
   }
   if (!user.companyId) {
     return NextResponse.json({ error: '회사 정보가 없습니다.' }, { status: 400 })

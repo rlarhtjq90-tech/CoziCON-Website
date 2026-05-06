@@ -65,7 +65,7 @@ export default async function NoticesPage() {
             <h1 className="text-t4 font-bold text-ink-700">입찰공고</h1>
             <p className="mt-1 text-p15 text-ink-400">현재 모집 중인 공고 {notices.length}건</p>
           </div>
-          {user?.userType === 'OWNER' && (
+          {user?.userType === 'GENERAL_CONTRACTOR' && (
             <Link
               href="/notices/create"
               className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-p14 font-medium hover:bg-primary/90 transition-colors"

@@ -13,9 +13,8 @@ datasource db {
 // =============================================
 
 enum UserType {
-  GENERAL_CONTRACTOR   // 종합건설사
-  SPECIALTY_CONTRACTOR // 전문건설사
-  OWNER                // 발주사
+  GENERAL_CONTRACTOR   // 종합건설사 (공고 등록 · 관리)
+  SPECIALTY_CONTRACTOR // 전문건설사 (입찰 제출)
 }
 
 enum UserStatus {

@@ -30,7 +30,7 @@ export default async function MyBidsPage() {
     select: { userType: true, companyId: true },
   })
 
-  if (user?.userType === 'OWNER') redirect('/dashboard')
+  if (user?.userType === 'GENERAL_CONTRACTOR') redirect('/dashboard')
 
   const submissions = await prisma.bidSubmission.findMany({
     where: { bidderId: session.user.id },
