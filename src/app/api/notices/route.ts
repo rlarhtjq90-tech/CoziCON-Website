@@ -50,7 +50,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: '잘못된 요청입니다.' }, { status: 400 })
   }
 
-  const { title, workTypes, regions, estimatedPrice, deadline, description, status } = body as {
+  type AttachmentInput = { fileName: string; fileUrl: string; fileSize?: number; mimeType?: string }
+
+  const { title, workTypes, regions, estimatedPrice, deadline, description, status, attachments } = body as {
     title?: string
     workTypes?: string[]
     regions?: string[]
@@ -58,6 +60,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     deadline?: string
     description?: string
     status?: string
+    attachments?: AttachmentInput[]
   }
 
   if (!title || !workTypes?.length || !regions?.length || !deadline) {
@@ -75,6 +78,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       status: (status as 'DRAFT' | 'OPEN') ?? 'OPEN',
       companyId: user.companyId,
       authorId: session.user.id,
+      attachments: attachments?.length
+        ? { create: attachments.map((a) => ({ fileName: a.fileName, fileUrl: a.fileUrl, fileSize: a.fileSize ?? null, mimeType: a.mimeType ?? null })) }
+        : undefined,
     },
   })
 

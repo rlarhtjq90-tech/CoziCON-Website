@@ -1,15 +1,25 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Plus, X } from 'lucide-react'
+import { ArrowLeft, Paperclip, X, Loader2 } from 'lucide-react'
 
 const WORK_TYPES = ['건축', '토목', '전기', '통신', '소방', '기계설비', '조경', '내장', '철근콘크리트', '기타']
 const REGIONS = ['서울', '경기', '인천', '부산', '대구', '광주', '대전', '울산', '세종', '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주']
 
+type AttachmentItem = {
+  fileName: string
+  fileUrl: string
+  fileSize: number
+  mimeType: string
+  uploading?: boolean
+  error?: string
+}
+
 export default function CreateNoticePage() {
   const router = useRouter()
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -20,14 +30,71 @@ export default function CreateNoticePage() {
   const [deadline, setDeadline] = useState('')
   const [description, setDescription] = useState('')
   const [asDraft, setAsDraft] = useState(false)
+  const [attachments, setAttachments] = useState<AttachmentItem[]>([])
 
   function toggleItem(arr: string[], setArr: (v: string[]) => void, item: string) {
     setArr(arr.includes(item) ? arr.filter((v) => v !== item) : [...arr, item])
   }
 
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? [])
+    if (!files.length) return
+
+    // 각 파일을 즉시 업로드
+    for (const file of files) {
+      const placeholder: AttachmentItem = {
+        fileName: file.name,
+        fileUrl: '',
+        fileSize: file.size,
+        mimeType: file.type,
+        uploading: true,
+      }
+      setAttachments((prev) => [...prev, placeholder])
+
+      const formData = new FormData()
+      formData.append('file', file)
+
+      try {
+        const res = await fetch('/api/upload/notice-attachment', { method: 'POST', body: formData })
+        const data = await res.json()
+
+        if (!res.ok) {
+          setAttachments((prev) =>
+            prev.map((a) => a.fileName === file.name && a.uploading ? { ...a, uploading: false, error: data.error ?? '업로드 실패' } : a)
+          )
+        } else {
+          setAttachments((prev) =>
+            prev.map((a) => a.fileName === file.name && a.uploading
+              ? { fileName: data.fileName, fileUrl: data.url, fileSize: data.fileSize, mimeType: data.mimeType, uploading: false }
+              : a
+            )
+          )
+        }
+      } catch {
+        setAttachments((prev) =>
+          prev.map((a) => a.fileName === file.name && a.uploading ? { ...a, uploading: false, error: '업로드 실패' } : a)
+        )
+      }
+    }
+
+    // input 초기화 (같은 파일 재선택 가능하게)
+    e.target.value = ''
+  }
+
+  function removeAttachment(idx: number) {
+    setAttachments((prev) => prev.filter((_, i) => i !== idx))
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
+
+    const uploading = attachments.some((a) => a.uploading)
+    if (uploading) { setError('파일 업로드가 완료될 때까지 기다려주세요.'); return }
+
+    const failed = attachments.some((a) => a.error)
+    if (failed) { setError('업로드 실패한 파일을 제거 후 다시 시도해주세요.'); return }
+
     setLoading(true)
 
     const res = await fetch('/api/notices', {
@@ -37,10 +104,16 @@ export default function CreateNoticePage() {
         title,
         workTypes,
         regions,
-        estimatedPrice: estimatedPrice ? Number(estimatedPrice.replace(/,/g, '')) : null,
+        estimatedPrice: estimatedPrice ? Number(estimatedPrice) : null,
         deadline,
         description,
         status: asDraft ? 'DRAFT' : 'OPEN',
+        attachments: attachments.filter((a) => a.fileUrl && !a.fileUrl.startsWith('__mock__')).map((a) => ({
+          fileName: a.fileName,
+          fileUrl: a.fileUrl,
+          fileSize: a.fileSize,
+          mimeType: a.mimeType,
+        })),
       }),
     })
 
@@ -180,6 +253,65 @@ export default function CreateNoticePage() {
               rows={6}
               className="w-full px-3 py-2.5 border border-ink-200 rounded-lg text-p15 focus:outline-none focus:border-primary resize-none"
             />
+          </div>
+
+          {/* 첨부파일 */}
+          <div>
+            <label className="block text-p14 font-medium text-ink-700 mb-1.5">
+              첨부파일
+              <span className="ml-1 text-p13 text-ink-400 font-normal">PDF, DOC, DOCX, HWP, 이미지 · 최대 20MB</span>
+            </label>
+
+            {attachments.length > 0 && (
+              <div className="mb-2 space-y-1.5">
+                {attachments.map((att, idx) => (
+                  <div
+                    key={idx}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-p14 ${
+                      att.error ? 'border-red-200 bg-red-50' : 'border-ink-200 bg-brand-slate-100'
+                    }`}
+                  >
+                    {att.uploading ? (
+                      <Loader2 className="w-4 h-4 text-primary animate-spin shrink-0" />
+                    ) : (
+                      <Paperclip className="w-4 h-4 text-ink-400 shrink-0" />
+                    )}
+                    <span className="flex-1 truncate text-ink-600">{att.fileName}</span>
+                    {att.error ? (
+                      <span className="text-p13 text-red-500 shrink-0">{att.error}</span>
+                    ) : !att.uploading ? (
+                      <span className="text-p13 text-ink-400 shrink-0">
+                        {(att.fileSize / 1024).toFixed(0)}KB
+                      </span>
+                    ) : null}
+                    <button
+                      type="button"
+                      onClick={() => removeAttachment(idx)}
+                      className="shrink-0 text-ink-300 hover:text-ink-500 transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              accept=".pdf,.doc,.docx,.hwp,.jpg,.jpeg,.png,.webp"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="flex items-center gap-2 px-4 py-2 border border-dashed border-ink-300 rounded-lg text-p14 text-ink-400 hover:border-primary hover:text-primary transition-colors"
+            >
+              <Paperclip className="w-4 h-4" />
+              파일 첨부
+            </button>
           </div>
 
           {error && (
