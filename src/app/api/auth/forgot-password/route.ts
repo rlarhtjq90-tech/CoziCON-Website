@@ -16,10 +16,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: '이메일 발송 서비스가 설정되지 않았습니다. 관리자에게 문의해주세요.' }, { status: 500 })
     }
 
-    // 가입된 이메일인지 확인 (보안상 미가입이어도 동일 성공 응답)
+    // 가입된 이메일인지 확인
     const user = await prisma.user.findUnique({ where: { email } })
-    if (!user || !user.password) {
+    console.log('[forgot-password] email:', email, 'user:', !!user, 'password:', !!user?.password)
+
+    if (!user) {
+      // 미가입 이메일 — 보안상 성공과 동일 응답 (anti-enumeration)
       return NextResponse.json({ success: true })
+    }
+    if (!user.password) {
+      // 소셜 로그인(Google 등)으로 가입된 계정
+      return NextResponse.json(
+        { error: '소셜 로그인(Google)으로 가입된 계정입니다. Google 로그인을 이용해주세요.' },
+        { status: 400 }
+      )
     }
 
     const otp = String(Math.floor(100000 + Math.random() * 900000))
