@@ -2,7 +2,7 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** Day 5 구현 완료(코드), Prisma generate EPERM 블로커 — dev 서버 재시작 후 테스트 필요
+- **상태:** Phase 1 구현 완료 + 프로덕션 배포 완료 (dev → main 머지, Vercel Ready)
 - **주요 기능:**
   - 랜딩 페이지, 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
   - 회원가입 4단계: 이메일 OTP(Gmail SMTP) → 유형선택 → 정보입력 + 약관동의
@@ -11,18 +11,21 @@
   - 사업자 인증 페이지 `/verify-biz`: 개업일자(start_dt) 포함 NTS 진위확인 → 사업자등록증 업로드 → Company 등록
   - 건설업등록증 인증 페이지 `/verify-license`: KISCON 면허 자동조회 + 체크박스 선택 + 파일 업로드 → License DB 저장
   - 관리자 승인 큐 `/admin`: PENDING 사용자 목록 → 승인(ACTIVE)/반려(REJECTED) + 낙관적 업데이트
-  - 회사 프로필 페이지 `/company/profile`: 조회/수정, 로고 업로드, 주력지역, 시공실적, 보유장비/인력 (코드 완성, DB push 완료)
+  - 회사 프로필 페이지 `/company/profile`: 조회/수정, 로고 업로드, 주력지역, 시공실적, 보유장비/인력
   - Company 스키마 확장: logoUrl, constructionCapacity, mainRegions, constructionRecords, equipmentAndStaff, fax, website
   - 대시보드에 "회사 프로필" 카드 추가
 - **알려진 이슈:**
-  - **[블로커]** Prisma generate EPERM — dev 서버 중지 후 `npx prisma generate` 실행 필요
-  - NTS API 15초 타임아웃 미해결
+  - NTS API 15초 타임아웃 미해결 (실제 사업자 인증 시 실패 가능)
   - NTS API `p_nm` Korean encoding 미해결 — 현재 `b_no+start_dt`만으로 진위확인
-  - E2E 전체 플로우 미검증 (verify-biz → verify-license → admin 승인)
-  - Vercel `ADMIN_EMAILS` 환경변수 등록 필요 (rlarhtjq90@gmail.com)
+  - `/company/profile` E2E 미검증 (실제 사업자 인증 완료 계정 필요)
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-06 (세션 18 — 블로커 해결 + 프로덕션 배포)
+- Prisma EPERM 블로커 해결 (`npx prisma generate` 성공) + `npm install` 누락 패키지 설치
+- dev 브랜치 미리보기 E2E 테스트 통과 (login/dashboard/verify-biz/verify-license/admin/signup 전 페이지 정상 확인)
+- `dev → main` 머지 + `git push` → Vercel 프로덕션 자동 배포 완료 (1분 13초, Ready)
 
 ### 2026-05-06 (세션 17 — Day 5 회사 프로필 구현)
 - Company 스키마에 7개 필드 추가(logoUrl, constructionCapacity, mainRegions, constructionRecords, equipmentAndStaff, fax, website) + `prisma db push` 성공

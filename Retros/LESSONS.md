@@ -87,6 +87,10 @@ React/Vue 등 프레임워크 이벤트 시스템도 bubbles:true 이벤트를 d
 기존 행이 있는 테이블에 `@updatedAt`만 추가하면 `prisma db push`가 실패 — 기존 행의 null 처리 불가.
 `updatedAt DateTime @default(now()) @updatedAt` 형태로 항상 세트로 써야 함. 로컬 빌드가 정상이어도 Vercel 배포 시 블로커가 될 수 있음.
 
+### Windows에서 `npm install` 후 브랜치 전환 전 `package-lock.json` 복원 필요 #coding #git #windows
+`npm install`을 실행하면 `package-lock.json`이 로컬에서 변경됨. 이 상태에서 `git checkout`을 시도하면 "Your local changes would be overwritten" 오류로 전환 실패.
+브랜치 전환 전에 `git restore package-lock.json`으로 먼저 되돌려야 함.
+
 ### Windows dev 서버 실행 중 `prisma generate`는 EPERM으로 실패 #coding #prisma #windows
 `prisma db push`나 `prisma generate`는 내부적으로 query_engine-windows.dll.node를 rename함.
 dev 서버가 해당 DLL을 점유 중이면 EPERM 발생 — "Jest worker encountered 2 child process exceptions" 에러로 나타남.
