@@ -1,0 +1,63 @@
+import { NextRequest, NextResponse } from 'next/server'
+import nodemailer from 'nodemailer'
+import { prisma } from '@/lib/db'
+
+const IDENTIFIER_PREFIX = 'pw-reset:'
+
+export async function POST(req: NextRequest) {
+  try {
+    const { email } = await req.json()
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return NextResponse.json({ error: '올바른 이메일 주소를 입력해주세요.' }, { status: 400 })
+    }
+
+    if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
+      return NextResponse.json({ error: '이메일 발송 서비스가 설정되지 않았습니다. 관리자에게 문의해주세요.' }, { status: 500 })
+    }
+
+    // 가입된 이메일인지 확인 (보안상 미가입이어도 동일 성공 응답)
+    const user = await prisma.user.findUnique({ where: { email } })
+    if (!user || !user.password) {
+      return NextResponse.json({ success: true })
+    }
+
+    const otp = String(Math.floor(100000 + Math.random() * 900000))
+    const expires = new Date(Date.now() + 3 * 60 * 1000)
+    const identifier = `${IDENTIFIER_PREFIX}${email}`
+
+    await prisma.verificationToken.deleteMany({ where: { identifier } })
+    await prisma.verificationToken.create({ data: { identifier, token: otp, expires } })
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD,
+      },
+    })
+
+    await transporter.sendMail({
+      from: `CoziCON <${process.env.GMAIL_USER}>`,
+      to: email,
+      subject: '[CoziCON] 비밀번호 재설정 인증번호',
+      html: `
+        <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:40px 24px">
+          <h2 style="color:#1a2dff;margin-bottom:8px">CoziCON 비밀번호 재설정</h2>
+          <p style="color:#555;margin-bottom:24px">아래 인증번호를 3분 이내에 입력해주세요.</p>
+          <div style="background:#f3f6fc;border-radius:12px;padding:24px;text-align:center">
+            <span style="font-size:36px;font-weight:800;letter-spacing:8px;color:#1a2dff">${otp}</span>
+          </div>
+          <p style="color:#999;font-size:13px;margin-top:24px">
+            본인이 요청하지 않은 경우 이 이메일을 무시하세요.
+          </p>
+        </div>
+      `,
+    })
+
+    return NextResponse.json({ success: true })
+  } catch (err) {
+    console.error('[forgot-password] 오류:', err)
+    return NextResponse.json({ error: '서버 오류가 발생했습니다.' }, { status: 500 })
+  }
+}

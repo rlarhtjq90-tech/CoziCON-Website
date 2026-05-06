@@ -2,7 +2,7 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** Phase 3 완료 — 입찰 제출 시스템 + 첨부파일 업로드 구현, 프로덕션 배포 완료
+- **상태:** 비밀번호 찾기 기능 구현 완료 — 로컬 테스트 미완 (Vercel 배포 후 검증 필요)
 - **주요 기능:**
   - 랜딩 페이지, 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
   - 회원가입 4단계: 이메일 OTP(Gmail SMTP) → 유형선택 → 정보입력 + 약관동의
@@ -15,12 +15,20 @@
   - 발주사: `/notices/[id]/bids` 입찰 현황 + 낙찰/탈락/검토중 처리
   - 첨부파일 업로드: Vercel Blob (PDF/DOC/HWP/이미지, 최대 20MB)
   - 대시보드 유저 타입별 카드 분기 (건설사: 내 입찰, 발주사: 공고 관리)
+  - **비밀번호 찾기**: 로그인 화면 링크 → 3단계 UI(이메일→OTP→새 비밀번호) — DB 마이그레이션 없음
 - **알려진 이슈:**
   - NTS API 15초 타임아웃 미해결 (실제 사업자 인증 시 실패 가능)
   - `BLOB_READ_WRITE_TOKEN` Vercel 환경변수 미확인 (첨부파일 실제 저장 미검증)
+  - 비밀번호 찾기 로컬/프로덕션 E2E 테스트 미완
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-06 (세션 22 — 비밀번호 찾기 구현)
+- 로그인 화면 비밀번호 필드 옆에 "비밀번호 찾기" 링크 추가 (`src/app/login/page.tsx`)
+- `/forgot-password` 페이지 생성: 3단계 UI (이메일 입력 → OTP 6자리 → 새 비밀번호 설정)
+- `POST /api/auth/forgot-password`: Gmail SMTP OTP 발송 (기존 `VerificationToken` 모델 재활용, `pw-reset:` prefix)
+- `POST /api/auth/reset-password`: OTP 검증 + bcrypt 해시 → User.password 업데이트 (DB 마이그레이션 없음)
 
 ### 2026-05-06 (세션 20 — Phase 3 입찰 제출 + 첨부파일 업로드)
 - Phase 3 입찰 제출 시스템: BidSubmission 모델 추가(prisma db push), API(POST/GET /notices/[id]/bids, PATCH /bids/[bidId]), 건설사 입찰폼/my-bids, 발주사 입찰현황/낙찰처리
