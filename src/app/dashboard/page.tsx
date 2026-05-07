@@ -150,7 +150,7 @@ export default async function DashboardPage() {
             </Link>
           )}
           <Link
-            href="/dashboard/settings"
+            href="/change-password"
             className="bg-white rounded-2xl p-6 shadow-card-md hover:shadow-card-lg transition-shadow group"
           >
             <div className="flex items-center gap-3 mb-3">
