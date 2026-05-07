@@ -2,27 +2,30 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** 비밀번호 찾기 기능 구현 완료 — 로컬 테스트 미완 (Vercel 배포 후 검증 필요)
+- **상태:** Day 6 완료 — Week 1 기능 구현 완성, Day 7 통합 테스트 남음
 - **주요 기능:**
   - 랜딩 페이지, 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
-  - 회원가입 4단계: 이메일 OTP(Gmail SMTP) → 유형선택 → 정보입력 + 약관동의
-  - 전문건설사 면허 종목 23종 다중선택 UI
+  - 회원가입 4단계: 이메일 OTP → 유형선택 → 정보입력 + 약관동의
   - DB: Company, CompanyVerification, License, TermsConsent, BidNotice, BidAttachment, BidSubmission
   - 사업자 인증 `/verify-biz`, 건설업등록증 인증 `/verify-license`, 관리자 승인 큐 `/admin`
-  - 회사 프로필 페이지 `/company/profile`: 조회/수정, 로고 업로드, 주력지역, 시공실적, 보유장비/인력
-  - 입찰공고 게시판 `/notices`, 공고 작성(파일 첨부 포함), 공고 상세
-  - 입찰 제출: 건설사 입찰폼, `/my-bids` 내 입찰 현황
-  - 발주사: `/notices/[id]/bids` 입찰 현황 + 낙찰/탈락/검토중 처리
-  - 첨부파일 업로드: Vercel Blob (PDF/DOC/HWP/이미지, 최대 20MB)
-  - 대시보드 유저 타입별 카드 분기 (건설사: 내 입찰, 발주사: 공고 관리)
-  - **비밀번호 찾기**: 로그인 화면 링크 → 3단계 UI(이메일→OTP→새 비밀번호) — DB 마이그레이션 없음
+  - 회사 프로필 페이지 `/company/profile`: 조회/수정, 로고 업로드, 주력지역, 시공실적 등
+  - 입찰공고 게시판 `/notices`, 공고 작성, 입찰 제출 `/my-bids`, 낙찰 처리
+  - **비밀번호 찾기** `/forgot-password`: 3단계 UI (이메일→OTP→새 비밀번호), Resend 이메일 발송
+  - **라우트 가드**: `withAuth` 미들웨어, isAdmin JWT 플래그, 비관리자 `/admin` 차단
+  - **비밀번호 변경** `/dashboard/settings`: 현재 비밀번호 확인 후 변경 (OAuth 계정 차단)
 - **알려진 이슈:**
   - NTS API 15초 타임아웃 미해결 (실제 사업자 인증 시 실패 가능)
   - `BLOB_READ_WRITE_TOKEN` Vercel 환경변수 미확인 (첨부파일 실제 저장 미검증)
-  - 비밀번호 찾기 로컬/프로덕션 E2E 테스트 미완
+  - 관리자 계정 isAdmin 반영: 로그아웃 후 재로그인 필요 (JWT 재발급)
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-07 (세션 23 — Day 6 라우트 가드 + 비밀번호 변경)
+- 비밀번호 찾기 E2E 검증: Vercel 로그로 Resend 실제 호출 확인(`POST api.resend.com/emails`), `black_0802@naver.com` DB 존재(`user: true, password: true`) 확인
+- `middleware.ts` → `withAuth` 래핑, `/admin` 비관리자 차단(→ `/dashboard` 리다이렉트), JWT에 `isAdmin` 플래그 추가(ADMIN_EMAILS 기반)
+- `POST /api/user/change-password`: 현재 비밀번호 검증 + bcrypt 업데이트, OAuth 계정 차단
+- `/dashboard/settings` 비밀번호 변경 페이지 + 대시보드에 "계정 설정" 카드 추가
 
 ### 2026-05-06 (세션 22 — 비밀번호 찾기 구현)
 - 로그인 화면 비밀번호 필드 옆에 "비밀번호 찾기" 링크 추가 (`src/app/login/page.tsx`)

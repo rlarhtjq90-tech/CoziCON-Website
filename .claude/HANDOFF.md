@@ -1,22 +1,22 @@
 # HANDOFF
-**agent:** claude | **project:** CoziCON-Website | **branch:** main | **commit:** 4cc1456
-**created:** 2026-05-06 | **status:** active
+**agent:** claude | **project:** CoziCON-Website | **branch:** main | **commit:** 3949759
+**created:** 2026-05-07 | **status:** active
 
 ## Context
-비밀번호 찾기 기능(4개 파일) 구현 완료. Chrome 확장 보안 제한으로 localhost 접속 스크린샷 불가 — 브라우저 E2E 테스트 및 Vercel 배포가 남아 있음.
+Day 6 완료. Week 1 기능 구현 전체 완성 — Day 7 통합 테스트만 남음.
 
 ## Immediate Next Steps
-- [ ] 로컬 `npm run dev` → `http://localhost:3001/login` 에서 "비밀번호 찾기" 링크 확인
-- [ ] `/forgot-password` 3단계 플로우 직접 테스트 (실제 이메일로 OTP 수신 확인)
-- [ ] git commit + push → Vercel 자동 배포 후 프로덕션 테스트
-- [ ] (이전) `BLOB_READ_WRITE_TOKEN` Vercel 환경변수 확인 (첨부파일 저장)
-- [ ] (이전) NTS API 15초 타임아웃 해결
+- [ ] Day 7: 통합 시나리오 직접 실행 (가입→사업자인증→관리자승인→로그인→프로필→비밀번호변경)
+- [ ] Vercel ADMIN_EMAILS 환경변수에 실제 관리자 이메일 등록 확인
+- [ ] 관리자 계정으로 로그아웃 후 재로그인 → /admin 접근 확인 (isAdmin JWT 재발급)
+- [ ] Week 2 시작: Day 8 입찰공고 데이터 모델 (공종 분류 마스터 테이블)
 
 ## Active Files
-- `src/app/login/page.tsx` — "비밀번호 찾기" 링크 추가됨
-- `src/app/forgot-password/page.tsx` — 3단계 UI
-- `src/app/api/auth/forgot-password/route.ts` — OTP 발송 (pw-reset: prefix)
-- `src/app/api/auth/reset-password/route.ts` — 비밀번호 변경
+- `src/middleware.ts` — withAuth 라우트 가드
+- `src/lib/auth.ts` — isAdmin JWT 플래그
+- `src/app/api/user/change-password/route.ts` — 비밀번호 변경 API
+- `src/app/dashboard/settings/` — 계정 설정 페이지
 
 ## Current State / Blockers
-dev 서버가 백그라운드 기동 중 (포트 3001 LISTENING). Chrome 확장은 localhost 스크린샷 불가 — 사용자가 직접 `http://localhost:3001/login` 열어서 테스트 필요. 커밋/푸시는 아직 미완.
+- NTS API 15초 타임아웃 미해결 (사업자 인증 실사 테스트 불가)
+- main 브랜치 기준 작업 중 (dev 브랜치와 diverge 상태)

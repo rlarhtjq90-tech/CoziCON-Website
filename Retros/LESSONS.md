@@ -81,6 +81,16 @@ React/Vue 등 프레임워크 이벤트 시스템도 bubbles:true 이벤트를 d
 
 ## Auth
 
+### JWT 권한 플래그는 발급 시점에 고정 — 재로그인 전까지 갱신 불가 #coding #next-auth #auth
+`isAdmin`, `role` 같은 플래그를 NextAuth JWT에 넣으면 토큰 만료 전까지 값이 바뀌지 않음.
+관리자 추가/제거 시 기존 세션은 구 권한을 유지 → 재로그인이 필요.
+즉각 반영이 중요하면 DB 기반 실시간 체크(`getServerSession` + DB 조회)로 보완해야 함.
+
+### Anti-enumeration 패턴 구간엔 서버 로그를 남겨야 디버깅 가능 #coding #auth #debugging
+"미가입 이메일 → silent success" 보안 패턴은 프론트에서 실패 원인을 숨겨 디버깅이 불가능함.
+`console.log('[forgot-password] user:', !!user, 'password:', !!user?.password)` 한 줄로
+Vercel Function Log에서 실제 DB 상태를 즉시 확인할 수 있음 — 보안은 유지하면서 서버 로그만 남길 것.
+
 ### 같은 테이블 재활용 시 prefix로 용도 구분 — DB 마이그레이션 없음 #coding #prisma #auth
 `VerificationToken` 같은 범용 토큰 테이블을 회원가입(`email`)과 비밀번호 재설정(`pw-reset:email`)에 함께 쓸 때 identifier에 prefix를 붙이면 충돌 없이 DB 변경 없이 기능 추가 가능.
 새 용도마다 별도 모델 추가하는 것보다 빠르며, prefix를 상수로 관리하면 실수도 방지됨.
