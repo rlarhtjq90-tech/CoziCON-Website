@@ -2,7 +2,7 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** Day 6 완료 — Week 1 기능 구현 완성, Day 7 통합 테스트 남음
+- **상태:** Day 6 완료 — 세션 25에서 Resend 이메일 발송 디버깅 + UI 버그 수정 완료
 - **주요 기능:**
   - 랜딩 페이지, 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
   - 회원가입 4단계: 이메일 OTP → 유형선택 → 정보입력 + 약관동의
@@ -12,14 +12,28 @@
   - 입찰공고 게시판 `/notices`, 공고 작성, 입찰 제출 `/my-bids`, 낙찰 처리
   - **비밀번호 찾기** `/forgot-password`: 3단계 UI (이메일→OTP→새 비밀번호), Resend 이메일 발송
   - **라우트 가드**: `withAuth` 미들웨어, isAdmin JWT 플래그, 비관리자 `/admin` 차단
-  - **비밀번호 변경** `/dashboard/settings`: 현재 비밀번호 확인 후 변경 (OAuth 계정 차단)
+  - **비밀번호 변경** `/change-password`: 로그인 화면 스타일 독립 페이지 (대시보드 카드에서 링크)
+  - **이메일 발송**: 회원가입 OTP + 비밀번호 찾기 모두 Resend HTTP API 통일
 - **알려진 이슈:**
+  - 이메일 미수신: 도메인 미등록 → SPF/DKIM 미설정 → 기업 메일 서버 차단 (ctgroup.co.kr 등)
   - NTS API 15초 타임아웃 미해결 (실제 사업자 인증 시 실패 가능)
   - `BLOB_READ_WRITE_TOKEN` Vercel 환경변수 미확인 (첨부파일 실제 저장 미검증)
   - 관리자 계정 isAdmin 반영: 로그아웃 후 재로그인 필요 (JWT 재발급)
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-07 (세션 25 — Resend 이메일 발송 디버깅 + UI 버그 수정)
+- `RESEND_FROM_EMAIL` Vercel 환경변수 이중 래핑 버그 수정: `CoziCON <onboarding@resend.dev>` → `onboarding@resend.dev` (코드에서 이미 display name 추가)
+- Resend 샌드박스 제한 확인: `onboarding@resend.dev` 발신 시 소유자 이메일(`rlarhtjq90@gmail.com`)만 수신 가능 (403 sandbox restriction)
+- UI 버그 수정: `forgot-password/route.ts` + `send-verification/route.ts` 모두 Resend SDK 에러를 무시하고 `success: true` 반환하던 문제 → `sendError` 체크 후 500 반환으로 수정
+- commit `3044a50` 푸시 → Vercel 자동 배포 완료 (Current)
+- 미가입 이메일의 Step 2 이동은 anti-enumeration 의도된 보안 동작임 확인 (Vercel 로그: `user: false`)
+
+### 2026-05-07 (세션 24 — 비밀번호 변경 페이지 이동 + 이메일 API 교체)
+- `/change-password` 독립 페이지 생성 (로그인 화면 스타일), `/dashboard/settings` 폴더 삭제, 미들웨어 보호 라우트 추가
+- 회원가입 OTP 이메일 발송: nodemailer(Gmail SMTP) → Resend HTTP API로 교체 (Vercel SMTP 포트 차단 우회)
+- `~/.claude/settings.json`에 Chrome 브라우저 자동화 권한 추가 (재시작 후 활성화)
 
 ### 2026-05-07 (세션 23 — Day 6 라우트 가드 + 비밀번호 변경)
 - 비밀번호 찾기 E2E 검증: Vercel 로그로 Resend 실제 호출 확인(`POST api.resend.com/emails`), `black_0802@naver.com` DB 존재(`user: true, password: true`) 확인
