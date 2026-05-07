@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
 import LogoutButton from './LogoutButton'
-import { AlertTriangle, CheckCircle2, Clock, Building2, FileText, Gavel } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, Clock, Building2, FileText, Gavel, Settings } from 'lucide-react'
 
 function isAdmin(email: string | null | undefined): boolean {
   if (!email) return false
@@ -149,6 +149,21 @@ export default async function DashboardPage() {
               <p className="mt-1 text-p12 text-primary font-medium">바로가기 →</p>
             </Link>
           )}
+          <Link
+            href="/dashboard/settings"
+            className="bg-white rounded-2xl p-6 shadow-card-md hover:shadow-card-lg transition-shadow group"
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-9 h-9 rounded-xl bg-ink-100 flex items-center justify-center">
+                <Settings className="w-4 h-4 text-ink-500" />
+              </div>
+              <p className="text-p14 text-ink-400 font-medium">계정 설정</p>
+            </div>
+            <p className="text-p15 font-semibold text-ink-700 group-hover:text-primary transition-colors">
+              비밀번호 변경
+            </p>
+            <p className="mt-1 text-p12 text-primary font-medium">설정 →</p>
+          </Link>
         </div>
       </main>
     </div>

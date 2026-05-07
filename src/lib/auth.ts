@@ -43,6 +43,8 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        const adminEmails = (process.env.ADMIN_EMAILS ?? '').split(',').map((e) => e.trim())
+        token.isAdmin = adminEmails.includes(user.email ?? '')
         token.id = user.id
         token.userType = (user as { userType?: string | null }).userType
         token.status = (user as { status?: string | null }).status
@@ -56,6 +58,7 @@ export const authOptions: NextAuthOptions = {
         session.user.userType = token.userType as string | null
         session.user.status = token.status as string | null
         session.user.companyId = token.companyId as string | null
+        session.user.isAdmin = token.isAdmin as boolean | null
       }
       return session
     },
