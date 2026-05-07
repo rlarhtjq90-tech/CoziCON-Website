@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import nodemailer from 'nodemailer'
+import { Resend } from 'resend'
 import { prisma } from '@/lib/db'
 
 export async function POST(req: NextRequest) {
@@ -10,8 +10,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: '올바른 이메일 주소를 입력해주세요.' }, { status: 400 })
     }
 
-    if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
-      console.error('GMAIL_USER 또는 GMAIL_APP_PASSWORD 환경변수가 설정되지 않았습니다.')
+    if (!process.env.RESEND_API_KEY || !process.env.RESEND_FROM_EMAIL) {
+      console.error('[send-verification] RESEND_API_KEY 또는 RESEND_FROM_EMAIL 환경변수가 설정되지 않았습니다.')
       return NextResponse.json({ error: '이메일 발송 서비스가 설정되지 않았습니다. 관리자에게 문의해주세요.' }, { status: 500 })
     }
 
@@ -26,16 +26,9 @@ export async function POST(req: NextRequest) {
     await prisma.verificationToken.deleteMany({ where: { identifier: email } })
     await prisma.verificationToken.create({ data: { identifier: email, token: otp, expires } })
 
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASSWORD,
-      },
-    })
-
-    await transporter.sendMail({
-      from: `CoziCON <${process.env.GMAIL_USER}>`,
+    const resend = new Resend(process.env.RESEND_API_KEY)
+    await resend.emails.send({
+      from: `CoziCON <${process.env.RESEND_FROM_EMAIL}>`,
       to: email,
       subject: '[CoziCON] 이메일 인증번호',
       html: `
