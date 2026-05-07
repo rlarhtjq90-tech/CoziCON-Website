@@ -20,7 +20,10 @@ export default async function CompanyProfilePage() {
     },
   })
 
-  if (!user?.company) redirect('/dashboard')
+  if (!user?.company) {
+    const adminEmails = (process.env.ADMIN_EMAILS ?? '').split(',').map((e) => e.trim())
+    redirect(adminEmails.includes(session.user?.email ?? '') ? '/admin' : '/dashboard')
+  }
 
   return (
     <div className="min-h-screen bg-brand-slate-100">

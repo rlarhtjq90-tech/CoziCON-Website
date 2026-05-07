@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { CheckCircle2, XCircle, Building2, AlertCircle } from 'lucide-react'
 
 interface AdminUser {
@@ -60,9 +61,14 @@ export default function AdminClient({ initialUsers }: { initialUsers: AdminUser[
   return (
     <div className="min-h-screen bg-brand-slate-100">
       <header className="bg-white border-b border-ink-200 shadow-sm">
-        <div className="container-content flex items-center h-16">
-          <a href="/" className="text-t6 font-bold text-primary tracking-tight">CoziCON</a>
-          <span className="ml-3 px-2 py-0.5 bg-red-100 text-red-600 text-p12 font-semibold rounded">관리자</span>
+        <div className="container-content flex items-center justify-between h-16">
+          <div className="flex items-center">
+            <a href="/" className="text-t6 font-bold text-primary tracking-tight">CoziCON</a>
+            <span className="ml-3 px-2 py-0.5 bg-red-100 text-red-600 text-p12 font-semibold rounded">관리자</span>
+          </div>
+          <Link href="/dashboard" className="text-p14 text-ink-400 hover:text-primary transition-colors">
+            대시보드
+          </Link>
         </div>
       </header>
 

@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
 import LogoutButton from './LogoutButton'
-import { AlertTriangle, CheckCircle2, Clock, Building2, FileText, Gavel, Settings } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, Clock, Building2, FileText, Gavel, Settings, Shield } from 'lucide-react'
 
 function isAdmin(email: string | null | undefined): boolean {
   if (!email) return false
@@ -15,7 +15,8 @@ function isAdmin(email: string | null | undefined): boolean {
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions)
   if (!session) redirect('/login')
-  if (isAdmin(session.user?.email)) redirect('/admin')
+
+  const adminUser = isAdmin(session.user?.email)
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
@@ -164,6 +165,23 @@ export default async function DashboardPage() {
             </p>
             <p className="mt-1 text-p12 text-primary font-medium">설정 →</p>
           </Link>
+          {adminUser && (
+            <Link
+              href="/admin"
+              className="bg-white rounded-2xl p-6 shadow-card-md hover:shadow-card-lg transition-shadow group border border-red-100"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center">
+                  <Shield className="w-4 h-4 text-red-500" />
+                </div>
+                <p className="text-p14 text-ink-400 font-medium">운영 관리</p>
+              </div>
+              <p className="text-p15 font-semibold text-ink-700 group-hover:text-red-500 transition-colors">
+                관리자 패널
+              </p>
+              <p className="mt-1 text-p12 text-red-400 font-medium">회원 승인 →</p>
+            </Link>
+          )}
         </div>
       </main>
     </div>
