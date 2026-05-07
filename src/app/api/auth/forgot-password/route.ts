@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     await prisma.verificationToken.create({ data: { identifier, token: otp, expires } })
 
     const resend = new Resend(process.env.RESEND_API_KEY)
-    await resend.emails.send({
+    const { error: sendError } = await resend.emails.send({
       from: `CoziCON <${process.env.RESEND_FROM_EMAIL}>`,
       to: email,
       subject: '[CoziCON] 비밀번호 재설정 인증번호',
@@ -57,6 +57,11 @@ export async function POST(req: NextRequest) {
         </div>
       `,
     })
+
+    if (sendError) {
+      console.error('[forgot-password] Resend 발송 오류:', sendError)
+      return NextResponse.json({ error: '이메일 발송에 실패했습니다. 잠시 후 다시 시도해주세요.' }, { status: 500 })
+    }
 
     return NextResponse.json({ success: true })
   } catch (err) {
