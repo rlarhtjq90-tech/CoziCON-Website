@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
 import LogoutButton from '@/app/dashboard/LogoutButton'
-import { ArrowLeft, MapPin, Wrench, CalendarDays, ScrollText } from 'lucide-react'
+import { ArrowLeft, MapPin, Wrench, CalendarDays } from 'lucide-react'
 
 function formatPrice(price: bigint | null) {
   if (!price) return '—'
@@ -45,7 +45,6 @@ export default async function MyBidsPage() {
           status: true,
         },
       },
-      contract: { select: { id: true } },
     },
     orderBy: { createdAt: 'desc' },
   })
@@ -93,15 +92,14 @@ export default async function MyBidsPage() {
               const diff = Math.ceil((new Date(n.deadline).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
               const deadlineLabel = new Date(n.deadline).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })
               return (
-                <div
+                <Link
                   key={s.id}
+                  href={`/notices/${n.id}`}
                   className="bg-white rounded-xl border border-ink-200 p-6 hover:border-primary/40 hover:shadow-sm transition-all"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
-                      <Link href={`/notices/${n.id}`}>
-                        <h2 className="text-p16 font-semibold text-ink-700 truncate mb-2 hover:text-primary transition-colors">{n.title}</h2>
-                      </Link>
+                      <h2 className="text-p16 font-semibold text-ink-700 truncate mb-2">{n.title}</h2>
                       <div className="flex flex-wrap gap-3 text-p13 text-ink-500">
                         <span className="flex items-center gap-1">
                           <Wrench className="w-3.5 h-3.5" />
@@ -124,22 +122,13 @@ export default async function MyBidsPage() {
                         )}
                       </div>
                     </div>
-                    <div className="shrink-0 flex flex-col items-end gap-2">
+                    <div className="shrink-0">
                       <span className={`text-p13 font-medium px-2.5 py-0.5 rounded-full ${st.color}`}>
                         {st.label}
                       </span>
-                      {s.status === 'ACCEPTED' && s.contract && (
-                        <Link
-                          href={`/contracts/${s.contract.id}`}
-                          className="flex items-center gap-1 text-p12 text-green-700 bg-green-50 px-2.5 py-1 rounded-full hover:bg-green-100 transition-colors"
-                        >
-                          <ScrollText className="w-3 h-3" />
-                          계약 보기
-                        </Link>
-                      )}
                     </div>
                   </div>
-                </div>
+                </Link>
               )
             })}
           </div>

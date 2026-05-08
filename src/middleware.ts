@@ -30,6 +30,5 @@ export const config = {
     '/notices/create',
     '/notices/:id/bids',
     '/my-bids/:path*',
-    '/contracts/:path*',
   ],
 }

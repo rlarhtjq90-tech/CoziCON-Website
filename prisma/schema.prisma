@@ -114,13 +114,11 @@ model Company {
   createdAt            DateTime @default(now())
   updatedAt            DateTime @default(now()) @updatedAt
 
-  users                User[]
-  licenses             License[]
-  verifications        CompanyVerification[]
-  bidNotices           BidNotice[]
-  bidSubmissions       BidSubmission[]
-  contractsAsOwner     Contract[]            @relation("ContractOwner")
-  contractsAsContractor Contract[]           @relation("ContractContractor")
+  users          User[]
+  licenses       License[]
+  verifications  CompanyVerification[]
+  bidNotices     BidNotice[]
+  bidSubmissions BidSubmission[]
 }
 
 // =============================================
@@ -187,7 +185,6 @@ model BidNotice {
   author      User            @relation(fields: [authorId], references: [id])
   attachments BidAttachment[]
   submissions BidSubmission[]
-  contracts   Contract[]
 }
 
 model BidAttachment {
@@ -224,46 +221,11 @@ model BidSubmission {
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @default(now()) @updatedAt
 
-  notice   BidNotice  @relation(fields: [noticeId], references: [id])
-  company  Company    @relation(fields: [companyId], references: [id])
-  bidder   User       @relation(fields: [bidderId], references: [id])
-  contract Contract?
+  notice  BidNotice @relation(fields: [noticeId], references: [id])
+  company Company   @relation(fields: [companyId], references: [id])
+  bidder  User      @relation(fields: [bidderId], references: [id])
 
   @@unique([noticeId, companyId])
-}
-
-// =============================================
-// 계약 시스템 (Phase 4)
-// =============================================
-
-enum ContractStatus {
-  PENDING_OWNER        // 발주사 서명 대기
-  PENDING_CONTRACTOR   // 건설사 서명 대기
-  ACTIVE               // 계약 체결 완료
-  COMPLETED            // 공사 완료
-  CANCELLED            // 취소
-}
-
-model Contract {
-  id                   String         @id @default(cuid())
-  submissionId         String         @unique
-  noticeId             String
-  ownerCompanyId       String
-  contractorCompanyId  String
-  contractAmount       BigInt
-  startDate            DateTime?
-  endDate              DateTime?
-  terms                String?        @db.Text
-  status               ContractStatus @default(PENDING_OWNER)
-  ownerSignedAt        DateTime?
-  contractorSignedAt   DateTime?
-  createdAt            DateTime       @default(now())
-  updatedAt            DateTime       @default(now()) @updatedAt
-
-  submission          BidSubmission @relation(fields: [submissionId], references: [id])
-  notice              BidNotice     @relation(fields: [noticeId], references: [id])
-  ownerCompany        Company       @relation("ContractOwner", fields: [ownerCompanyId], references: [id])
-  contractorCompany   Company       @relation("ContractContractor", fields: [contractorCompanyId], references: [id])
 }
 
 // =============================================

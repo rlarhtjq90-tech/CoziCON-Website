@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
 import LogoutButton from './LogoutButton'
-import { AlertTriangle, CheckCircle2, Clock, Building2, FileText, Gavel, Settings, Shield, ScrollText } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, Clock, Building2, FileText, Gavel, Settings, Shield } from 'lucide-react'
 
 function isAdmin(email: string | null | undefined): boolean {
   if (!email) return false
@@ -148,23 +148,6 @@ export default async function DashboardPage() {
                 입찰공고 작성
               </p>
               <p className="mt-1 text-p12 text-primary font-medium">바로가기 →</p>
-            </Link>
-          )}
-          {hasCompany && !isPending && (
-            <Link
-              href="/contracts"
-              className="bg-white rounded-2xl p-6 shadow-card-md hover:shadow-card-lg transition-shadow group"
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <ScrollText className="w-4 h-4 text-primary" />
-                </div>
-                <p className="text-p14 text-ink-400 font-medium">계약 관리</p>
-              </div>
-              <p className="text-p15 font-semibold text-ink-700 group-hover:text-primary transition-colors">
-                내 계약
-              </p>
-              <p className="mt-1 text-p12 text-primary font-medium">계약 현황 →</p>
             </Link>
           )}
           <Link
