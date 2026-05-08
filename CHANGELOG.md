@@ -2,7 +2,7 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** Day 6 완료 — 세션 25에서 Resend 이메일 발송 디버깅 + UI 버그 수정 완료
+- **상태:** Day 7 완료 — 미들웨어 보안 수정 + 관리자 일반 유저 기능 동시 사용 구현 + 브라우저 E2E 검증
 - **주요 기능:**
   - 랜딩 페이지, 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
   - 회원가입 4단계: 이메일 OTP → 유형선택 → 정보입력 + 약관동의
@@ -11,17 +11,22 @@
   - 회사 프로필 페이지 `/company/profile`: 조회/수정, 로고 업로드, 주력지역, 시공실적 등
   - 입찰공고 게시판 `/notices`, 공고 작성, 입찰 제출 `/my-bids`, 낙찰 처리
   - **비밀번호 찾기** `/forgot-password`: 3단계 UI (이메일→OTP→새 비밀번호), Resend 이메일 발송
-  - **라우트 가드**: `withAuth` 미들웨어, isAdmin JWT 플래그, 비관리자 `/admin` 차단
+  - **라우트 가드**: `withAuth` 미들웨어 — `/admin`, `/notices/create`, `/notices/:id/bids`, `/my-bids` 전체 보호
   - **비밀번호 변경** `/change-password`: 로그인 화면 스타일 독립 페이지 (대시보드 카드에서 링크)
   - **이메일 발송**: 회원가입 OTP + 비밀번호 찾기 모두 Resend HTTP API 통일
+  - **관리자 겸 일반 유저**: 관리자 계정이 `/dashboard`와 `/admin` 모두 이용 가능, 대시보드에 "관리자 패널" 카드 표시
 - **알려진 이슈:**
   - 이메일 미수신: 도메인 미등록 → SPF/DKIM 미설정 → 기업 메일 서버 차단 (ctgroup.co.kr 등)
   - NTS API 15초 타임아웃 미해결 (실제 사업자 인증 시 실패 가능)
   - `BLOB_READ_WRITE_TOKEN` Vercel 환경변수 미확인 (첨부파일 실제 저장 미검증)
-  - 관리자 계정 isAdmin 반영: 로그아웃 후 재로그인 필요 (JWT 재발급)
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-08 (세션 26 — Day 7 미들웨어 보안 수정 + 관리자 일반 유저 기능 동시 사용)
+- `middleware.ts` matcher에 `/notices/create`, `/notices/:id/bids`, `/my-bids/:path*` 추가 (미보호 라우트 보안 수정)
+- 관리자 계정 일반 유저 기능 동시 사용 구현: `dashboard/page.tsx` redirect 제거 + "관리자 패널" 카드 추가, `AdminClient.tsx` 헤더에 "대시보드" 링크 추가, `company/profile/page.tsx` 관리자/일반 리다이렉트 분기
+- 브라우저 E2E 검증 완료: `/dashboard` ↔ `/admin` 양방향 네비게이션 정상 동작 확인 (Vercel 프로덕션)
 
 ### 2026-05-07 (세션 25 — Resend 이메일 발송 디버깅 + UI 버그 수정)
 - `RESEND_FROM_EMAIL` Vercel 환경변수 이중 래핑 버그 수정: `CoziCON <onboarding@resend.dev>` → `onboarding@resend.dev` (코드에서 이미 display name 추가)

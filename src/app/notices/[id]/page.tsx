@@ -88,11 +88,33 @@ export default async function NoticeDetailPage({ params }: Params) {
           <h1 className="text-t4 font-bold text-ink-700 mb-6">{notice.title}</h1>
 
           {/* 핵심 정보 */}
-          <div className="mb-8">
-            <div className="bg-brand-slate-100 rounded-lg p-4 inline-block">
-              <p className="text-p13 text-ink-400 mb-1">마감일</p>
+          <div className="mb-8 flex flex-wrap gap-3">
+            <div className="bg-brand-slate-100 rounded-lg p-4">
+              <p className="text-p13 text-ink-400 mb-1">입찰 마감일시</p>
               <p className="text-p16 font-semibold text-ink-700">{deadlineLabel}</p>
             </div>
+            {notice.openingAt && (
+              <div className="bg-brand-slate-100 rounded-lg p-4">
+                <p className="text-p13 text-ink-400 mb-1">개찰 일시</p>
+                <p className="text-p16 font-semibold text-ink-700">
+                  {notice.openingAt.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                </p>
+              </div>
+            )}
+            {(notice.constructionStart || notice.constructionEnd) && (
+              <div className="bg-brand-slate-100 rounded-lg p-4">
+                <p className="text-p13 text-ink-400 mb-1">공사기간</p>
+                <p className="text-p16 font-semibold text-ink-700">
+                  {notice.constructionStart
+                    ? notice.constructionStart.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })
+                    : '미정'}
+                  {' ~ '}
+                  {notice.constructionEnd
+                    ? notice.constructionEnd.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })
+                    : '미정'}
+                </p>
+              </div>
+            )}
           </div>
 
           {/* 상세 정보 */}

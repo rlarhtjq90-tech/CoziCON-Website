@@ -52,12 +52,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   type AttachmentInput = { fileName: string; fileUrl: string; fileSize?: number; mimeType?: string }
 
-  const { title, workTypes, categoryIds, regions, deadline, description, status, attachments } = body as {
+  const { title, workTypes, categoryIds, regions, deadline, openingAt, constructionStart, constructionEnd, description, status, attachments } = body as {
     title?: string
     workTypes?: string[]
     categoryIds?: string[]
     regions?: string[]
     deadline?: string
+    openingAt?: string
+    constructionStart?: string
+    constructionEnd?: string
     description?: string
     status?: string
     attachments?: AttachmentInput[]
@@ -73,6 +76,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       workTypes,
       regions,
       deadline: new Date(deadline),
+      openingAt: openingAt ? new Date(openingAt) : null,
+      constructionStart: constructionStart ? new Date(constructionStart) : null,
+      constructionEnd: constructionEnd ? new Date(constructionEnd) : null,
       description: description ?? null,
       status: (status as 'DRAFT' | 'OPEN') ?? 'OPEN',
       companyId: user.companyId,

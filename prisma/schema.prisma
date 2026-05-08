@@ -168,18 +168,21 @@ enum BidStatus {
 }
 
 model BidNotice {
-  id             String    @id @default(cuid())
-  title          String
-  workTypes      String[]
-  regions        String[]
-  estimatedPrice BigInt?
-  deadline       DateTime
-  description    String?   @db.Text
-  status         BidStatus @default(DRAFT)
-  companyId      String
-  authorId       String
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @default(now()) @updatedAt
+  id                String    @id @default(cuid())
+  title             String
+  workTypes         String[]
+  regions           String[]
+  estimatedPrice    BigInt?
+  deadline          DateTime
+  openingAt         DateTime?
+  constructionStart DateTime?
+  constructionEnd   DateTime?
+  description       String?   @db.Text
+  status            BidStatus @default(DRAFT)
+  companyId         String
+  authorId          String
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @default(now()) @updatedAt
 
   company     Company             @relation(fields: [companyId], references: [id])
   author      User                @relation(fields: [authorId], references: [id])
