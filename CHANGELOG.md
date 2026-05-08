@@ -2,26 +2,32 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** Day 7 완료 — 미들웨어 보안 수정 + 관리자 일반 유저 기능 동시 사용 구현 + 브라우저 E2E 검증
+- **상태:** Week 2 Day 8~12 완료 — 공종 분류 마스터, 공고 등록/수정 고도화, 입찰 조건, 검색·필터
 - **주요 기능:**
   - 랜딩 페이지, 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
   - 회원가입 4단계: 이메일 OTP → 유형선택 → 정보입력 + 약관동의
-  - DB: Company, CompanyVerification, License, TermsConsent, BidNotice, BidAttachment, BidSubmission
+  - DB: Company, CompanyVerification, License, TermsConsent, BidNotice, BidAttachment, BidSubmission, WorkCategory, BidNoticeCategory
   - 사업자 인증 `/verify-biz`, 건설업등록증 인증 `/verify-license`, 관리자 승인 큐 `/admin`
   - 회사 프로필 페이지 `/company/profile`: 조회/수정, 로고 업로드, 주력지역, 시공실적 등
-  - 입찰공고 게시판 `/notices`, 공고 작성, 입찰 제출 `/my-bids`, 낙찰 처리
-  - **비밀번호 찾기** `/forgot-password`: 3단계 UI (이메일→OTP→새 비밀번호), Resend 이메일 발송
-  - **라우트 가드**: `withAuth` 미들웨어 — `/admin`, `/notices/create`, `/notices/:id/bids`, `/my-bids` 전체 보호
-  - **비밀번호 변경** `/change-password`: 로그인 화면 스타일 독립 페이지 (대시보드 카드에서 링크)
-  - **이메일 발송**: 회원가입 OTP + 비밀번호 찾기 모두 Resend HTTP API 통일
-  - **관리자 겸 일반 유저**: 관리자 계정이 `/dashboard`와 `/admin` 모두 이용 가능, 대시보드에 "관리자 패널" 카드 표시
+  - 입찰공고 게시판 `/notices` (키워드/지역/공종 필터, URL 쿼리 파라미터 연동)
+  - 공고 등록 `/notices/create`: 마크다운 에디터, 계층형 공종 선택, 날짜 필드, 입찰 조건
+  - 공고 수정 `/notices/[id]/edit`: 기존 필드 전체 수정 + 첨부파일 추가/삭제 (Vercel Blob 연동)
+  - 공고 상세 `/notices/[id]`: 개찰일시, 공사기간, 예정가격, 낙찰방식, 필요면허 표시
+  - 입찰 제출 `/my-bids`, 낙찰 처리
+  - **비밀번호 찾기/변경**, **이메일 발송** (Resend), **라우트 가드** (withAuth 미들웨어)
+  - **관리자 겸 일반 유저**: `/dashboard` ↔ `/admin` 양방향 네비게이션
 - **알려진 이슈:**
   - 이메일 미수신: 도메인 미등록 → SPF/DKIM 미설정 → 기업 메일 서버 차단 (ctgroup.co.kr 등)
   - NTS API 15초 타임아웃 미해결 (실제 사업자 인증 시 실패 가능)
-  - `BLOB_READ_WRITE_TOKEN` Vercel 환경변수 미확인 (첨부파일 실제 저장 미검증)
+  - `BLOB_READ_WRITE_TOKEN` Vercel 환경변수 미설정 → 첨부파일 `__mock__` URL로 폴백 (실제 저장 안됨)
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-08 (세션 27 — Week 2 Day 10~12)
+- Day 10: 공고 수정 페이지 `/notices/[id]/edit` 신설 — 첨부파일 추가/삭제(Vercel Blob del), 모든 필드 수정, PATCH API 고도화 (날짜 3개 + 카테고리 교체 + 첨부 관리)
+- Day 11: BidNotice에 입찰 조건 4개 필드 추가 — `estimatedPrice`(활성화), `bidMethod`(낙찰방식), `requiredLicenses`(필요면허), `qualificationNote`(자격요건 비고); 등록/수정 폼 + 상세 페이지 표시
+- Day 12: 공고 목록 검색·필터 — 키워드(제목 contains), 지역(17개 시도), 공종(대분류 드롭다운), URL 쿼리 파라미터 연동, 필터 태그 + 개별 초기화, `useTransition` 로딩 처리
 
 ### 2026-05-08 (세션 26 — Day 7 미들웨어 보안 수정 + 관리자 일반 유저 기능 동시 사용)
 - `middleware.ts` matcher에 `/notices/create`, `/notices/:id/bids`, `/my-bids/:path*` 추가 (미보호 라우트 보안 수정)

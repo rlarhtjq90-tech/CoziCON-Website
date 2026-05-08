@@ -107,11 +107,22 @@ PowerShell은 `&`를 명령 연결자로 해석해 `sslmode=require&channel_bind
 
 ## Next.js / React
 
+### App Router 목록 필터는 URL searchParams + 서버 Prisma 쿼리 조합이 최선 #coding #next-js
+클라이언트 상태로 필터를 관리하면 URL 공유·북마크·SSR이 모두 별도 구현 필요.
+`searchParams` prop을 받아 Prisma `where` 절에 바로 전달하면 공짜로 해결됨.
+클라이언트 컴포넌트는 `router.push()`로 URL만 업데이트하고 렌더링은 서버에 맡길 것.
+
 ### Server → Client 경계에서 Prisma DateTime 필드는 명시적으로 직렬화할 것 #coding #next-js #prisma
 `{ ...prismaRecord }` 스프레드로 Server Component에서 Client Component에 전달하면 `createdAt`, `updatedAt` 등 Date 객체가 직렬화 오류를 일으킴.
 필요한 필드만 명시적으로 선택하고 `.toISOString()` 변환 후 전달해야 함. TypeScript는 이 오류를 컴파일 타임에 잡지 못함.
 
 ## DB / Prisma
+
+### Prisma BigInt 필드는 API 경계에서 Number로 변환 필요 #coding #prisma #next-js
+`BigInt`는 `JSON.stringify`가 지원하지 않아 API 응답에 포함되면 런타임 에러 발생.
+프론트에서 전송 시 `Number(value)`로 변환 후 전송, 서버에서 수신 시 `BigInt(value)`로 복원.
+Prisma 응답을 그대로 NextResponse.json()에 넣으면 BigInt 필드가 있을 때 에러가 나므로
+응답 전 직렬화 단계 추가 또는 `estimatedPrice: Number(notice.estimatedPrice)` 명시적 변환 필요.
 
 ### `@updatedAt` 추가 시 `@default(now())`도 함께 써야 함 #coding #prisma #vercel
 기존 행이 있는 테이블에 `@updatedAt`만 추가하면 `prisma db push`가 실패 — 기존 행의 null 처리 불가.

@@ -1,21 +1,24 @@
 # HANDOFF
-**agent:** claude | **project:** CoziCON-Website | **branch:** main | **commit:** 3044a50
-**created:** 2026-05-07 | **status:** active
+**agent:** claude | **project:** CoziCON-Website | **branch:** main | **commit:** 6c4fb04
+**created:** 2026-05-08 | **status:** active
 
 ## Context
-세션 25: Resend 이메일 발송 디버깅 완료. `RESEND_FROM_EMAIL` 환경변수 이중 래핑 버그 수정(422→200), 샌드박스 제한으로 소유자 이메일만 수신 가능 확인. UI 버그(발송 실패 시에도 Step 2로 이동) 수정 완료 — 현재 프로덕션 배포.
+Week 2 Day 8~12 완료. 공고 시스템 고도화(수정 페이지, 입찰 조건, 검색 필터)까지 마쳤으며,
+다음 단계는 Phase 4 계약 시스템 또는 알림 시스템 중 선택.
 
 ## Immediate Next Steps
-- [ ] Resend 도메인 인증: 직접 소유한 도메인이 생기면 `resend.com/domains`에서 DNS 설정 (SPF/DKIM)
-- [ ] 그 전까지 소유자 이메일(`rlarhtjq90@gmail.com`)로만 이메일 기능 테스트 가능
-- [ ] NTS API 15초 타임아웃 원인 조사 및 해결 (Vercel Function 타임아웃 연장 또는 폴링 방식 전환)
-- [ ] Day 7: 통합 시나리오 직접 실행 (가입→사업자인증→관리자승인→로그인→프로필→비밀번호변경)
+- [ ] Vercel Blob 스토어 생성 → `BLOB_READ_WRITE_TOKEN` `.env.local` + Vercel 환경변수 등록 (첨부파일 실제 저장 활성화)
+- [ ] Phase 4 계약 시스템: 낙찰 처리 후 Contract 모델 생성 + 계약서 PDF 생성 플로우
+- [ ] 알림 시스템: 입찰 마감 임박(D-3) + 낙찰 결과 Resend 이메일 발송
+- [ ] Resend 도메인 인증: 직접 소유 도메인 생기면 `resend.com/domains`에서 SPF/DKIM 설정
 
 ## Active Files
-- `src/app/api/auth/forgot-password/route.ts` — Resend 에러 처리 추가
-- `src/app/api/auth/send-verification/route.ts` — Resend 에러 처리 추가
+- src/app/notices/page.tsx
+- src/app/notices/create/CreateNoticeForm.tsx
+- src/app/notices/[id]/edit/EditNoticeForm.tsx
+- prisma/schema.prisma
 
 ## Current State / Blockers
-- Resend 샌드박스(`onboarding@resend.dev`): 소유자 이메일(`rlarhtjq90@gmail.com`)만 수신 가능
-- 미가입 이메일 forgot-password 시 Step 2로 이동하는 것은 anti-enumeration 의도된 동작
-- NTS API 15초 타임아웃 미해결
+- 첨부파일: `BLOB_READ_WRITE_TOKEN` 미설정 → `__mock__/filename` URL 폴백, 실제 파일 저장 안됨
+- NTS API 15초 타임아웃 미해결 (사업자 인증 간헐적 실패)
+- Prisma generate EPERM: dev 서버 실행 중 발생 (Windows 알려진 이슈) → Vercel 배포 시 자동 해결
