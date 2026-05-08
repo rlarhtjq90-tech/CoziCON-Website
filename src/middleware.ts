@@ -28,6 +28,7 @@ export const config = {
     '/company/:path*',
     '/change-password',
     '/notices/create',
+    '/notices/:id/edit',
     '/notices/:id/bids',
     '/my-bids/:path*',
   ],
