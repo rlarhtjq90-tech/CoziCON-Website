@@ -173,6 +173,9 @@ model BidNotice {
   workTypes         String[]
   regions           String[]
   estimatedPrice    BigInt?
+  bidMethod         String?
+  requiredLicenses  String[]
+  qualificationNote String?   @db.Text
   deadline          DateTime
   openingAt         DateTime?
   constructionStart DateTime?

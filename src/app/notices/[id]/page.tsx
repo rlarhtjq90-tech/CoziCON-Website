@@ -115,7 +115,42 @@ export default async function NoticeDetailPage({ params }: Params) {
                 </p>
               </div>
             )}
+            {notice.estimatedPrice != null && (
+              <div className="bg-brand-slate-100 rounded-lg p-4">
+                <p className="text-p13 text-ink-400 mb-1">예정가격</p>
+                <p className="text-p16 font-semibold text-ink-700">{Number(notice.estimatedPrice).toLocaleString()}원</p>
+              </div>
+            )}
           </div>
+
+          {/* 입찰 조건 */}
+          {(notice.bidMethod || notice.requiredLicenses.length > 0 || notice.qualificationNote) && (
+            <div className="mb-8 border border-ink-100 rounded-lg p-5 space-y-3">
+              <h2 className="text-p15 font-semibold text-ink-700">입찰 조건</h2>
+              {notice.bidMethod && (
+                <div className="flex items-center gap-3 text-p15">
+                  <span className="text-ink-400 text-p13 w-20 shrink-0">낙찰방식</span>
+                  <span className="px-2.5 py-0.5 bg-blue-50 text-brand-blue text-p13 rounded-full">{notice.bidMethod}</span>
+                </div>
+              )}
+              {notice.requiredLicenses.length > 0 && (
+                <div className="flex items-start gap-3 text-p15">
+                  <span className="text-ink-400 text-p13 w-20 shrink-0 mt-0.5">필요 면허</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {notice.requiredLicenses.map((l) => (
+                      <span key={l} className="px-2.5 py-0.5 bg-ink-100 text-ink-600 text-p13 rounded-full">{l}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {notice.qualificationNote && (
+                <div className="flex items-start gap-3 text-p15">
+                  <span className="text-ink-400 text-p13 w-20 shrink-0 mt-0.5">자격요건</span>
+                  <p className="text-ink-600 text-p14 whitespace-pre-wrap">{notice.qualificationNote}</p>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* 상세 정보 */}
           <div className="space-y-3 mb-8 text-p15">

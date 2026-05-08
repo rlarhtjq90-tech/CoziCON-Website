@@ -57,6 +57,7 @@ export async function PATCH(req: NextRequest, { params }: Params): Promise<NextR
   const {
     title, workTypes, categoryIds, regions,
     deadline, openingAt, constructionStart, constructionEnd,
+    estimatedPrice, bidMethod, requiredLicenses, qualificationNote,
     description, status,
     attachmentsToAdd, attachmentIdsToDelete,
   } = body as {
@@ -68,6 +69,10 @@ export async function PATCH(req: NextRequest, { params }: Params): Promise<NextR
     openingAt?: string | null
     constructionStart?: string | null
     constructionEnd?: string | null
+    estimatedPrice?: number | null
+    bidMethod?: string | null
+    requiredLicenses?: string[]
+    qualificationNote?: string | null
     description?: string
     status?: string
     attachmentsToAdd?: AttachmentInput[]
@@ -102,6 +107,10 @@ export async function PATCH(req: NextRequest, { params }: Params): Promise<NextR
       ...(openingAt !== undefined && { openingAt: openingAt ? new Date(openingAt) : null }),
       ...(constructionStart !== undefined && { constructionStart: constructionStart ? new Date(constructionStart) : null }),
       ...(constructionEnd !== undefined && { constructionEnd: constructionEnd ? new Date(constructionEnd) : null }),
+      ...(estimatedPrice !== undefined && { estimatedPrice: estimatedPrice != null ? BigInt(estimatedPrice) : null }),
+      ...(bidMethod !== undefined && { bidMethod: bidMethod ?? null }),
+      ...(requiredLicenses !== undefined && { requiredLicenses }),
+      ...(qualificationNote !== undefined && { qualificationNote: qualificationNote ?? null }),
       ...(description !== undefined && { description }),
       ...(status !== undefined && { status: status as 'DRAFT' | 'OPEN' | 'CLOSED' | 'CANCELLED' }),
       ...(categoryIds !== undefined && {

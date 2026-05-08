@@ -25,6 +25,13 @@ type AttachmentItem = {
 
 const REGIONS = ['서울', '경기', '인천', '부산', '대구', '광주', '대전', '울산', '세종', '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주']
 
+const BID_METHODS = ['최저가낙찰제', '적격심사제', '협상에 의한 계약', '수의계약']
+
+const LICENSE_OPTIONS = [
+  { group: '종합건설업', items: ['토목공사업', '건축공사업', '토목건축공사업', '산업환경설비공사업', '조경공사업'] },
+  { group: '전문건설업', items: ['실내건축공사업', '철근콘크리트공사업', '포장공사업', '상하수도설비공사업', '기계설비공사업', '도장공사업', '소방시설공사업', '전기공사업', '정보통신공사업', '조경식재공사업', '가스시설시공업'] },
+]
+
 function DateTimeInput({ label, value, onChange, min, required, hint }: {
   label: string; value: string; onChange: (v: string) => void
   min?: string; required?: boolean; hint?: string
@@ -60,6 +67,10 @@ export default function CreateNoticeForm({ categories }: { categories: Category[
   const [openingAt, setOpeningAt] = useState('')
   const [constructionStart, setConstructionStart] = useState('')
   const [constructionEnd, setConstructionEnd] = useState('')
+  const [estimatedPrice, setEstimatedPrice] = useState('')
+  const [bidMethod, setBidMethod] = useState('')
+  const [requiredLicenses, setRequiredLicenses] = useState<string[]>([])
+  const [qualificationNote, setQualificationNote] = useState('')
   const [description, setDescription] = useState<string | undefined>('')
   const [asDraft, setAsDraft] = useState(false)
   const [attachments, setAttachments] = useState<AttachmentItem[]>([])
@@ -75,6 +86,9 @@ export default function CreateNoticeForm({ categories }: { categories: Category[
   }
   function toggleRegion(r: string) {
     setRegions((prev) => prev.includes(r) ? prev.filter((v) => v !== r) : [...prev, r])
+  }
+  function toggleLicense(l: string) {
+    setRequiredLicenses((prev) => prev.includes(l) ? prev.filter((v) => v !== l) : [...prev, l])
   }
 
   const selectedNames = categories
@@ -133,6 +147,10 @@ export default function CreateNoticeForm({ categories }: { categories: Category[
         openingAt: openingAt || null,
         constructionStart: constructionStart || null,
         constructionEnd: constructionEnd || null,
+        estimatedPrice: estimatedPrice ? Number(estimatedPrice.replace(/,/g, '')) : null,
+        bidMethod: bidMethod || null,
+        requiredLicenses,
+        qualificationNote: qualificationNote || null,
         description: description ?? '',
         status: asDraft ? 'DRAFT' : 'OPEN',
         attachments: attachments
@@ -266,6 +284,83 @@ export default function CreateNoticeForm({ categories }: { categories: Category[
                   className="w-full px-3 py-2.5 border border-ink-200 rounded-lg text-p15 focus:outline-none focus:border-primary"
                 />
               </div>
+            </div>
+          </div>
+
+          {/* 입찰 조건 */}
+          <div className="border-t border-ink-100 pt-6 space-y-5">
+            <h2 className="text-p15 font-semibold text-ink-700">입찰 조건 <span className="text-p13 text-ink-400 font-normal">(선택)</span></h2>
+
+            {/* 예정가격 */}
+            <div>
+              <label className="block text-p14 font-medium text-ink-700 mb-1.5">예정가격 (원)</label>
+              <input
+                type="text"
+                value={estimatedPrice}
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/[^0-9]/g, '')
+                  setEstimatedPrice(raw ? Number(raw).toLocaleString() : '')
+                }}
+                placeholder="예) 450,000,000"
+                className="w-full px-3 py-2.5 border border-ink-200 rounded-lg text-p15 focus:outline-none focus:border-primary"
+              />
+              {estimatedPrice && (
+                <p className="mt-1 text-p13 text-ink-400">{estimatedPrice}원</p>
+              )}
+            </div>
+
+            {/* 낙찰방식 */}
+            <div>
+              <label className="block text-p14 font-medium text-ink-700 mb-2">낙찰방식</label>
+              <div className="flex flex-wrap gap-2">
+                {BID_METHODS.map((m) => (
+                  <button key={m} type="button" onClick={() => setBidMethod(bidMethod === m ? '' : m)}
+                    className={`px-3 py-1.5 rounded-full text-p13 border transition-colors ${
+                      bidMethod === m ? 'bg-primary text-white border-primary' : 'bg-white text-ink-500 border-ink-200 hover:border-primary hover:text-primary'
+                    }`}
+                  >
+                    {m}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 필요 면허 */}
+            <div>
+              <label className="block text-p14 font-medium text-ink-700 mb-2">
+                필요 면허
+                {requiredLicenses.length > 0 && <span className="ml-2 text-p12 text-primary font-normal">{requiredLicenses.length}개 선택</span>}
+              </label>
+              <div className="space-y-3">
+                {LICENSE_OPTIONS.map((group) => (
+                  <div key={group.group}>
+                    <p className="text-p13 text-ink-400 mb-1.5">{group.group}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {group.items.map((l) => (
+                        <button key={l} type="button" onClick={() => toggleLicense(l)}
+                          className={`px-3 py-1.5 rounded-full text-p13 border transition-colors ${
+                            requiredLicenses.includes(l) ? 'bg-primary text-white border-primary' : 'bg-white text-ink-500 border-ink-200 hover:border-primary hover:text-primary'
+                          }`}
+                        >
+                          {l}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 자격요건 비고 */}
+            <div>
+              <label className="block text-p14 font-medium text-ink-700 mb-1.5">자격요건 비고</label>
+              <textarea
+                value={qualificationNote}
+                onChange={(e) => setQualificationNote(e.target.value)}
+                placeholder="예) 시공능력평가액 50억 이상, 최근 3년간 동종 공사 실적 보유"
+                rows={3}
+                className="w-full px-3 py-2.5 border border-ink-200 rounded-lg text-p15 focus:outline-none focus:border-primary resize-none"
+              />
             </div>
           </div>
 
