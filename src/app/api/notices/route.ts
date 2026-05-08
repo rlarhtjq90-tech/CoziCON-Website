@@ -52,9 +52,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   type AttachmentInput = { fileName: string; fileUrl: string; fileSize?: number; mimeType?: string }
 
-  const { title, workTypes, regions, deadline, description, status, attachments } = body as {
+  const { title, workTypes, categoryIds, regions, deadline, description, status, attachments } = body as {
     title?: string
     workTypes?: string[]
+    categoryIds?: string[]
     regions?: string[]
     deadline?: string
     description?: string
@@ -78,6 +79,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       authorId: session.user.id,
       attachments: attachments?.length
         ? { create: attachments.map((a) => ({ fileName: a.fileName, fileUrl: a.fileUrl, fileSize: a.fileSize ?? null, mimeType: a.mimeType ?? null })) }
+        : undefined,
+      categories: categoryIds?.length
+        ? { create: categoryIds.map((categoryId) => ({ categoryId })) }
         : undefined,
     },
   })

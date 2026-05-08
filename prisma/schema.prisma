@@ -181,10 +181,11 @@ model BidNotice {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @default(now()) @updatedAt
 
-  company     Company         @relation(fields: [companyId], references: [id])
-  author      User            @relation(fields: [authorId], references: [id])
+  company     Company             @relation(fields: [companyId], references: [id])
+  author      User                @relation(fields: [authorId], references: [id])
   attachments BidAttachment[]
   submissions BidSubmission[]
+  categories  BidNoticeCategory[]
 }
 
 model BidAttachment {
@@ -226,6 +227,32 @@ model BidSubmission {
   bidder  User      @relation(fields: [bidderId], references: [id])
 
   @@unique([noticeId, companyId])
+}
+
+// =============================================
+// 공종 분류 마스터 (Day 8)
+// =============================================
+
+model WorkCategory {
+  id        String          @id @default(cuid())
+  name      String
+  code      String          @unique
+  parentId  String?
+  order     Int             @default(0)
+
+  parent    WorkCategory?   @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children  WorkCategory[]  @relation("CategoryHierarchy")
+  notices   BidNoticeCategory[]
+}
+
+model BidNoticeCategory {
+  noticeId    String
+  categoryId  String
+
+  notice   BidNotice    @relation(fields: [noticeId], references: [id], onDelete: Cascade)
+  category WorkCategory @relation(fields: [categoryId], references: [id])
+
+  @@id([noticeId, categoryId])
 }
 
 // =============================================
