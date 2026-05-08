@@ -5,6 +5,7 @@ import { prisma } from '@/lib/db'
 import Link from 'next/link'
 import LogoutButton from '@/app/dashboard/LogoutButton'
 import { ArrowLeft, Plus, Paperclip, MapPin, Wrench, CalendarDays } from 'lucide-react'
+import NoticesFilterBar from './NoticesFilterBar'
 
 function formatDeadline(date: Date) {
   const diff = Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
@@ -14,17 +15,33 @@ function formatDeadline(date: Date) {
   return { label, badge: `D-${diff}`, color: 'text-brand-blue bg-blue-50' }
 }
 
-export default async function NoticesPage() {
+type SearchParams = Promise<{ q?: string; region?: string; categoryId?: string }>
+
+export default async function NoticesPage({ searchParams }: { searchParams: SearchParams }) {
   const session = await getServerSession(authOptions)
   if (!session) redirect('/login')
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { userType: true },
-  })
+  const { q, region, categoryId } = await searchParams
+
+  const [user, parentCategories] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { userType: true },
+    }),
+    prisma.workCategory.findMany({
+      where: { parentId: null },
+      select: { id: true, name: true },
+      orderBy: { order: 'asc' },
+    }),
+  ])
 
   const notices = await prisma.bidNotice.findMany({
-    where: { status: 'OPEN' },
+    where: {
+      status: 'OPEN',
+      ...(q ? { title: { contains: q, mode: 'insensitive' } } : {}),
+      ...(region ? { regions: { has: region } } : {}),
+      ...(categoryId ? { categories: { some: { category: { parentId: categoryId } } } } : {}),
+    },
     include: {
       company: { select: { name: true } },
       _count: { select: { attachments: true } },
@@ -53,10 +70,7 @@ export default async function NoticesPage() {
         </div>
 
         <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-t4 font-bold text-ink-700">입찰공고</h1>
-            <p className="mt-1 text-p15 text-ink-400">현재 모집 중인 공고 {notices.length}건</p>
-          </div>
+          <h1 className="text-t4 font-bold text-ink-700">입찰공고</h1>
           {user?.userType === 'GENERAL_CONTRACTOR' && (
             <Link
               href="/notices/create"
@@ -68,9 +82,19 @@ export default async function NoticesPage() {
           )}
         </div>
 
+        <NoticesFilterBar
+          initialQ={q ?? ''}
+          initialRegion={region ?? ''}
+          initialCategoryId={categoryId ?? ''}
+          parentCategories={parentCategories}
+          totalCount={notices.length}
+        />
+
         {notices.length === 0 ? (
           <div className="bg-white rounded-xl border border-ink-200 p-16 text-center">
-            <p className="text-p15 text-ink-400">현재 모집 중인 공고가 없습니다.</p>
+            <p className="text-p15 text-ink-400">
+              {q || region || categoryId ? '검색 결과가 없습니다.' : '현재 모집 중인 공고가 없습니다.'}
+            </p>
           </div>
         ) : (
           <div className="grid gap-4">
@@ -91,11 +115,11 @@ export default async function NoticesPage() {
                       <div className="mt-3 flex flex-wrap gap-3 text-p13 text-ink-500">
                         <span className="flex items-center gap-1">
                           <Wrench className="w-3.5 h-3.5" />
-                          {notice.workTypes.join(', ')}
+                          {notice.workTypes.slice(0, 3).join(', ')}{notice.workTypes.length > 3 ? ` 외 ${notice.workTypes.length - 3}` : ''}
                         </span>
                         <span className="flex items-center gap-1">
                           <MapPin className="w-3.5 h-3.5" />
-                          {notice.regions.join(', ')}
+                          {notice.regions.slice(0, 3).join(', ')}{notice.regions.length > 3 ? ` 외 ${notice.regions.length - 3}` : ''}
                         </span>
                         <span className="flex items-center gap-1">
                           <CalendarDays className="w-3.5 h-3.5" />
