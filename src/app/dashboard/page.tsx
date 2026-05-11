@@ -2,6 +2,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db'
+import { ContractStatus } from '@prisma/client'
 import Link from 'next/link'
 import LogoutButton from './LogoutButton'
 import { AlertTriangle, CheckCircle2, Clock, Building2, FileText, Gavel, Settings, Shield, FileSignature } from 'lucide-react'
@@ -11,6 +12,8 @@ function isAdmin(email: string | null | undefined): boolean {
   const adminEmails = (process.env.ADMIN_EMAILS ?? '').split(',').map((e) => e.trim())
   return adminEmails.includes(email)
 }
+
+type StatCard = { label: string; value: number; sub?: string }
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions)
@@ -26,6 +29,37 @@ export default async function DashboardPage() {
   const isPending = user?.status === 'PENDING'
   const hasCompany = !!user?.company
   const isBusinessVerified = user?.company?.businessVerified ?? false
+
+  // 통계: 활성 계정만 조회
+  let stats: StatCard[] = []
+  if (hasCompany && !isPending && user?.company) {
+    const companyId = user.company.id
+    const activeStatuses: ContractStatus[] = [ContractStatus.PENDING, ContractStatus.GC_SIGNED, ContractStatus.ACTIVE]
+
+    if (user.userType === 'GENERAL_CONTRACTOR') {
+      const [noticeCount, bidCount, contractCount] = await Promise.all([
+        prisma.bidNotice.count({ where: { companyId } }),
+        prisma.bidSubmission.count({ where: { notice: { companyId } } }),
+        prisma.contract.count({ where: { gcCompanyId: companyId, status: { in: activeStatuses } } }),
+      ])
+      stats = [
+        { label: '등록 공고', value: noticeCount, sub: '건' },
+        { label: '접수 입찰', value: bidCount, sub: '건' },
+        { label: '진행 계약', value: contractCount, sub: '건' },
+      ]
+    } else if (user.userType === 'SPECIALTY_CONTRACTOR') {
+      const [bidCount, awardedCount, contractCount] = await Promise.all([
+        prisma.bidSubmission.count({ where: { companyId } }),
+        prisma.bidSubmission.count({ where: { companyId, status: 'ACCEPTED' } }),
+        prisma.contract.count({ where: { scCompanyId: companyId, status: { in: activeStatuses } } }),
+      ])
+      stats = [
+        { label: '참여 입찰', value: bidCount, sub: '건' },
+        { label: '낙찰', value: awardedCount, sub: '건' },
+        { label: '진행 계약', value: contractCount, sub: '건' },
+      ]
+    }
+  }
 
   return (
     <div className="min-h-screen bg-brand-slate-100">
@@ -82,6 +116,21 @@ export default async function DashboardPage() {
           </h1>
           <p className="mt-2 text-p16 text-ink-500">CoziCON 대시보드에 오신 것을 환영합니다.</p>
         </div>
+
+        {/* 통계 카드 */}
+        {stats.length > 0 && (
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            {stats.map((s) => (
+              <div key={s.label} className="bg-white rounded-2xl p-6 shadow-card-md">
+                <p className="text-p13 text-ink-400 font-medium mb-1">{s.label}</p>
+                <p className="text-t3 font-bold text-ink-800 leading-none">
+                  {s.value.toLocaleString()}
+                  <span className="text-p14 font-normal text-ink-400 ml-1">{s.sub}</span>
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
 
         <div className="grid gap-4 tablet:grid-cols-3">
           {hasCompany && (
