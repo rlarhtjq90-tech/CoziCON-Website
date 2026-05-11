@@ -132,10 +132,11 @@ Prisma 응답을 그대로 NextResponse.json()에 넣으면 BigInt 필드가 있
 `npm install`을 실행하면 `package-lock.json`이 로컬에서 변경됨. 이 상태에서 `git checkout`을 시도하면 "Your local changes would be overwritten" 오류로 전환 실패.
 브랜치 전환 전에 `git restore package-lock.json`으로 먼저 되돌려야 함.
 
-### Windows dev 서버 실행 중 `prisma generate`는 EPERM으로 실패 #coding #prisma #windows
+### Windows dev 서버 실행 중 `prisma generate`는 EPERM으로 실패 — `--no-engine`으로 우회 #coding #prisma #windows
 `prisma db push`나 `prisma generate`는 내부적으로 query_engine-windows.dll.node를 rename함.
-dev 서버가 해당 DLL을 점유 중이면 EPERM 발생 — "Jest worker encountered 2 child process exceptions" 에러로 나타남.
-반드시 dev 서버를 완전 종료한 뒤 `npx prisma generate`를 단독 실행하고, 이후 서버를 재시작해야 함.
+dev 서버가 해당 DLL을 점유 중이면 EPERM 발생.
+서버를 멈추기 어려운 상황에선 `npx prisma generate --no-engine`으로 TypeScript 타입만 생성 가능.
+이 경우 엔진 바이너리는 교체되지 않으므로 새 모델 쿼리는 dev 서버 재시작 후 완전히 적용됨.
 
 ### prisma db push 후 실행 중인 dev 서버는 반드시 재시작 #coding #prisma #next-js
 `prisma db push`가 `prisma generate`를 함께 실행해도, 이미 실행 중인 Next.js dev 서버는 메모리에 구버전 Prisma 클라이언트를 캐시하고 있음.
@@ -181,6 +182,10 @@ Vercel Function Log의 "External APIs" 섹션은 함수에서 호출한 외부 H
 같은 건설업 도메인이라도 KISCON ConAdminInfoSvc1(공시 목록, 날짜+지역 조회)과
 국토교통부 ConstBizInforService(사업자번호 직접 조회)는 완전히 다른 API.
 활용가이드 docx의 "요청 메시지 명세"에서 입력 파라미터를 먼저 확인해야 목적에 맞는 서비스인지 알 수 있음.
+
+### 상태 전이 API는 사이드 이펙트(자동 생성)에 멱등성 보장이 필수 #coding #prisma #api
+낙찰 처리처럼 상태 변경 API가 Contract 같은 파생 레코드를 자동 생성할 때, PATCH가 두 번 호출되면 `@unique` 제약으로 P2002 에러가 발생.
+사이드 이펙트 실행 전 `findUnique`로 이미 존재하는지 확인하거나, `upsert`를 쓰면 멱등성을 보장할 수 있음.
 
 ### 서버 사이드 API 연동 오류는 진단 엔드포인트 노출이 가장 빠름 #coding #debugging
 GET /api/[route] 진단 엔드포인트를 서버에 배포하면 환경변수 유무, 연결 상태, resultCode를

@@ -2,11 +2,11 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** Week 2 Day 8~12 완료 — 공종 분류 마스터, 공고 등록/수정 고도화, 입찰 조건, 검색·필터
+- **상태:** Week 2 Day 13 완료 — Phase 4 계약 시스템 구현 (4개 Phase 모두 완료)
 - **주요 기능:**
   - 랜딩 페이지, 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
   - 회원가입 4단계: 이메일 OTP → 유형선택 → 정보입력 + 약관동의
-  - DB: Company, CompanyVerification, License, TermsConsent, BidNotice, BidAttachment, BidSubmission, WorkCategory, BidNoticeCategory
+  - DB: Company, CompanyVerification, License, TermsConsent, BidNotice, BidAttachment, BidSubmission, WorkCategory, BidNoticeCategory, **Contract, ContractSign**
   - 사업자 인증 `/verify-biz`, 건설업등록증 인증 `/verify-license`, 관리자 승인 큐 `/admin`
   - 회사 프로필 페이지 `/company/profile`: 조회/수정, 로고 업로드, 주력지역, 시공실적 등
   - 입찰공고 게시판 `/notices` (키워드/지역/공종 필터, URL 쿼리 파라미터 연동)
@@ -16,6 +16,7 @@
   - 입찰 제출 `/my-bids`, 낙찰 처리
   - **비밀번호 찾기/변경**, **이메일 발송** (Resend), **라우트 가드** (withAuth 미들웨어)
   - **관리자 겸 일반 유저**: `/dashboard` ↔ `/admin` 양방향 네비게이션
+  - **[Phase 4] 계약 시스템**: `/contracts` 목록, `/contracts/[id]` 상세+서명, 낙찰 시 자동 생성, 해지/완료 처리
 - **알려진 이슈:**
   - 이메일 미수신: 도메인 미등록 → SPF/DKIM 미설정 → 기업 메일 서버 차단 (ctgroup.co.kr 등)
   - NTS API 15초 타임아웃 미해결 (실제 사업자 인증 시 실패 가능)
@@ -23,6 +24,11 @@
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-11 (세션 28 — Day 13 Phase 4 계약 시스템)
+- Contract + ContractSign 모델 추가 (prisma db push 완료), 낙찰 시 Contract 자동 생성
+- PATCH /api/contracts/[id]: 서명(sign)·완료(complete)·해지(terminate) 처리; 상태: PENDING → GC_SIGNED → ACTIVE → COMPLETED/TERMINATED
+- /contracts 목록 + /contracts/[id] 상세(서명 현황·액션 버튼) 페이지 생성, 대시보드 계약 카드 추가
 
 ### 2026-05-08 (세션 27 — Week 2 Day 10~12)
 - Day 10: 공고 수정 페이지 `/notices/[id]/edit` 신설 — 첨부파일 추가/삭제(Vercel Blob del), 모든 필드 수정, PATCH API 고도화 (날짜 3개 + 카테고리 교체 + 첨부 관리)
