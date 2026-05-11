@@ -120,7 +120,7 @@ export default function NoticesFilterBar({ initialQ, initialRegion, initialCateg
         </span>
         {initialQ && (
           <span className="flex items-center gap-1 px-2 py-0.5 bg-primary/10 text-primary text-p13 rounded-full">
-            "{initialQ}"
+            &ldquo;{initialQ}&rdquo;
             <button onClick={() => { setQ(''); pushURL('', region, categoryId) }}><X className="w-3 h-3" /></button>
           </span>
         )}
