@@ -54,6 +54,7 @@ model User {
   verifications  CompanyVerification[]
   bidNotices     BidNotice[]
   bidSubmissions BidSubmission[]
+  contractSigns  ContractSign[]
 }
 
 model Account {
@@ -119,6 +120,8 @@ model Company {
   verifications  CompanyVerification[]
   bidNotices     BidNotice[]
   bidSubmissions BidSubmission[]
+  contractsAsGC  Contract[]            @relation("ContractGC")
+  contractsAsSC  Contract[]            @relation("ContractSC")
 }
 
 // =============================================
@@ -167,6 +170,14 @@ enum BidStatus {
   CANCELLED // 취소
 }
 
+enum ContractStatus {
+  PENDING    // 낙찰 후 서명 대기
+  GC_SIGNED  // 발주사 서명 완료
+  ACTIVE     // 계약 성립 (양측 서명)
+  COMPLETED  // 공사 완료
+  TERMINATED // 중도 해지
+}
+
 model BidNotice {
   id                String    @id @default(cuid())
   title             String
@@ -192,6 +203,7 @@ model BidNotice {
   attachments BidAttachment[]
   submissions BidSubmission[]
   categories  BidNoticeCategory[]
+  contracts   Contract[]
 }
 
 model BidAttachment {
@@ -228,9 +240,10 @@ model BidSubmission {
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @default(now()) @updatedAt
 
-  notice  BidNotice @relation(fields: [noticeId], references: [id])
-  company Company   @relation(fields: [companyId], references: [id])
-  bidder  User      @relation(fields: [bidderId], references: [id])
+  notice   BidNotice  @relation(fields: [noticeId], references: [id])
+  company  Company    @relation(fields: [companyId], references: [id])
+  bidder   User       @relation(fields: [bidderId], references: [id])
+  contract Contract?
 
   @@unique([noticeId, companyId])
 }
@@ -259,6 +272,46 @@ model BidNoticeCategory {
   category WorkCategory @relation(fields: [categoryId], references: [id])
 
   @@id([noticeId, categoryId])
+}
+
+// =============================================
+// 계약 시스템 (Phase 4)
+// =============================================
+
+model Contract {
+  id             String         @id @default(cuid())
+  noticeId       String
+  submissionId   String         @unique
+  gcCompanyId    String
+  scCompanyId    String
+  contractAmount BigInt?
+  status         ContractStatus @default(PENDING)
+  gcSignedAt     DateTime?
+  scSignedAt     DateTime?
+  startDate      DateTime?
+  endDate        DateTime?
+  terms          String?        @db.Text
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @default(now()) @updatedAt
+
+  notice     BidNotice     @relation(fields: [noticeId], references: [id])
+  submission BidSubmission @relation(fields: [submissionId], references: [id])
+  gcCompany  Company       @relation("ContractGC", fields: [gcCompanyId], references: [id])
+  scCompany  Company       @relation("ContractSC", fields: [scCompanyId], references: [id])
+  signs      ContractSign[]
+}
+
+model ContractSign {
+  id          String   @id @default(cuid())
+  contractId  String
+  userId      String
+  role        String   // "GC" | "SC"
+  signedAt    DateTime @default(now())
+
+  contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id])
+
+  @@unique([contractId, role])
 }
 
 // =============================================
