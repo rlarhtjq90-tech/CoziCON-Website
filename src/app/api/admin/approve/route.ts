@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { Prisma } from '@prisma/client'
+import { sendAdminApprovalEmail } from '@/lib/email'
 
 function isAdmin(email: string | null | undefined): boolean {
   if (!email) return false
@@ -27,10 +28,14 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    await prisma.user.update({
+    const user = await prisma.user.update({
       where: { id: body.userId },
       data: { status: 'ACTIVE' },
+      select: { email: true, name: true },
     })
+    if (user.email) {
+      await sendAdminApprovalEmail(user.email, { userName: user.name ?? user.email })
+    }
     return NextResponse.json({ success: true })
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {

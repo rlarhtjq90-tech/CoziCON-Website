@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { Prisma } from '@prisma/client'
+import { sendAdminRejectionEmail } from '@/lib/email'
 
 function isAdmin(email: string | null | undefined): boolean {
   if (!email) return false
@@ -16,7 +17,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: '권한이 없습니다.' }, { status: 403 })
   }
 
-  let body: { userId: string }
+  let body: { userId: string; reason?: string }
   try { body = await req.json() }
   catch {
     return NextResponse.json({ error: '잘못된 요청입니다.' }, { status: 400 })
@@ -27,10 +28,17 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    await prisma.user.update({
+    const user = await prisma.user.update({
       where: { id: body.userId },
       data: { status: 'REJECTED' },
+      select: { email: true, name: true },
     })
+    if (user.email) {
+      await sendAdminRejectionEmail(user.email, {
+        userName: user.name ?? user.email,
+        reason: body.reason,
+      })
+    }
     return NextResponse.json({ success: true })
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {

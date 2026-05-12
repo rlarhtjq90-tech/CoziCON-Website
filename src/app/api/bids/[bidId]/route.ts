@@ -2,6 +2,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { NextRequest, NextResponse } from 'next/server'
+import { sendBidAwardEmail, sendBidRejectedEmail } from '@/lib/email'
 
 type RouteContext = { params: Promise<{ bidId: string }> }
 
@@ -14,7 +15,8 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
   const submission = await prisma.bidSubmission.findUnique({
     where: { id: bidId },
     include: {
-      notice: { select: { id: true, authorId: true, companyId: true, constructionStart: true, constructionEnd: true } },
+      notice: { select: { id: true, title: true, authorId: true, companyId: true, constructionStart: true, constructionEnd: true } },
+      bidder: { select: { email: true, name: true } },
     },
   })
 
@@ -30,11 +32,11 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
     data: { status },
   })
 
-  // 낙찰 처리 시 계약 자동 생성
   if (status === 'ACCEPTED') {
     const existing = await prisma.contract.findUnique({ where: { submissionId: bidId } })
+    let contractId = existing?.id
     if (!existing) {
-      await prisma.contract.create({
+      const created = await prisma.contract.create({
         data: {
           noticeId: submission.noticeId,
           submissionId: bidId,
@@ -45,7 +47,22 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
           endDate: submission.notice.constructionEnd,
         },
       })
+      contractId = created.id
     }
+    if (submission.bidder.email && contractId) {
+      await sendBidAwardEmail(submission.bidder.email, {
+        userName: submission.bidder.name ?? submission.bidder.email,
+        noticeTitle: submission.notice.title,
+        contractId,
+      })
+    }
+  }
+
+  if (status === 'REJECTED' && submission.bidder.email) {
+    await sendBidRejectedEmail(submission.bidder.email, {
+      userName: submission.bidder.name ?? submission.bidder.email,
+      noticeTitle: submission.notice.title,
+    })
   }
 
   return NextResponse.json({ id: updated.id, status: updated.status })

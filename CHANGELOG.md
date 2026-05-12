@@ -2,7 +2,7 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** Week 2 Day 14 완료 — 대시보드 역할별 통계 카드 추가, 전체 Phase 1~4 배포 중
+- **상태:** Week 2 Day 14 + 이메일 알림 시스템 — Phase 1~4 + 트랜잭션 이메일 완료, 배포 중
 - **주요 기능:**
   - 랜딩 페이지, 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
   - 회원가입 4단계: 이메일 OTP → 유형선택 → 정보입력 + 약관동의
@@ -14,17 +14,23 @@
   - 공고 수정 `/notices/[id]/edit`: 기존 필드 전체 수정 + 첨부파일 추가/삭제 (Vercel Blob 연동)
   - 공고 상세 `/notices/[id]`: 개찰일시, 공사기간, 예정가격, 낙찰방식, 필요면허 표시
   - 입찰 제출 `/my-bids`, 낙찰 처리
-  - **비밀번호 찾기/변경**, **이메일 발송** (Resend), **라우트 가드** (withAuth 미들웨어)
+  - **비밀번호 찾기/변경**, **라우트 가드** (withAuth 미들웨어)
   - **관리자 겸 일반 유저**: `/dashboard` ↔ `/admin` 양방향 네비게이션
   - **[Phase 4] 계약 시스템**: `/contracts` 목록, `/contracts/[id]` 상세+서명, 낙찰 시 자동 생성, 해지/완료 처리
   - **[Day 14] 대시보드 통계 카드**: GC(등록공고·접수입찰·진행계약), SC(참여입찰·낙찰·진행계약) 역할별 카운트 표시
+  - **[이메일 알림] `src/lib/email.ts`**: OTP·비밀번호 재설정·낙찰·탈락·계약 서명 요청·계약 성립·관리자 승인/거절 7종 트랜잭션 이메일
 - **알려진 이슈:**
-  - 이메일 미수신: 도메인 미등록 → SPF/DKIM 미설정 → 기업 메일 서버 차단 (ctgroup.co.kr 등)
+  - 이메일 미수신: 도메인 미등록 → SPF/DKIM 미설정 → 기업 메일 서버 차단 (cozicon.co.kr 도메인 구매 + Resend 등록 필요)
   - NTS API 15초 타임아웃 미해결 (실제 사업자 인증 시 실패 가능)
   - `BLOB_READ_WRITE_TOKEN` Vercel 환경변수 미설정 → 첨부파일 `__mock__` URL로 폴백 (실제 저장 안됨)
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-12 (세션 30 — 트랜잭션 이메일 알림 시스템)
+- `src/lib/email.ts` 생성: 7종 이메일 함수 (OTP·비밀번호 재설정·낙찰·탈락·계약 서명 요청·계약 성립·관리자 승인/거절) — Resend SDK 래퍼, 에러 스월로우(best-effort)
+- 6개 API 라우트 업데이트: `send-verification`, `forgot-password`(인라인 → lib 함수), `bids/[bidId]`(낙찰/탈락 알림), `contracts/[contractId]`(서명 요청 + 성립 알림), `admin/approve`, `admin/reject`
+- 남은 블로커: `cozicon.co.kr` 도메인 구매 + Resend 도메인 등록 + DNS(SPF/DKIM) 설정 후 `RESEND_FROM_EMAIL=noreply@cozicon.co.kr` 업데이트 필요
 
 ### 2026-05-12 (세션 29 — Day 14 대시보드 통계 카드)
 - Phase 4 배포 확인 (`FDT2K4uQ1` Ready/Current) — NoticesFilterBar JSX 이스케이프 픽스 포함

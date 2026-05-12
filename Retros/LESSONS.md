@@ -27,6 +27,15 @@ Vercel CLI v52에서 계정명에 한글 등 비ASCII 문자가 포함되면 HTT
 
 ## Email
 
+### 트랜잭션 이메일은 best-effort — 실패가 주요 API 응답을 막으면 안 됨 #coding #email
+낙찰·계약 서명·관리자 승인 같은 API에서 이메일 발송 실패가 500을 반환하면 비즈니스 로직이 멈춤.
+`send()` 함수는 에러를 catch해 `console.error`만 남기고 throw하지 않도록 래핑할 것.
+이메일은 best-effort이며, 재시도·큐가 필요한 경우만 별도 처리.
+
+### 이메일 발송 코드는 처음부터 lib 함수로 분리 #coding #email
+라우트마다 `new Resend(...)` 인스턴스 생성과 HTML 인라인이 흩어지면 도메인·발신자 변경 시 누락 위험.
+`src/lib/email.ts`에 함수로 정의하면 변경점이 한 곳에 집중되고, 라우트 코드가 단순해짐.
+
 ### Resend 무료 플랜은 샌드박스 — 본인 계정 이메일로만 발송 가능 #coding #email
 Resend에서 도메인 인증 없이 `onboarding@resend.dev`를 발신 주소로 쓰면 샌드박스 모드.
 샌드박스에서는 Resend 가입 계정 이메일 외에는 수신 불가 → 실사용 불가.

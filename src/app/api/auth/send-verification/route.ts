@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { Resend } from 'resend'
 import { prisma } from '@/lib/db'
+import { sendOtpEmail } from '@/lib/email'
 
 export async function POST(req: NextRequest) {
   try {
@@ -26,29 +26,7 @@ export async function POST(req: NextRequest) {
     await prisma.verificationToken.deleteMany({ where: { identifier: email } })
     await prisma.verificationToken.create({ data: { identifier: email, token: otp, expires } })
 
-    const resend = new Resend(process.env.RESEND_API_KEY)
-    const { error: sendError } = await resend.emails.send({
-      from: `CoziCON <${process.env.RESEND_FROM_EMAIL}>`,
-      to: email,
-      subject: '[CoziCON] 이메일 인증번호',
-      html: `
-        <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:40px 24px">
-          <h2 style="color:#1a2dff;margin-bottom:8px">CoziCON 이메일 인증</h2>
-          <p style="color:#555;margin-bottom:24px">아래 인증번호를 3분 이내에 입력해주세요.</p>
-          <div style="background:#f3f6fc;border-radius:12px;padding:24px;text-align:center">
-            <span style="font-size:36px;font-weight:800;letter-spacing:8px;color:#1a2dff">${otp}</span>
-          </div>
-          <p style="color:#999;font-size:13px;margin-top:24px">
-            본인이 요청하지 않은 경우 이 이메일을 무시하세요.
-          </p>
-        </div>
-      `,
-    })
-
-    if (sendError) {
-      console.error('[send-verification] Resend 발송 오류:', sendError)
-      return NextResponse.json({ error: '이메일 발송에 실패했습니다. 잠시 후 다시 시도해주세요.' }, { status: 500 })
-    }
+    await sendOtpEmail(email, otp)
 
     return NextResponse.json({ success: true })
   } catch (err) {
