@@ -174,6 +174,21 @@ export default async function DashboardPage() {
               <p className="mt-1 text-p12 text-primary font-medium">바로가기 →</p>
             </Link>
           )}
+          <Link
+            href="/my-bookmarks"
+            className="bg-white rounded-2xl p-6 shadow-card-md hover:shadow-card-lg transition-shadow group"
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-9 h-9 rounded-xl bg-yellow-50 flex items-center justify-center">
+                <FileSignature className="w-4 h-4 text-yellow-500" />
+              </div>
+              <p className="text-p14 text-ink-400 font-medium">관심공고</p>
+            </div>
+            <p className="text-p15 font-semibold text-ink-700 group-hover:text-yellow-600 transition-colors">
+              즐겨찾기
+            </p>
+            <p className="mt-1 text-p12 text-yellow-500 font-medium">관심 목록 →</p>
+          </Link>
           {user?.userType === 'GENERAL_CONTRACTOR' && (
             <Link
               href="/notices/create"

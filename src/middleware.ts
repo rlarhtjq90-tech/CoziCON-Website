@@ -33,5 +33,6 @@ export const config = {
     '/my-bids/:path*',
     '/notifications/:path*',
     '/contracts/:path*',
+    '/my-bookmarks/:path*',
   ],
 }

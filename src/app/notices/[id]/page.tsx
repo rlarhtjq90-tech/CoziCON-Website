@@ -4,8 +4,9 @@ import { redirect, notFound } from 'next/navigation'
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
 import LogoutButton from '@/app/dashboard/LogoutButton'
-import { ArrowLeft, Paperclip, MapPin, Wrench, CalendarDays, Building2, Users } from 'lucide-react'
+import { ArrowLeft, Paperclip, MapPin, Wrench, Building2, Users } from 'lucide-react'
 import BidForm from './BidForm'
+import BookmarkButton from './BookmarkButton'
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -29,6 +30,10 @@ export default async function NoticeDetailPage({ params }: Params) {
       select: { userType: true, status: true, companyId: true },
     }),
   ])
+
+  const isBookmarked = !!(await prisma.noticeBookmark.findUnique({
+    where: { userId_noticeId: { userId: session.user.id, noticeId: id } },
+  }))
 
   if (!notice) notFound()
 
@@ -90,7 +95,10 @@ export default async function NoticeDetailPage({ params }: Params) {
             )}
           </div>
 
-          <h1 className="text-t4 font-bold text-ink-700 mb-6">{notice.title}</h1>
+          <div className="flex items-start justify-between gap-4 mb-6">
+            <h1 className="text-t4 font-bold text-ink-700">{notice.title}</h1>
+            <BookmarkButton noticeId={notice.id} initialBookmarked={isBookmarked} />
+          </div>
 
           {/* 핵심 정보 */}
           <div className="mb-8 flex flex-wrap gap-3">
