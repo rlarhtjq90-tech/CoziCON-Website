@@ -4,7 +4,7 @@ import { redirect, notFound } from 'next/navigation'
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
 import LogoutButton from '@/app/dashboard/LogoutButton'
-import { ArrowLeft, Paperclip, MapPin, Wrench, Building2, Users } from 'lucide-react'
+import { ArrowLeft, Paperclip, MapPin, Wrench, Building2, Users, MessageSquare } from 'lucide-react'
 import BidForm from './BidForm'
 import BookmarkButton from './BookmarkButton'
 
@@ -237,9 +237,9 @@ export default async function NoticeDetailPage({ params }: Params) {
           )}
 
           <div className="border-t border-ink-100 pt-6 space-y-4">
-            {/* 발주사: 수정 + 입찰 현황 */}
+            {/* 발주사: 수정 + 입찰 현황 + Q&A */}
             {isOwner && (
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center gap-2">
                 <Link
                   href={`/notices/${notice.id}/bids`}
                   className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-brand-blue rounded-lg text-p14 font-medium hover:bg-blue-100 transition-colors"
@@ -248,12 +248,30 @@ export default async function NoticeDetailPage({ params }: Params) {
                   입찰 현황 ({notice._count.submissions}건)
                 </Link>
                 <Link
+                  href={`/notices/${notice.id}/qna`}
+                  className="flex items-center gap-2 px-4 py-2 border border-ink-200 rounded-lg text-p14 text-ink-500 hover:bg-ink-50 transition-colors"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  Q&amp;A
+                </Link>
+                <Link
                   href={`/notices/${notice.id}/edit`}
-                  className="px-4 py-2 border border-ink-200 rounded-lg text-p14 text-ink-500 hover:bg-ink-50 transition-colors"
+                  className="ml-auto px-4 py-2 border border-ink-200 rounded-lg text-p14 text-ink-500 hover:bg-ink-50 transition-colors"
                 >
                   공고 수정
                 </Link>
               </div>
+            )}
+
+            {/* 건설사: Q&A 링크 */}
+            {isContractor && (
+              <Link
+                href={`/notices/${notice.id}/qna`}
+                className="flex items-center gap-2 px-4 py-2 border border-ink-200 rounded-lg text-p14 text-ink-500 hover:bg-ink-50 transition-colors w-fit"
+              >
+                <MessageSquare className="w-4 h-4" />
+                Q&amp;A 보기
+              </Link>
             )}
 
             {/* 건설사: 입찰하기 폼 */}

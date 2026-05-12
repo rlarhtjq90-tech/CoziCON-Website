@@ -57,6 +57,7 @@ model User {
   contractSigns  ContractSign[]
   notifications  Notification[]
   bookmarks      NoticeBookmark[]
+  qnaQuestions   BidQnA[]
 }
 
 model Account {
@@ -208,6 +209,7 @@ model BidNotice {
   categories  BidNoticeCategory[]
   contracts   Contract[]
   bookmarks   NoticeBookmark[]
+  qnaList     BidQnA[]
 }
 
 model BidAttachment {
@@ -316,6 +318,24 @@ model ContractSign {
   user     User     @relation(fields: [userId], references: [id])
 
   @@unique([contractId, role])
+}
+
+// =============================================
+// 공고별 Q&A
+// =============================================
+
+model BidQnA {
+  id        String    @id @default(cuid())
+  noticeId  String
+  askerId   String
+  question  String    @db.Text
+  answer    String?   @db.Text
+  answeredAt DateTime?
+  isAnon    Boolean   @default(false)
+  createdAt DateTime  @default(now())
+
+  notice BidNotice @relation(fields: [noticeId], references: [id], onDelete: Cascade)
+  asker  User      @relation(fields: [askerId], references: [id])
 }
 
 // =============================================
