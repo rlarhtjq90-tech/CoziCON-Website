@@ -32,6 +32,10 @@
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
 
+### 2026-05-12 (세션 32 — CRON_SECRET Vercel 등록 가이드)
+- 미해결 블로커 3개(BLOB/도메인/CRON_SECRET) 중 CRON_SECRET 분석: cron 라우트 인증 로직 확인, 로컬 `.env.local` 설정 확인, Vercel 환경변수 미등록 확인
+- Vercel 대시보드 → Settings → Environment Variables에 `CRON_SECRET` 등록 가이드 제공 (등록 후 재배포 필요)
+
 ### 2026-05-12 (세션 31 — 개찰 흐름·인앱 알림·관심공고·Q&A)
 - **개찰 흐름**: BidStatus OPENED 추가, Vercel Cron 2개(`close-notices`, `open-bids`), 수동 개찰 버튼, 입찰 현황 화면 개찰 후 가격 순위 공개
 - **인앱 알림**: `Notification` 모델, `src/lib/notify.ts` (best-effort), AppHeader 벨 배지, `/notifications` 페이지 (7종 알림·읽음 처리)
