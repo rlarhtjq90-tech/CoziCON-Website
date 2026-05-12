@@ -2,11 +2,11 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** Week 2 Day 14 + 이메일 알림 시스템 — Phase 1~4 + 트랜잭션 이메일 완료, 배포 중
+- **상태:** 세션 31 완료 — 개찰 흐름·인앱 알림·관심공고·Q&A 구현, 핵심 플랫폼 기능 완성
 - **주요 기능:**
   - 랜딩 페이지, 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
   - 회원가입 4단계: 이메일 OTP → 유형선택 → 정보입력 + 약관동의
-  - DB: Company, CompanyVerification, License, TermsConsent, BidNotice, BidAttachment, BidSubmission, WorkCategory, BidNoticeCategory, **Contract, ContractSign**
+  - DB: Company, CompanyVerification, License, TermsConsent, BidNotice, BidAttachment, BidSubmission, WorkCategory, BidNoticeCategory, **Contract, ContractSign, Notification, NoticeBookmark, BidQnA**
   - 사업자 인증 `/verify-biz`, 건설업등록증 인증 `/verify-license`, 관리자 승인 큐 `/admin`
   - 회사 프로필 페이지 `/company/profile`: 조회/수정, 로고 업로드, 주력지역, 시공실적 등
   - 입찰공고 게시판 `/notices` (키워드/지역/공종 필터, URL 쿼리 파라미터 연동)
@@ -18,14 +18,25 @@
   - **관리자 겸 일반 유저**: `/dashboard` ↔ `/admin` 양방향 네비게이션
   - **[Phase 4] 계약 시스템**: `/contracts` 목록, `/contracts/[id]` 상세+서명, 낙찰 시 자동 생성, 해지/완료 처리
   - **[Day 14] 대시보드 통계 카드**: GC(등록공고·접수입찰·진행계약), SC(참여입찰·낙찰·진행계약) 역할별 카운트 표시
-  - **[이메일 알림] `src/lib/email.ts`**: OTP·비밀번호 재설정·낙찰·탈락·계약 서명 요청·계약 성립·관리자 승인/거절 7종 트랜잭션 이메일
+  - **[이메일 알림] `src/lib/email.ts`**: 7종 트랜잭션 이메일 (OTP·비밀번호·낙찰·탈락·계약·관리자 승인/거절)
+  - **[개찰 흐름] Vercel Cron 2개**: `/api/cron/close-notices` (마감), `/api/cron/open-bids` (개찰), BidStatus OPENED 추가, 개찰 화면 입찰가 순위 공개
+  - **[인앱 알림] AppHeader 벨 아이콘 + `/notifications` 페이지**: 7종 알림 트리거, 읽음 처리, `src/lib/notify.ts`
+  - **[관심공고] 북마크 토글 + `/my-bookmarks` 페이지**: BookmarkButton 클라이언트 컴포넌트, 대시보드 카드
+  - **[Q&A] `/notices/[id]/qna`**: SC 질문(익명 옵션), GC 인라인 답변, 전체 공개
 - **알려진 이슈:**
-  - 이메일 미수신: 도메인 미등록 → SPF/DKIM 미설정 → 기업 메일 서버 차단 (cozicon.co.kr 도메인 구매 + Resend 등록 필요)
+  - 이메일 미수신: 도메인 미등록 → SPF/DKIM 미설정 (cozicon.co.kr 구매 + Resend 등록 필요)
   - NTS API 15초 타임아웃 미해결 (실제 사업자 인증 시 실패 가능)
-  - `BLOB_READ_WRITE_TOKEN` Vercel 환경변수 미설정 → 첨부파일 `__mock__` URL로 폴백 (실제 저장 안됨)
+  - `BLOB_READ_WRITE_TOKEN` Vercel 환경변수 미설정 → 첨부파일 `__mock__` URL로 폴백
+  - Vercel Cron `CRON_SECRET` 환경변수 등록 필요 (Vercel 대시보드 → Settings → Environment Variables)
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-12 (세션 31 — 개찰 흐름·인앱 알림·관심공고·Q&A)
+- **개찰 흐름**: BidStatus OPENED 추가, Vercel Cron 2개(`close-notices`, `open-bids`), 수동 개찰 버튼, 입찰 현황 화면 개찰 후 가격 순위 공개
+- **인앱 알림**: `Notification` 모델, `src/lib/notify.ts` (best-effort), AppHeader 벨 배지, `/notifications` 페이지 (7종 알림·읽음 처리)
+- **관심공고**: `NoticeBookmark` 모델, `/api/notices/[id]/bookmark` 토글, `BookmarkButton`, `/my-bookmarks` 페이지
+- **Q&A**: `BidQnA` 모델, `/api/notices/[id]/qna` GET/POST + `/api/qna/[qnaId]` PATCH, `QuestionForm`(익명 옵션) + `QnAList`(GC 인라인 답변)
 
 ### 2026-05-12 (세션 30 — 트랜잭션 이메일 알림 시스템)
 - `src/lib/email.ts` 생성: 7종 이메일 함수 (OTP·비밀번호 재설정·낙찰·탈락·계약 서명 요청·계약 성립·관리자 승인/거절) — Resend SDK 래퍼, 에러 스월로우(best-effort)
