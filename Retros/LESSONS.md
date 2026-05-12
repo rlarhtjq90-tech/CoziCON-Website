@@ -27,6 +27,11 @@ Vercel CLI v52에서 계정명에 한글 등 비ASCII 문자가 포함되면 HTT
 
 ## Email
 
+### 알림·이메일 등 사이드 이펙트는 best-effort 래퍼로 격리 #coding #api-design
+이메일·인앱 알림·로깅처럼 비즈니스 핵심이 아닌 사이드 이펙트가 실패하면 메인 응답이 500이 되는 문제 발생.
+`src/lib/notify.ts`, `src/lib/email.ts`처럼 try/catch로 에러를 삼키고 `console.error`만 남기는 래퍼 함수로 분리할 것.
+main 플로우 → 커밋 → 사이드 이펙트(best-effort) 순서를 지키면 실패해도 데이터 정합성에 영향 없음.
+
 ### 트랜잭션 이메일은 best-effort — 실패가 주요 API 응답을 막으면 안 됨 #coding #email
 낙찰·계약 서명·관리자 승인 같은 API에서 이메일 발송 실패가 500을 반환하면 비즈니스 로직이 멈춤.
 `send()` 함수는 에러를 catch해 `console.error`만 남기고 throw하지 않도록 래핑할 것.
