@@ -3,6 +3,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { NextRequest, NextResponse } from 'next/server'
 import { sendBidAwardEmail, sendBidRejectedEmail } from '@/lib/email'
+import { createNotification } from '@/lib/notify'
 
 type RouteContext = { params: Promise<{ bidId: string }> }
 
@@ -49,20 +50,40 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
       })
       contractId = created.id
     }
-    if (submission.bidder.email && contractId) {
-      await sendBidAwardEmail(submission.bidder.email, {
-        userName: submission.bidder.name ?? submission.bidder.email,
-        noticeTitle: submission.notice.title,
-        contractId,
-      })
-    }
+    await Promise.all([
+      submission.bidder.email && contractId
+        ? sendBidAwardEmail(submission.bidder.email, {
+            userName: submission.bidder.name ?? submission.bidder.email,
+            noticeTitle: submission.notice.title,
+            contractId,
+          })
+        : null,
+      createNotification(
+        submission.bidderId,
+        'BID_AWARDED',
+        '낙찰 축하드립니다!',
+        `${submission.notice.title} 공고에 낙찰되었습니다.`,
+        contractId ? `/contracts/${contractId}` : undefined,
+      ),
+    ])
   }
 
-  if (status === 'REJECTED' && submission.bidder.email) {
-    await sendBidRejectedEmail(submission.bidder.email, {
-      userName: submission.bidder.name ?? submission.bidder.email,
-      noticeTitle: submission.notice.title,
-    })
+  if (status === 'REJECTED') {
+    await Promise.all([
+      submission.bidder.email
+        ? sendBidRejectedEmail(submission.bidder.email, {
+            userName: submission.bidder.name ?? submission.bidder.email,
+            noticeTitle: submission.notice.title,
+          })
+        : null,
+      createNotification(
+        submission.bidderId,
+        'BID_REJECTED',
+        '입찰 결과 안내',
+        `${submission.notice.title} 공고 입찰에서 탈락하였습니다.`,
+        `/notices/${submission.noticeId}`,
+      ),
+    ])
   }
 
   return NextResponse.json({ id: updated.id, status: updated.status })

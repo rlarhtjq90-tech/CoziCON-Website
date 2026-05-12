@@ -3,7 +3,7 @@ import { authOptions } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
-import LogoutButton from '@/app/dashboard/LogoutButton'
+import AppHeader from '@/components/AppHeader'
 import { ArrowLeft, Plus, Paperclip, MapPin, Wrench, CalendarDays } from 'lucide-react'
 import NoticesFilterBar from './NoticesFilterBar'
 
@@ -51,15 +51,7 @@ export default async function NoticesPage({ searchParams }: { searchParams: Sear
 
   return (
     <div className="min-h-screen bg-brand-slate-100">
-      <header className="bg-white border-b border-ink-200 shadow-sm">
-        <div className="container-content flex items-center justify-between h-16">
-          <a href="/" className="text-t6 font-bold text-primary tracking-tight">CoziCON</a>
-          <div className="flex items-center gap-4">
-            <span className="text-p14 text-ink-500">{session.user?.email}</span>
-            <LogoutButton />
-          </div>
-        </div>
-      </header>
+      <AppHeader userId={session.user.id} userEmail={session.user.email ?? ''} />
 
       <main className="container-content py-10">
         <div className="mb-6 flex items-center gap-3">

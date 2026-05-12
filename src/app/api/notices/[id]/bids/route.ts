@@ -2,6 +2,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { NextRequest, NextResponse } from 'next/server'
+import { createNotification } from '@/lib/notify'
 
 type RouteContext = { params: Promise<{ id: string }> }
 
@@ -41,6 +42,15 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
       description: description ?? null,
     },
   })
+
+  // GC에게 새 입찰 접수 알림
+  await createNotification(
+    notice.authorId,
+    'NEW_BID',
+    '새 입찰이 접수되었습니다',
+    `${notice.title} 공고에 새로운 입찰이 접수되었습니다.`,
+    `/notices/${noticeId}/bids`,
+  )
 
   return NextResponse.json({ id: submission.id }, { status: 201 })
 }

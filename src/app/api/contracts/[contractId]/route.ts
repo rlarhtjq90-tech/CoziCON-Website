@@ -3,6 +3,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { NextRequest, NextResponse } from 'next/server'
 import { sendContractSignRequestEmail, sendContractActiveEmail } from '@/lib/email'
+import { createNotification } from '@/lib/notify'
 
 type RouteContext = { params: Promise<{ contractId: string }> }
 
@@ -57,39 +58,25 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
     const noticeTitle = contract.notice.title
 
     if (nextStatus === 'ACTIVE') {
-      // 양측 서명 완료 → 양측 모두에게 계약 성립 알림
       const [gcUser, scUser] = await Promise.all([
-        prisma.user.findFirst({ where: { companyId: contract.gcCompanyId }, select: { email: true, name: true } }),
-        prisma.user.findFirst({ where: { companyId: contract.scCompanyId }, select: { email: true, name: true } }),
+        prisma.user.findFirst({ where: { companyId: contract.gcCompanyId }, select: { id: true, email: true, name: true } }),
+        prisma.user.findFirst({ where: { companyId: contract.scCompanyId }, select: { id: true, email: true, name: true } }),
       ])
-      if (gcUser?.email) {
-        await sendContractActiveEmail(gcUser.email, {
-          userName: gcUser.name ?? gcUser.email,
-          noticeTitle,
-          contractId,
-        })
-      }
-      if (scUser?.email) {
-        await sendContractActiveEmail(scUser.email, {
-          userName: scUser.name ?? scUser.email,
-          noticeTitle,
-          contractId,
-        })
-      }
+      await Promise.all([
+        gcUser?.email ? sendContractActiveEmail(gcUser.email, { userName: gcUser.name ?? gcUser.email, noticeTitle, contractId }) : null,
+        scUser?.email ? sendContractActiveEmail(scUser.email, { userName: scUser.name ?? scUser.email, noticeTitle, contractId }) : null,
+        gcUser ? createNotification(gcUser.id, 'CONTRACT_ACTIVE', '계약이 성립되었습니다', `${noticeTitle} 공고 계약이 양측 서명으로 확정되었습니다.`, `/contracts/${contractId}`) : null,
+        scUser ? createNotification(scUser.id, 'CONTRACT_ACTIVE', '계약이 성립되었습니다', `${noticeTitle} 공고 계약이 양측 서명으로 확정되었습니다.`, `/contracts/${contractId}`) : null,
+      ])
     } else if (nextStatus === 'GC_SIGNED') {
-      // GC 서명 완료 → SC에게 서명 요청
       const scUser = await prisma.user.findFirst({
         where: { companyId: contract.scCompanyId },
-        select: { email: true, name: true },
+        select: { id: true, email: true, name: true },
       })
-      if (scUser?.email) {
-        await sendContractSignRequestEmail(scUser.email, {
-          userName: scUser.name ?? scUser.email,
-          noticeTitle,
-          contractId,
-          signerRole: 'GC',
-        })
-      }
+      await Promise.all([
+        scUser?.email ? sendContractSignRequestEmail(scUser.email, { userName: scUser.name ?? scUser.email, noticeTitle, contractId, signerRole: 'GC' }) : null,
+        scUser ? createNotification(scUser.id, 'CONTRACT_SIGN_REQUEST', '계약 서명이 요청되었습니다', `${noticeTitle} 공고 계약에 서명이 필요합니다.`, `/contracts/${contractId}`) : null,
+      ])
     }
 
     return NextResponse.json({ id: updated.id, status: updated.status })

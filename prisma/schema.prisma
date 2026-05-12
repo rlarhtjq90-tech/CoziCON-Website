@@ -55,6 +55,7 @@ model User {
   bidNotices     BidNotice[]
   bidSubmissions BidSubmission[]
   contractSigns  ContractSign[]
+  notifications  Notification[]
 }
 
 model Account {
@@ -313,6 +314,25 @@ model ContractSign {
   user     User     @relation(fields: [userId], references: [id])
 
   @@unique([contractId, role])
+}
+
+// =============================================
+// 인앱 알림
+// =============================================
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // BID_AWARDED | BID_REJECTED | NEW_BID | CONTRACT_SIGN_REQUEST | CONTRACT_ACTIVE | ADMIN_APPROVED | ADMIN_REJECTED
+  title     String
+  body      String
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
 }
 
 // =============================================
