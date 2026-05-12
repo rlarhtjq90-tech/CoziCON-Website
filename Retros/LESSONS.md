@@ -152,6 +152,10 @@ Next.js dev 서버는 `.env.local` → `.env` 순으로 로드하지만, 독립 
 
 ## Deployment
 
+### Vercel Hobby 빌드 상태는 대시보드로만 확인, 로컬 `next build` 백그라운드 실행 금지 #coding #vercel
+Hobby 플랜은 동시 빌드 1개 제한. 이전 빌드 완료 전 새 푸시 시 Queued 상태로 1~2분 대기.
+로컬에서 `npx next build`를 백그라운드로 여러 번 실행하면 출력 파일이 비거나 혼선이 생김. 빌드 결과 확인은 Vercel 대시보드 Deployments 탭으로만 할 것.
+
 ### Vercel 프로젝트명은 자동 생성 suffix 포함 전체명으로 확인할 것 #coding #vercel
 Vercel은 동일 이름 프로젝트 충돌 시 `-xxxx` suffix를 붙여 새 프로젝트를 생성함 (예: `cozi-con-website-2ano`).
 Vercel CLI나 GitHub Deployments 탭에서 보이는 짧은 이름과 실제 프로젝트명이 다를 수 있음.
@@ -182,6 +186,9 @@ Vercel Function Log의 "External APIs" 섹션은 함수에서 호출한 외부 H
 같은 건설업 도메인이라도 KISCON ConAdminInfoSvc1(공시 목록, 날짜+지역 조회)과
 국토교통부 ConstBizInforService(사업자번호 직접 조회)는 완전히 다른 API.
 활용가이드 docx의 "요청 메시지 명세"에서 입력 파라미터를 먼저 확인해야 목적에 맞는 서비스인지 알 수 있음.
+
+### Prisma enum을 `{ in: [...] }` 조건에 쓸 때 `as const` 배열은 타입 오류 #coding #prisma #typescript
+`['PENDING', 'ACTIVE'] as const` 배열은 readonly여서 `ContractStatus[]`에 할당 불가. `as const` 제거도 `string[]`이 되어 불가. `ContractStatus[]` 타입을 명시하거나 `ContractStatus.PENDING` 같이 enum 멤버를 직접 배열에 넣어야 함.
 
 ### 상태 전이 API는 사이드 이펙트(자동 생성)에 멱등성 보장이 필수 #coding #prisma #api
 낙찰 처리처럼 상태 변경 API가 Contract 같은 파생 레코드를 자동 생성할 때, PATCH가 두 번 호출되면 `@unique` 제약으로 P2002 에러가 발생.
