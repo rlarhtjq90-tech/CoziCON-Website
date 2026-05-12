@@ -112,7 +112,7 @@ export async function PATCH(req: NextRequest, { params }: Params): Promise<NextR
       ...(requiredLicenses !== undefined && { requiredLicenses }),
       ...(qualificationNote !== undefined && { qualificationNote: qualificationNote ?? null }),
       ...(description !== undefined && { description }),
-      ...(status !== undefined && { status: status as 'DRAFT' | 'OPEN' | 'CLOSED' | 'CANCELLED' }),
+      ...(status !== undefined && { status: status as 'DRAFT' | 'OPEN' | 'CLOSED' | 'OPENED' | 'CANCELLED' }),
       ...(categoryIds !== undefined && {
         categories: {
           deleteMany: {},

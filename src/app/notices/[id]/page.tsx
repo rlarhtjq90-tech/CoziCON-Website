@@ -39,6 +39,7 @@ export default async function NoticeDetailPage({ params }: Params) {
   const isOwner = notice.authorId === session.user.id
   const isContractor = user?.userType === 'SPECIALTY_CONTRACTOR'
   const isOpen = notice.status === 'OPEN' && diff >= 0
+  const isOpened = notice.status === 'OPENED'
 
   // 이미 입찰했는지 확인
   const mySubmission = user?.companyId && isContractor
@@ -71,12 +72,16 @@ export default async function NoticeDetailPage({ params }: Params) {
           {/* 상태 배지 */}
           <div className="flex items-center gap-2 mb-4">
             <span className={`text-p13 font-medium px-2.5 py-0.5 rounded-full ${
-              notice.status === 'OPEN' ? 'bg-green-50 text-green-600' :
-              notice.status === 'CLOSED' ? 'bg-ink-100 text-ink-400' :
-              notice.status === 'DRAFT' ? 'bg-yellow-50 text-yellow-600' :
+              notice.status === 'OPEN'   ? 'bg-green-50 text-green-600' :
+              notice.status === 'CLOSED' ? 'bg-yellow-50 text-yellow-600' :
+              notice.status === 'OPENED' ? 'bg-blue-50 text-brand-blue' :
+              notice.status === 'DRAFT'  ? 'bg-ink-100 text-ink-400' :
               'bg-red-50 text-red-500'
             }`}>
-              {notice.status === 'OPEN' ? '모집중' : notice.status === 'CLOSED' ? '마감' : notice.status === 'DRAFT' ? '임시저장' : '취소'}
+              {notice.status === 'OPEN'   ? '모집중' :
+               notice.status === 'CLOSED' ? '개찰 대기' :
+               notice.status === 'OPENED' ? '개찰됨' :
+               notice.status === 'DRAFT'  ? '임시저장' : '취소'}
             </span>
             {diff > 0 && notice.status === 'OPEN' && (
               <span className={`text-p13 font-medium px-2.5 py-0.5 rounded-full ${diff <= 3 ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-brand-blue'}`}>
@@ -252,8 +257,21 @@ export default async function NoticeDetailPage({ params }: Params) {
               />
             )}
 
-            {/* 건설사 + 마감 */}
-            {isContractor && !isOpen && (
+            {/* 건설사: 개찰 결과 */}
+            {isContractor && isOpened && mySubmission && (
+              <div className={`rounded-lg px-5 py-4 text-p15 font-medium text-center ${
+                mySubmission.status === 'ACCEPTED' ? 'bg-green-50 text-green-700' :
+                mySubmission.status === 'REJECTED' ? 'bg-ink-100 text-ink-400' :
+                'bg-blue-50 text-brand-blue'
+              }`}>
+                {mySubmission.status === 'ACCEPTED' ? '🎉 낙찰되었습니다!' :
+                 mySubmission.status === 'REJECTED' ? '이번 입찰에서 탈락하였습니다.' :
+                 '개찰이 완료되었습니다. 결과를 기다려주세요.'}
+              </div>
+            )}
+
+            {/* 건설사 + 마감 (개찰 전) */}
+            {isContractor && !isOpen && !isOpened && (
               <p className="text-p14 text-ink-400 text-center py-2">마감된 공고입니다.</p>
             )}
           </div>

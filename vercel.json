@@ -1,3 +1,7 @@
 {
-  "regions": ["icn1"]
+  "regions": ["icn1"],
+  "crons": [
+    { "path": "/api/cron/close-notices", "schedule": "*/5 * * * *" },
+    { "path": "/api/cron/open-bids",     "schedule": "*/5 * * * *" }
+  ]
 }

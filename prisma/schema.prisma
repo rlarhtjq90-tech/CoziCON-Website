@@ -166,7 +166,8 @@ model CompanyVerification {
 enum BidStatus {
   DRAFT     // 임시저장
   OPEN      // 모집중
-  CLOSED    // 마감
+  CLOSED    // 마감 (개찰 대기)
+  OPENED    // 개찰됨 (입찰가 공개)
   CANCELLED // 취소
 }
 

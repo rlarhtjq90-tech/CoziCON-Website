@@ -11,7 +11,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
   const notices = await prisma.bidNotice.findMany({
     where: {
-      status: status as 'DRAFT' | 'OPEN' | 'CLOSED' | 'CANCELLED',
+      status: status as 'DRAFT' | 'OPEN' | 'CLOSED' | 'OPENED' | 'CANCELLED',
       ...(workType ? { workTypes: { has: workType } } : {}),
       ...(region ? { regions: { has: region } } : {}),
     },

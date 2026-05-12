@@ -23,7 +23,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
 
   const notice = await prisma.bidNotice.findUnique({ where: { id: noticeId } })
   if (!notice || notice.status !== 'OPEN') return NextResponse.json({ error: '모집중인 공고가 아닙니다.' }, { status: 400 })
-  if (notice.deadline < new Date()) return NextResponse.json({ error: '마감된 공고입니다.' }, { status: 400 })
+  if (notice.deadline <= new Date()) return NextResponse.json({ error: '입찰 마감 시각이 지났습니다.' }, { status: 400 })
 
   const existing = await prisma.bidSubmission.findUnique({
     where: { noticeId_companyId: { noticeId, companyId: user.companyId } },
@@ -56,19 +56,24 @@ export async function GET(_req: NextRequest, { params }: RouteContext) {
   if (!notice) return NextResponse.json({ error: '공고를 찾을 수 없습니다.' }, { status: 404 })
   if (notice.authorId !== session.user.id) return NextResponse.json({ error: '권한 없음' }, { status: 403 })
 
+  const isOpened = notice.status === 'OPENED'
+
   const submissions = await prisma.bidSubmission.findMany({
     where: { noticeId },
     include: {
       company: { select: { name: true, type: true } },
       bidder: { select: { name: true, email: true } },
     },
-    orderBy: { createdAt: 'asc' },
+    orderBy: isOpened
+      ? [{ proposedPrice: 'asc' }, { createdAt: 'asc' }]
+      : [{ createdAt: 'asc' }],
   })
 
   return NextResponse.json(
     submissions.map((s) => ({
       ...s,
-      proposedPrice: s.proposedPrice?.toString() ?? null,
+      // 개찰 전에는 입찰금액 비공개
+      proposedPrice: isOpened ? (s.proposedPrice?.toString() ?? null) : null,
     }))
   )
 }
