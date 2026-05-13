@@ -125,6 +125,9 @@ model Company {
   bidSubmissions BidSubmission[]
   contractsAsGC  Contract[]            @relation("ContractGC")
   contractsAsSC  Contract[]            @relation("ContractSC")
+  portfolios      Portfolio[]
+  reviewsGiven    CompanyReview[] @relation("ReviewsGiven")
+  reviewsReceived CompanyReview[] @relation("ReviewsReceived")
 }
 
 // =============================================
@@ -306,6 +309,7 @@ model Contract {
   gcCompany  Company       @relation("ContractGC", fields: [gcCompanyId], references: [id])
   scCompany  Company       @relation("ContractSC", fields: [scCompanyId], references: [id])
   signs      ContractSign[]
+  review     CompanyReview?
 }
 
 model ContractSign {
@@ -398,4 +402,42 @@ model TermsConsent {
   ipAddress    String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// =============================================
+// SC 포트폴리오 (시공 실적)
+// =============================================
+
+model Portfolio {
+  id           String    @id @default(cuid())
+  companyId    String
+  title        String
+  client       String
+  startDate    DateTime
+  endDate      DateTime
+  amount       BigInt?
+  workCategory String
+  description  String?   @db.Text
+  docUrl       String?
+  createdAt    DateTime  @default(now())
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+// =============================================
+// GC → SC 리뷰
+// =============================================
+
+model CompanyReview {
+  id                String   @id @default(cuid())
+  contractId        String   @unique
+  reviewerCompanyId String
+  targetCompanyId   String
+  rating            Int
+  comment           String?  @db.Text
+  createdAt         DateTime @default(now())
+
+  contract        Contract @relation(fields: [contractId], references: [id])
+  reviewerCompany Company  @relation("ReviewsGiven",    fields: [reviewerCompanyId], references: [id])
+  targetCompany   Company  @relation("ReviewsReceived", fields: [targetCompanyId],   references: [id])
 }
