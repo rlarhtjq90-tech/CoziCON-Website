@@ -118,7 +118,7 @@ export default function PrivacyPage() {
             <h1 className="text-t4 font-bold text-ink-700 mb-2">개인정보처리방침</h1>
             <p className="text-p14 text-ink-400">시행일: 2025년 1월 1일 &nbsp;|&nbsp; 최종 수정: 2025년 5월 1일</p>
             <p className="text-p14 text-ink-500 mt-3 leading-relaxed">
-              주식회사 CoziCON(이하 "회사")은 개인정보보호법 제30조에 따라 정보주체의 개인정보를 보호하고 이와 관련한 고충을 신속하고 원활하게 처리할 수 있도록 다음과 같이 개인정보처리방침을 수립·공개합니다.
+              주식회사 CoziCON(이하 &quot;회사&quot;)은 개인정보보호법 제30조에 따라 정보주체의 개인정보를 보호하고 이와 관련한 고충을 신속하고 원활하게 처리할 수 있도록 다음과 같이 개인정보처리방침을 수립·공개합니다.
             </p>
           </div>
 
