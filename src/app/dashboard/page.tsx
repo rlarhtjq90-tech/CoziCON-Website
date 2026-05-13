@@ -224,6 +224,20 @@ export default async function DashboardPage() {
               <p className="mt-1 text-p12 text-primary font-medium">바로가기 →</p>
             </Link>
           )}
+          {user?.userType === 'SPECIALTY_CONTRACTOR' && hasCompany && !isPending && (
+            <Link
+              href="/dashboard/portfolio"
+              className="bg-white rounded-2xl border border-ink-200 p-6 hover:border-primary hover:shadow-sm transition-all"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-primary" />
+                </div>
+                <h3 className="text-p15 font-semibold text-ink-700">내 포트폴리오</h3>
+              </div>
+              <p className="text-p13 text-ink-400">시공 실적을 등록하고 관리하세요.</p>
+            </Link>
+          )}
           <Link
             href="/change-password"
             className="bg-white rounded-2xl p-6 shadow-card-md hover:shadow-card-lg transition-shadow group"

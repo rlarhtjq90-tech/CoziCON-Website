@@ -5,7 +5,7 @@ import { prisma } from '@/lib/db'
 import Link from 'next/link'
 import LogoutButton from '@/app/dashboard/LogoutButton'
 import ContractActions from './ContractActions'
-import { ArrowLeft, Building2, CalendarDays, FileText, CheckCircle2 } from 'lucide-react'
+import { ArrowLeft, Building2, CalendarDays, FileText, CheckCircle2, Star } from 'lucide-react'
 
 function formatPrice(price: bigint | null) {
   if (!price) return '—'
@@ -50,6 +50,7 @@ export default async function ContractDetailPage({ params }: Props) {
       scCompany: { select: { name: true, bizNo: true } },
       submission: { select: { proposedPrice: true, description: true } },
       signs: { select: { role: true, signedAt: true, user: { select: { name: true, email: true } } } },
+      review: true,
     },
   })
 
@@ -209,6 +210,35 @@ export default async function ContractDetailPage({ params }: Props) {
             />
           </div>
         </div>
+
+        {/* 리뷰 섹션: GC이고 계약 ACTIVE 이상이고 리뷰 미작성인 경우 */}
+        {isGC && ['ACTIVE', 'COMPLETED', 'TERMINATED'].includes(contract.status) && !contract.review && (
+          <div className="mt-6 bg-white rounded-2xl border border-ink-200 p-6">
+            <h3 className="text-p16 font-semibold text-ink-700 mb-1">수주사 리뷰</h3>
+            <p className="text-p13 text-ink-400 mb-4">
+              이 계약의 수주사({contract.scCompany.name})에 대한 평가를 남겨보세요.
+            </p>
+            <a
+              href={`/company/${contract.scCompanyId}?tab=reviews`}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white text-p14 font-semibold rounded-lg hover:bg-primary-600 transition-colors"
+            >
+              리뷰 남기기
+            </a>
+          </div>
+        )}
+        {isGC && contract.review && (
+          <div className="mt-6 bg-white rounded-2xl border border-ink-200 p-6">
+            <h3 className="text-p16 font-semibold text-ink-700 mb-3">내가 남긴 리뷰</h3>
+            <div className="flex items-center gap-1 mb-2">
+              {[1,2,3,4,5].map(i => (
+                <Star key={i} className={`w-5 h-5 ${i <= contract.review!.rating ? 'fill-amber-400 text-amber-400' : 'text-ink-200'}`} />
+              ))}
+            </div>
+            {contract.review.comment && (
+              <p className="text-p14 text-ink-600">{contract.review.comment}</p>
+            )}
+          </div>
+        )}
       </main>
     </div>
   )
