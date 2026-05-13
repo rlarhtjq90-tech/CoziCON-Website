@@ -56,13 +56,19 @@ export default function GNB() {
           ))}
         </ul>
 
-        {/* 로그인 — 항상 표시 */}
-        <div className="hidden laptop:flex items-center">
+        {/* 로그인 + 시작하기 */}
+        <div className="hidden laptop:flex items-center gap-3">
           <a
             href="/login"
             className="text-p14 font-medium text-ink-600 hover:text-primary transition-colors"
           >
             로그인
+          </a>
+          <a
+            href="/signup"
+            className="inline-flex items-center rounded-full bg-primary text-white px-5 py-2 text-p14 font-semibold shadow-btn-glow hover:bg-primary-600 transition-colors"
+          >
+            무료 시작하기
           </a>
         </div>
 

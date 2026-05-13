@@ -5,6 +5,7 @@ import DualAudience from '@/components/sections/DualAudience'
 import Features from '@/components/sections/Features'
 import WorkTypeSection from '@/components/sections/WorkTypeSection'
 import Statistics from '@/components/sections/Statistics'
+import FAQ from '@/components/sections/FAQ'
 import FinalCTA from '@/components/sections/FinalCTA'
 
 export default function HomePage() {
@@ -17,6 +18,7 @@ export default function HomePage() {
         <DualAudience />
         <Features />
         <Statistics />
+        <FAQ />
         <FinalCTA />
       </main>
       <Footer />

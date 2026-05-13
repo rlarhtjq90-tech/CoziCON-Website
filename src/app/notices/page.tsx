@@ -38,6 +38,7 @@ export default async function NoticesPage({ searchParams }: { searchParams: Sear
   const notices = await prisma.bidNotice.findMany({
     where: {
       status: 'OPEN',
+      isHidden: false,
       ...(q ? { title: { contains: q, mode: 'insensitive' } } : {}),
       ...(region ? { regions: { has: region } } : {}),
       ...(categoryId ? { categories: { some: { category: { parentId: categoryId } } } } : {}),

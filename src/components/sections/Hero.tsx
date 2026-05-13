@@ -26,7 +26,7 @@ export default function Hero() {
           {/* CTA Buttons */}
           <div className="flex flex-col tablet:flex-row gap-3 mt-10 w-full tablet:w-auto">
             <a
-              href="#contact"
+              href="/signup"
               className="inline-flex items-center justify-center gap-2 rounded-full bg-primary text-white px-8 py-3.5 text-p16 font-semibold shadow-btn-glow hover:bg-primary-600 transition-colors"
             >
               무료로 시작하기 →

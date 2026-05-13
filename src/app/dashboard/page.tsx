@@ -6,6 +6,7 @@ import { ContractStatus } from '@prisma/client'
 import Link from 'next/link'
 import AppHeader from '@/components/AppHeader'
 import { AlertTriangle, CheckCircle2, Clock, Building2, FileText, Gavel, Settings, Shield, FileSignature } from 'lucide-react'
+import AppFooter from '@/components/layout/AppFooter'
 
 function isAdmin(email: string | null | undefined): boolean {
   if (!email) return false
@@ -62,10 +63,10 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-brand-slate-100">
+    <div className="min-h-screen bg-brand-slate-100 flex flex-col">
       <AppHeader userId={session.user.id} userEmail={session.user.email ?? ''} />
 
-      <main className="container-content py-12">
+      <main className="container-content py-12 flex-1">
         {/* 사업자 인증 배너 */}
         {!hasCompany && (
           <div className="mb-6 flex items-start gap-3 px-5 py-4 bg-amber-50 border border-amber-200 rounded-xl">
@@ -257,6 +258,7 @@ export default async function DashboardPage() {
           )}
         </div>
       </main>
+      <AppFooter />
     </div>
   )
 }

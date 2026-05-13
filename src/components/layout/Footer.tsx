@@ -1,10 +1,22 @@
+import Link from 'next/link'
 import { Youtube, Instagram, Twitter } from 'lucide-react'
 
-const FOOTER_LINKS = {
-  서비스: ['서비스 소개', '입찰 프로세스', '요금 안내', '파트너 현황'],
-  고객지원: ['공지사항', 'FAQ', '1:1 문의', '사용 가이드'],
-  '법적 고지': ['이용약관', '개인정보 처리방침', '입찰 운영 정책'],
-}
+const SERVICE_LINKS = [
+  { label: '서비스 소개', href: '/#service' },
+  { label: '입찰 프로세스', href: '/#process' },
+  { label: '파트너 현황', href: '/#partners' },
+]
+
+const SUPPORT_LINKS = [
+  { label: 'FAQ', href: '/#faq' },
+  { label: '1:1 문의', href: '/contact' },
+]
+
+const LEGAL_LINKS = [
+  { label: '이용약관', href: '/terms' },
+  { label: '개인정보처리방침', href: '/privacy' },
+  { label: '입찰 운영 정책', href: '/legal' },
+]
 
 export default function Footer() {
   return (
@@ -18,37 +30,60 @@ export default function Footer() {
             <div className="mt-6 text-p12 text-brand-slate-400 leading-relaxed space-y-1">
               <p>(주)CoziCON &nbsp;|&nbsp; 대표: 홍길동</p>
               <p>사업자등록번호: 000-00-00000</p>
-              <p>통신판매업신고: 제2024-서울-00000호</p>
+              <p>통신판매업신고: 제2025-서울강남-00000호</p>
               <p>서울특별시 강남구 테헤란로 000</p>
               <p className="pt-1">고객센터: 1600-0000</p>
               <p>평일 09:00 – 18:00 (주말·공휴일 휴무)</p>
             </div>
           </div>
 
-          {/* Link Columns */}
-          {Object.entries(FOOTER_LINKS).map(([title, links]) => (
-            <div key={title}>
-              <h4 className="text-p14 font-semibold text-white mb-4">{title}</h4>
-              <ul className="flex flex-col gap-3">
-                {links.map((link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
-                      className="text-p14 text-brand-slate-400 hover:text-white transition-colors"
-                    >
-                      {link}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          {/* 서비스 */}
+          <div>
+            <h4 className="text-p14 font-semibold text-white mb-4">서비스</h4>
+            <ul className="flex flex-col gap-3">
+              {SERVICE_LINKS.map(({ label, href }) => (
+                <li key={label}>
+                  <Link href={href} className="text-p14 text-brand-slate-400 hover:text-white transition-colors">
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* 고객지원 */}
+          <div>
+            <h4 className="text-p14 font-semibold text-white mb-4">고객지원</h4>
+            <ul className="flex flex-col gap-3">
+              {SUPPORT_LINKS.map(({ label, href }) => (
+                <li key={label}>
+                  <Link href={href} className="text-p14 text-brand-slate-400 hover:text-white transition-colors">
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* 법적 고지 */}
+          <div>
+            <h4 className="text-p14 font-semibold text-white mb-4">법적 고지</h4>
+            <ul className="flex flex-col gap-3">
+              {LEGAL_LINKS.map(({ label, href }) => (
+                <li key={label}>
+                  <Link href={href} className="text-p14 text-brand-slate-400 hover:text-white transition-colors">
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
         {/* Bottom Bar */}
         <div className="border-t border-white/10 mt-12 pt-8 flex flex-col tablet:flex-row justify-between items-center gap-4">
           <p className="text-p13 text-brand-slate-400">
-            © 2024 CoziCON. All rights reserved.
+            © 2025 CoziCON. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             {[

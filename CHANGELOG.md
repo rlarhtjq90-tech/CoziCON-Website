@@ -2,35 +2,32 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** 세션 31 완료 — 개찰 흐름·인앱 알림·관심공고·Q&A 구현, 핵심 플랫폼 기능 완성
+- **상태:** 세션 33 완료 — 법적 페이지·UX 마감·관리자 대시보드 강화. 운영 배포 직전 단계.
 - **주요 기능:**
   - 랜딩 페이지, 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
   - 회원가입 4단계: 이메일 OTP → 유형선택 → 정보입력 + 약관동의
-  - DB: Company, CompanyVerification, License, TermsConsent, BidNotice, BidAttachment, BidSubmission, WorkCategory, BidNoticeCategory, **Contract, ContractSign, Notification, NoticeBookmark, BidQnA**
-  - 사업자 인증 `/verify-biz`, 건설업등록증 인증 `/verify-license`, 관리자 승인 큐 `/admin`
-  - 회사 프로필 페이지 `/company/profile`: 조회/수정, 로고 업로드, 주력지역, 시공실적 등
-  - 입찰공고 게시판 `/notices` (키워드/지역/공종 필터, URL 쿼리 파라미터 연동)
-  - 공고 등록 `/notices/create`: 마크다운 에디터, 계층형 공종 선택, 날짜 필드, 입찰 조건
-  - 공고 수정 `/notices/[id]/edit`: 기존 필드 전체 수정 + 첨부파일 추가/삭제 (Vercel Blob 연동)
-  - 공고 상세 `/notices/[id]`: 개찰일시, 공사기간, 예정가격, 낙찰방식, 필요면허 표시
-  - 입찰 제출 `/my-bids`, 낙찰 처리
-  - **비밀번호 찾기/변경**, **라우트 가드** (withAuth 미들웨어)
-  - **관리자 겸 일반 유저**: `/dashboard` ↔ `/admin` 양방향 네비게이션
-  - **[Phase 4] 계약 시스템**: `/contracts` 목록, `/contracts/[id]` 상세+서명, 낙찰 시 자동 생성, 해지/완료 처리
-  - **[Day 14] 대시보드 통계 카드**: GC(등록공고·접수입찰·진행계약), SC(참여입찰·낙찰·진행계약) 역할별 카운트 표시
-  - **[이메일 알림] `src/lib/email.ts`**: 7종 트랜잭션 이메일 (OTP·비밀번호·낙찰·탈락·계약·관리자 승인/거절)
-  - **[개찰 흐름] Vercel Cron 2개**: `/api/cron/close-notices` (마감), `/api/cron/open-bids` (개찰), BidStatus OPENED 추가, 개찰 화면 입찰가 순위 공개
-  - **[인앱 알림] AppHeader 벨 아이콘 + `/notifications` 페이지**: 7종 알림 트리거, 읽음 처리, `src/lib/notify.ts`
-  - **[관심공고] 북마크 토글 + `/my-bookmarks` 페이지**: BookmarkButton 클라이언트 컴포넌트, 대시보드 카드
-  - **[Q&A] `/notices/[id]/qna`**: SC 질문(익명 옵션), GC 인라인 답변, 전체 공개
+  - DB: Company, CompanyVerification, License, TermsConsent, BidNotice(isHidden), BidAttachment, BidSubmission, WorkCategory, Contract, ContractSign, Notification, NoticeBookmark, BidQnA, **Announcement**
+  - 사업자 인증, 건설업등록증 인증, 관리자 승인 큐
+  - 공고 게시판·등록·수정·상세, 입찰 제출·낙찰 처리
+  - 계약 시스템, 트랜잭션 이메일 7종, Vercel Cron 2개(개찰 흐름)
+  - 인앱 알림, 관심공고, Q&A
+  - **[세션 33] 법적 페이지**: `/terms`, `/privacy`, `/legal` (이용약관·개인정보처리방침·통신판매업 정보)
+  - **[세션 33] UX 마감**: 파비콘(SVG), OG 메타태그, FAQ 10문항 아코디언, 1:1 문의 폼(`/contact`), EmptyState UI, loading/error 경계, GNB CTA 버튼, 랜딩 CTA `/signup` 링크 수정
+  - **[세션 33] 관리자 대시보드**: 통계·승인대기·공고관리(isHidden)·회원관리(상태변경)·공지사항 CRUD — 5탭 AdminDashboard
 - **알려진 이슈:**
-  - 이메일 미수신: 도메인 미등록 → SPF/DKIM 미설정 (cozicon.co.kr 구매 + Resend 등록 필요)
-  - NTS API 15초 타임아웃 미해결 (실제 사업자 인증 시 실패 가능)
-  - `BLOB_READ_WRITE_TOKEN` Vercel 환경변수 미설정 → 첨부파일 `__mock__` URL로 폴백
-  - Vercel Cron `CRON_SECRET` 환경변수 등록 필요 (Vercel 대시보드 → Settings → Environment Variables)
+  - `CRON_SECRET` Vercel 환경변수 미등록 → Cron 인증 실패 가능
+  - `BLOB_READ_WRITE_TOKEN` 미설정 → 첨부파일 `__mock__` URL 폴백
+  - 이메일 미수신: `cozicon.co.kr` 도메인 미구매 → Resend SPF/DKIM 미설정
+  - NTS API 15초 타임아웃 미해결
+  - `public/og-image.png` (1200×630) 수동 제작 필요
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-13 (세션 33 — 법적 페이지·UX 마감·관리자 대시보드 강화)
+- **법적 페이지**: `/terms`(이용약관 11조), `/privacy`(개인정보처리방침 9항), `/legal`(통신판매업 정보); AppFooter 컴포넌트, 랜딩 Footer 링크 실제 경로 교체
+- **UX 마감**: `public/favicon.svg`, metadataBase+OG 태그, FAQ 10문항 아코디언, 1:1 문의 폼+API(`/contact`), EmptyState UI, dashboard/notices loading+error 경계, GNB CTA 버튼, 랜딩 CTA href `/signup`
+- **관리자 대시보드**: `BidNotice.isHidden` + `Announcement` 스키마 추가(prisma db push), Admin API 8개 신규, 5탭 AdminDashboard(통계·승인대기·공고비공개·회원상태·공지CRUD)
 
 ### 2026-05-12 (세션 32 — CRON_SECRET Vercel 등록 가이드)
 - 미해결 블로커 3개(BLOB/도메인/CRON_SECRET) 중 CRON_SECRET 분석: cron 라우트 인증 로직 확인, 로컬 `.env.local` 설정 확인, Vercel 환경변수 미등록 확인

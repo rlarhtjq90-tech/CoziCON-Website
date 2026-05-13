@@ -81,7 +81,7 @@ export default function DualAudience() {
 
               {/* CTA */}
               <a
-                href="#contact"
+                href="/signup"
                 className={`mt-auto inline-flex items-center justify-center rounded-full px-6 py-3 text-p16 font-semibold transition-colors ${aud.ctaStyle}`}
               >
                 {aud.cta}
