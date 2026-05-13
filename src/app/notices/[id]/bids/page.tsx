@@ -180,7 +180,12 @@ export default async function NoticeBidsPage({ params }: Params) {
                       )}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-p15 font-semibold text-ink-700">{s.company.name}</span>
+                          <Link
+                            href={`/company/${s.companyId}`}
+                            className="text-p15 font-semibold text-primary hover:underline"
+                          >
+                            {s.company.name}
+                          </Link>
                           <span className="text-p13 px-2 py-0.5 bg-ink-100 text-ink-500 rounded-full">{companyTypeLabel}</span>
                         </div>
                         <p className="text-p13 text-ink-400 mb-3">
