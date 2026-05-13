@@ -18,5 +18,7 @@ export async function GET(_req: NextRequest, { params }: Props): Promise<NextRes
     orderBy: { startDate: 'desc' },
   })
 
-  return NextResponse.json({ portfolios })
+  return NextResponse.json({
+    portfolios: portfolios.map(p => ({ ...p, amount: p.amount !== null ? Number(p.amount) : null }))
+  })
 }

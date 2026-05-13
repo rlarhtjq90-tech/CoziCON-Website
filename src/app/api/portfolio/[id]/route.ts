@@ -55,7 +55,9 @@ export async function PATCH(req: NextRequest, { params }: Props): Promise<NextRe
     },
   })
 
-  return NextResponse.json({ portfolio: updated })
+  return NextResponse.json({
+    portfolio: { ...updated, amount: updated.amount !== null ? Number(updated.amount) : null }
+  })
 }
 
 export async function DELETE(_req: NextRequest, { params }: Props): Promise<NextResponse> {

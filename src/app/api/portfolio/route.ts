@@ -22,7 +22,9 @@ export async function GET(): Promise<NextResponse> {
     orderBy: { startDate: 'desc' },
   })
 
-  return NextResponse.json({ portfolios })
+  return NextResponse.json({
+    portfolios: portfolios.map(p => ({ ...p, amount: p.amount !== null ? Number(p.amount) : null }))
+  })
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -79,5 +81,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     },
   })
 
-  return NextResponse.json({ portfolio }, { status: 201 })
+  return NextResponse.json({
+    portfolio: { ...portfolio, amount: portfolio.amount !== null ? Number(portfolio.amount) : null }
+  }, { status: 201 })
 }
