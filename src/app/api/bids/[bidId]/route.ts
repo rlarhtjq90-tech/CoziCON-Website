@@ -16,7 +16,7 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
   const submission = await prisma.bidSubmission.findUnique({
     where: { id: bidId },
     include: {
-      notice: { select: { id: true, title: true, authorId: true, companyId: true, constructionStart: true, constructionEnd: true } },
+      notice: { select: { id: true, title: true, authorId: true, companyId: true, constructionStart: true, constructionEnd: true, status: true } },
       bidder: { select: { email: true, name: true } },
     },
   })
@@ -27,6 +27,11 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
   const { status } = await req.json()
   const allowed = ['REVIEWED', 'ACCEPTED', 'REJECTED']
   if (!allowed.includes(status)) return NextResponse.json({ error: '유효하지 않은 상태입니다.' }, { status: 400 })
+
+  // 낙찰/탈락 처리는 반드시 개찰(OPENED) 상태에서만 허용
+  if ((status === 'ACCEPTED' || status === 'REJECTED') && submission.notice.status !== 'OPENED') {
+    return NextResponse.json({ error: '개찰 후에만 낙찰/탈락 처리가 가능합니다.' }, { status: 400 })
+  }
 
   const updated = await prisma.bidSubmission.update({
     where: { id: bidId },

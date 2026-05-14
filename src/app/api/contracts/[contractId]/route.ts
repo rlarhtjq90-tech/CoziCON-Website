@@ -84,6 +84,9 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
 
   if (action === 'complete' || action === 'terminate') {
     if (!isGC) return NextResponse.json({ error: '발주사만 변경 가능합니다.' }, { status: 403 })
+    if (!['ACTIVE', 'GC_SIGNED'].includes(contract.status)) {
+      return NextResponse.json({ error: '진행 중인 계약만 완료/해지할 수 있습니다.' }, { status: 400 })
+    }
     const newStatus = action === 'complete' ? 'COMPLETED' : 'TERMINATED'
     const updated = await prisma.contract.update({
       where: { id: contractId },

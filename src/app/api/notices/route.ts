@@ -4,14 +4,24 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
+  const session = await getServerSession(authOptions)
   const { searchParams } = new URL(req.url)
   const workType = searchParams.get('workType')
   const region = searchParams.get('region')
-  const status = searchParams.get('status') ?? 'OPEN'
+  const rawStatus = searchParams.get('status') ?? 'OPEN'
+
+  const validStatuses = ['DRAFT', 'OPEN', 'CLOSED', 'OPENED', 'CANCELLED'] as const
+  type NoticeStatus = typeof validStatuses[number]
+  const status = validStatuses.includes(rawStatus as NoticeStatus) ? (rawStatus as NoticeStatus) : 'OPEN'
+
+  // DRAFT는 본인(작성자) 조회 시에만 허용 — 미인증이면 OPEN만 노출
+  if (status === 'DRAFT' && !session?.user?.id) {
+    return NextResponse.json({ notices: [] })
+  }
 
   const notices = await prisma.bidNotice.findMany({
     where: {
-      status: status as 'DRAFT' | 'OPEN' | 'CLOSED' | 'OPENED' | 'CANCELLED',
+      status,
       ...(workType ? { workTypes: { has: workType } } : {}),
       ...(region ? { regions: { has: region } } : {}),
     },
@@ -33,11 +43,14 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { userType: true, companyId: true },
+    select: { userType: true, companyId: true, status: true },
   })
 
   if (user?.userType !== 'GENERAL_CONTRACTOR') {
     return NextResponse.json({ error: '종합건설사만 공고를 등록할 수 있습니다.' }, { status: 403 })
+  }
+  if (user.status !== 'ACTIVE') {
+    return NextResponse.json({ error: '승인된 계정만 공고를 등록할 수 있습니다.' }, { status: 403 })
   }
   if (!user.companyId) {
     return NextResponse.json({ error: '회사 정보가 없습니다.' }, { status: 400 })
