@@ -2,27 +2,33 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** Week 3 완료 — SC 포트폴리오·GC→SC 리뷰 시스템 구현 + 프로덕션 배포 완료.
+- **상태:** Week 4 진행 중 — 랜딩 UX 개선·RBAC 보안 점검 완료. Sentry 환경변수 등록 미완.
 - **주요 기능:**
   - 랜딩 페이지, 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
   - 회원가입 4단계: 이메일 OTP → 유형선택 → 정보입력 + 약관동의
-  - DB: Company, CompanyVerification, License, TermsConsent, BidNotice(isHidden), BidAttachment, BidSubmission, WorkCategory, Contract, ContractSign, Notification, NoticeBookmark, BidQnA, Announcement, **Portfolio, CompanyReview**
+  - DB: Company, CompanyVerification, License, TermsConsent, BidNotice, BidAttachment, BidSubmission, WorkCategory, Contract, ContractSign, Notification, NoticeBookmark, BidQnA, Announcement, Portfolio, CompanyReview
   - 사업자 인증, 건설업등록증 인증, 관리자 승인 큐
   - 공고 게시판·등록·수정·상세, 입찰 제출·낙찰 처리
   - 계약 시스템, 트랜잭션 이메일 7종, Vercel Cron 2개(개찰 흐름)
   - 인앱 알림, 관심공고, Q&A
   - 법적 페이지(`/terms`, `/privacy`, `/legal`), FAQ, 1:1 문의 폼, 관리자 대시보드 5탭
-  - **[Week 3] SC 포트폴리오**: `/dashboard/portfolio` 관리 페이지, CRUD API, PDF 업로드(Vercel Blob)
-  - **[Week 3] GC→SC 리뷰**: 계약 상세 리뷰 섹션, `/company/[companyId]` 공개 프로필(기본정보·포트폴리오·리뷰 탭)
+  - SC 포트폴리오 CRUD, GC→SC 리뷰, `/company/[companyId]` 공개 프로필
+  - **[Week 4] OG 이미지** (`public/og-image.png` 1200×630) 생성 완료
+  - **[Week 4] 랜딩 UX**: GNB 모바일 햄버거 메뉴, 히어로 CTA 버튼, 아코디언→카드
+  - **[Week 4] RBAC**: 개찰 전 낙찰 차단, DRAFT 공개 차단, PENDING GC 공고 등록 차단, 계약 상태 전환 검증
 - **알려진 이슈:**
-  - `CRON_SECRET` Vercel 환경변수 미등록 → Cron 인증 실패 가능
-  - `BLOB_READ_WRITE_TOKEN` 미설정 → 첨부파일·포트폴리오 PDF `__mock__` URL 폴백
+  - Sentry 환경변수 미등록 (`NEXT_PUBLIC_SENTRY_DSN` 등 4개) → 에러 모니터링 비활성
   - 이메일 미수신: `cozicon.co.kr` 도메인 미구매 → Resend SPF/DKIM 미설정
-  - NTS API 15초 타임아웃 미해결
-  - `public/og-image.png` (1200×630) 수동 제작 필요
+  - 알림톡(NHN/Aligo) 미연동
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-14 (세션 35 — Week 4 랜딩 UX·RBAC 보안)
+- OG 이미지 생성(`public/og-image.png` 1200×630, PowerShell System.Drawing) + 커밋/푸시
+- 랜딩 UX 개선: GNB 모바일 햄버거 메뉴+드로어, 히어로 CTA 버튼 추가, 모바일 아코디언→2×2 카드, BIDBILDING 오타 수정
+- RBAC 보안 점검 4건: 개찰 전 낙찰/탈락 차단, DRAFT 공고 미인증 차단, PENDING GC 공고 등록 차단, 계약 상태 전환 검증, 미들웨어 PENDING 사용자 제한
+- Sentry 신규 계정 생성(cozi-con.sentry.io) — Chrome 도메인 권한 차단으로 환경변수 등록 미완
 
 ### 2026-05-14 (Week 3 — SC 포트폴리오·GC→SC 리뷰 시스템)
 - git pull로 Week 3 구현 코드 수신; DB 이미 동기화(Neon), 미들웨어 `/dashboard/:path*` 와일드카드로 커버 확인
