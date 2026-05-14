@@ -35,6 +35,21 @@ export default function WorkTypeSection() {
               ))}
             </ul>
 
+            <div className="flex flex-col tablet:flex-row gap-3 w-full">
+              <a
+                href="/signup"
+                className="inline-flex items-center justify-center rounded-full bg-primary text-white px-6 py-3 text-p15 font-semibold shadow-btn-glow hover:bg-primary-600 transition-colors"
+              >
+                종합건설사로 시작하기
+              </a>
+              <a
+                href="/signup"
+                className="inline-flex items-center justify-center rounded-full border border-ink-300 text-ink-600 px-6 py-3 text-p15 font-semibold hover:border-primary hover:text-primary transition-colors"
+              >
+                전문건설사로 시작하기
+              </a>
+            </div>
+
           </div>
 
           {/* Right: Accordion */}

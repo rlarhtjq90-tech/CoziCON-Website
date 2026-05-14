@@ -109,15 +109,37 @@ export function InteractiveImageAccordion() {
   const [activeIndex, setActiveIndex] = useState(0)
 
   return (
-    <div className="flex flex-row items-center justify-center gap-3 overflow-x-auto pb-2">
-      {accordionItems.map((item, index) => (
-        <AccordionItem
-          key={item.id}
-          item={item}
-          isActive={index === activeIndex}
-          onMouseEnter={() => setActiveIndex(index)}
-        />
-      ))}
-    </div>
+    <>
+      {/* 모바일: 2×2 카드 그리드 */}
+      <div className="grid grid-cols-2 gap-3 laptop:hidden">
+        {accordionItems.map((item) => (
+          <a
+            key={item.id}
+            href={item.href}
+            className="relative h-40 rounded-2xl overflow-hidden"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={item.imageUrl} alt={item.title} className="absolute inset-0 w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+            <div className="absolute bottom-4 left-4">
+              <p className="text-white/70 text-xs font-medium mb-0.5">{item.subtitle}</p>
+              <p className="text-white text-sm font-bold">{item.title}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      {/* 데스크탑: 기존 아코디언 */}
+      <div className="hidden laptop:flex flex-row items-center justify-center gap-3">
+        {accordionItems.map((item, index) => (
+          <AccordionItem
+            key={item.id}
+            item={item}
+            isActive={index === activeIndex}
+            onMouseEnter={() => setActiveIndex(index)}
+          />
+        ))}
+      </div>
+    </>
   )
 }

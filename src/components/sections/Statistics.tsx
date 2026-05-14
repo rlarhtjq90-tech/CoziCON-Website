@@ -12,7 +12,7 @@ export default function Statistics() {
         {/* Header */}
         <div className="flex flex-col items-center text-center gap-3">
           <span className="text-p14 font-semibold text-primary-300 tracking-widest uppercase">
-            BIDBILDING IN NUMBERS
+            BIDDING IN NUMBERS
           </span>
           <h2 className="text-t3 laptop:text-t2 font-bold text-white">
             건설 입찰, 숫자로 증명합니다
