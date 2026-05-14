@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export const maxDuration = 20
+export const maxDuration = 15
 
 interface NtsResult {
   b_no: string
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({ businesses: [{ b_no: cleanBizNo, start_dt: cleanStartDt }] }),
-      signal: AbortSignal.timeout(15000),
+      signal: AbortSignal.timeout(8000),
     })
 
     if (!res.ok) {
