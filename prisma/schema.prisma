@@ -244,7 +244,7 @@ model BidSubmission {
   noticeId      String
   companyId     String
   bidderId      String
-  proposedPrice BigInt?
+  proposedPrice String?  // AES-256-GCM encrypted; see src/lib/crypto.ts
   description   String?             @db.Text
   status        BidSubmissionStatus @default(SUBMITTED)
   createdAt     DateTime            @default(now())

@@ -4,6 +4,7 @@ import { prisma } from '@/lib/db'
 import { NextRequest, NextResponse } from 'next/server'
 import { sendBidAwardEmail, sendBidRejectedEmail } from '@/lib/email'
 import { createNotification } from '@/lib/notify'
+import { decryptBidPrice } from '@/lib/crypto'
 
 type RouteContext = { params: Promise<{ bidId: string }> }
 
@@ -48,7 +49,7 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
           submissionId: bidId,
           gcCompanyId: submission.notice.companyId,
           scCompanyId: submission.companyId,
-          contractAmount: submission.proposedPrice,
+          contractAmount: submission.proposedPrice ? decryptBidPrice(submission.proposedPrice) : null,
           startDate: submission.notice.constructionStart,
           endDate: submission.notice.constructionEnd,
         },

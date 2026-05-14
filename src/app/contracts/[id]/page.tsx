@@ -48,7 +48,7 @@ export default async function ContractDetailPage({ params }: Props) {
       notice: { select: { id: true, title: true, description: true, workTypes: true, regions: true } },
       gcCompany: { select: { name: true, bizNo: true } },
       scCompany: { select: { name: true, bizNo: true } },
-      submission: { select: { proposedPrice: true, description: true } },
+      submission: { select: { description: true } },
       signs: { select: { role: true, signedAt: true, user: { select: { name: true, email: true } } } },
       review: true,
     },

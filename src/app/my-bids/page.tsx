@@ -2,6 +2,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db'
+import { decryptBidPrice } from '@/lib/crypto'
 import Link from 'next/link'
 import LogoutButton from '@/app/dashboard/LogoutButton'
 import { ArrowLeft, MapPin, Wrench, CalendarDays } from 'lucide-react'
@@ -32,7 +33,7 @@ export default async function MyBidsPage() {
 
   if (user?.userType === 'GENERAL_CONTRACTOR') redirect('/dashboard')
 
-  const submissions = await prisma.bidSubmission.findMany({
+  const raw = await prisma.bidSubmission.findMany({
     where: { bidderId: session.user.id },
     include: {
       notice: {
@@ -48,6 +49,12 @@ export default async function MyBidsPage() {
     },
     orderBy: { createdAt: 'desc' },
   })
+
+  // 본인 입찰가는 항상 복호화해서 표시
+  const submissions = raw.map((s) => ({
+    ...s,
+    proposedPrice: s.proposedPrice ? decryptBidPrice(s.proposedPrice) : null,
+  }))
 
   return (
     <div className="min-h-screen bg-brand-slate-100">

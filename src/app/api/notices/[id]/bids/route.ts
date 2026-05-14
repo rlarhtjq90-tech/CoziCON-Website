@@ -3,6 +3,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { NextRequest, NextResponse } from 'next/server'
 import { createNotification } from '@/lib/notify'
+import { encryptBidPrice, decryptBidPrice } from '@/lib/crypto'
 
 type RouteContext = { params: Promise<{ id: string }> }
 
@@ -38,7 +39,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
       noticeId,
       companyId: user.companyId,
       bidderId: session.user.id,
-      proposedPrice: proposedPrice ? BigInt(proposedPrice) : null,
+      proposedPrice: proposedPrice ? encryptBidPrice(BigInt(proposedPrice)) : null,
       description: description ?? null,
     },
   })
@@ -68,22 +69,34 @@ export async function GET(_req: NextRequest, { params }: RouteContext) {
 
   const isOpened = notice.status === 'OPENED'
 
-  const submissions = await prisma.bidSubmission.findMany({
+  const raw = await prisma.bidSubmission.findMany({
     where: { noticeId },
     include: {
       company: { select: { name: true, type: true } },
       bidder: { select: { name: true, email: true } },
     },
-    orderBy: isOpened
-      ? [{ proposedPrice: 'asc' }, { createdAt: 'asc' }]
-      : [{ createdAt: 'asc' }],
+    orderBy: [{ createdAt: 'asc' }],
   })
 
-  return NextResponse.json(
-    submissions.map((s) => ({
-      ...s,
-      // 개찰 전에는 입찰금액 비공개
-      proposedPrice: isOpened ? (s.proposedPrice?.toString() ?? null) : null,
-    }))
-  )
+  // 개찰 전에는 입찰금액 비공개; 개찰 후 복호화 + 가격 오름차순 정렬
+  const submissions = raw.map((s) => ({
+    ...s,
+    proposedPrice: isOpened && s.proposedPrice
+      ? decryptBidPrice(s.proposedPrice).toString()
+      : null,
+  }))
+
+  if (isOpened) {
+    submissions.sort((a, b) => {
+      if (a.proposedPrice && b.proposedPrice) {
+        const av = BigInt(a.proposedPrice)
+        const bv = BigInt(b.proposedPrice)
+        if (av < bv) return -1
+        if (av > bv) return 1
+      }
+      return 0
+    })
+  }
+
+  return NextResponse.json(submissions)
 }

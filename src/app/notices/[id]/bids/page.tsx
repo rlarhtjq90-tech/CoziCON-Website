@@ -2,6 +2,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { redirect, notFound } from 'next/navigation'
 import { prisma } from '@/lib/db'
+import { decryptBidPrice } from '@/lib/crypto'
 import Link from 'next/link'
 import LogoutButton from '@/app/dashboard/LogoutButton'
 import { ArrowLeft, Lock, Clock, Trophy } from 'lucide-react'
@@ -48,16 +49,29 @@ export default async function NoticeBidsPage({ params }: Params) {
 
   const isOpened = notice.status === 'OPENED'
 
-  const submissions = await prisma.bidSubmission.findMany({
+  const raw = await prisma.bidSubmission.findMany({
     where: { noticeId: id },
     include: {
       company: { select: { name: true, type: true } },
       bidder:  { select: { name: true, email: true } },
     },
-    orderBy: isOpened
-      ? [{ proposedPrice: 'asc' }, { createdAt: 'asc' }]
-      : [{ createdAt: 'asc' }],
+    orderBy: [{ createdAt: 'asc' }],
   })
+
+  // 개찰 후 복호화 + 가격 오름차순 정렬
+  const submissions = raw.map((s) => ({
+    ...s,
+    proposedPrice: (isOpened && s.proposedPrice) ? decryptBidPrice(s.proposedPrice) : null,
+  }))
+  if (isOpened) {
+    submissions.sort((a, b) => {
+      if (a.proposedPrice !== null && b.proposedPrice !== null) {
+        if (a.proposedPrice < b.proposedPrice) return -1
+        if (a.proposedPrice > b.proposedPrice) return 1
+      }
+      return 0
+    })
+  }
 
   const canManualOpen =
     notice.status === 'CLOSED' &&
