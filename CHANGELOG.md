@@ -2,7 +2,7 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** Week 4 마무리 중 — Sentry 에러 모니터링 연결 완료. 도메인·이메일·알림톡 남음.
+- **상태:** Week 4 마무리 중 — 입찰가 AES-256-GCM 암호화 완료. 도메인·이메일·알림톡 남음.
 - **주요 기능:**
   - 랜딩 페이지, 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
   - 회원가입 4단계: 이메일 OTP → 유형선택 → 정보입력 + 약관동의
@@ -17,12 +17,20 @@
   - **[Week 4] 랜딩 UX**: GNB 모바일 햄버거 메뉴, 히어로 CTA 버튼, 아코디언→카드
   - **[Week 4] RBAC**: 개찰 전 낙찰 차단, DRAFT 공개 차단, PENDING GC 공고 등록 차단, 계약 상태 전환 검증
   - **[Week 4] Sentry**: 에러 모니터링 환경변수 4개 등록 + Production 배포 완료
+  - **[Week 4] 입찰가 암호화**: AES-256-GCM, `BID_PRICE_ENCRYPTION_KEY` Vercel 등록, DB 컬럼 String 마이그레이션
 - **알려진 이슈:**
-  - 이메일 미수신: `cozicon.co.kr` 도메인 미구매 → Resend SPF/DKIM 미설정
+  - 이메일 미수신: 도메인 미구매 → Resend SPF/DKIM 미설정 (브랜드명 미확정으로 보류)
   - 알림톡(NHN/Aligo) 미연동
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-14 (세션 37 — 입찰가 AES-256-GCM 암호화 + DB 백업)
+- `src/lib/crypto.ts` 신규: AES-256-GCM `encryptBidPrice` / `decryptBidPrice` (IV 12B + AuthTag 16B + Ciphertext → Base64)
+- `prisma/schema.prisma`: `BidSubmission.proposedPrice` `BigInt?` → `String?` 마이그레이션 (dotenv-cli 우회 적용)
+- API·페이지 4곳 수정: 입찰 제출 시 암호화, 개찰 후 복호화 + 메모리 정렬, 낙찰 처리 시 복호화 후 Contract 생성
+- `BID_PRICE_ENCRYPTION_KEY` Vercel Production+Preview 환경변수 등록 (Sensitive, Chrome 자동화) + Redeploy
+- Neon DB 백업 점검: Free 플랜 6시간 PITR 확인, 수동 스냅샷 1개 생성 (2026-05-14 07:27 UTC)
 
 ### 2026-05-14 (세션 36 — Sentry 에러 모니터링 연결)
 - Chrome 자동화로 cozi-con.sentry.io에서 DSN 확인 + Personal Token(`CoziCON Vercel Build`) 신규 생성 (Project·Release Admin, Org Read)

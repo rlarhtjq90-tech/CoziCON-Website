@@ -227,6 +227,26 @@ Vercel Function Log의 "External APIs" 섹션은 함수에서 호출한 외부 H
 `prisma db push`가 "The database is already in sync with your Prisma schema."를 출력하면 아무 변경도 없음 — 멱등적으로 실행 가능.
 스키마 변경이 있었는지 불확실할 때도 부담 없이 실행하면 됨. 단, `.env.local` 환경변수를 직접 인라인으로 넘겨야 Claude Code Bash 환경에서 DATABASE_URL을 인식함.
 
+### Prisma CLI는 `.env.local`을 자동으로 읽지 않는다 #coding #prisma #deployment
+`npx prisma db push`는 `.env`만 읽고 `.env.local`은 무시함. Next.js가 `.env.local`을 특별 취급하는 것과 달리 Prisma CLI는 표준 dotenv만 지원.
+`npx --yes dotenv-cli -e .env.local -- npx prisma db push`로 우회하거나, `DATABASE_URL`을 `.env`에도 복사해두면 됨.
+
+### 암호화된 컬럼은 DB 레벨 `orderBy` 불가 — 복호화 후 메모리 정렬 #coding #prisma #security
+`proposedPrice`를 AES-256-GCM으로 암호화하면 DB에는 opaque Base64 문자열이 저장되므로 Prisma `orderBy: { proposedPrice: 'asc' }`가 의미 없어짐.
+복호화 후 JavaScript `Array.sort()`로 정렬해야 함. 대용량이 아니면 성능 문제 없음.
+
+### BigInt 리터럴(`0n`)은 TypeScript `target: ES2020` 이상 필요 #coding #typescript
+`0n` 같은 BigInt 리터럴은 tsconfig `target`이 ES2020 미만이면 "BigInt literals are not available when targeting lower than ES2020" 에러 발생.
+`if (a < b) return -1; if (a > b) return 1;` 방식으로 우회하거나 tsconfig `target`을 ES2020으로 올리면 됨.
+
+### Vercel CLI는 비ASCII OS 사용자명에서 인증 실패 #ops #vercel
+Vercel CLI 52.x는 로그인 시 OS 사용자명을 HTTP 헤더에 포함하는데, 한글 등 비ASCII 문자가 있으면 "invalid character in header content" 에러로 인증 불가.
+Chrome 브라우저 자동화(MCP)로 Vercel 대시보드를 직접 조작하여 우회 가능.
+
+### Neon Free 플랜은 PITR 6시간, 수동 스냅샷 1개 한도 #ops #database
+Neon Free 플랜 History retention은 6시간 — 6시간 이전 데이터는 복구 불가.
+수동 스냅샷은 1개까지 무료로 생성 가능(Beta). 중요 마일스톤마다 스냅샷 교체 권장. 스케줄 자동 백업은 Launch 플랜($19/월) 이상 필요.
+
 ### 서버 사이드 API 연동 오류는 진단 엔드포인트 노출이 가장 빠름 #coding #debugging
 GET /api/[route] 진단 엔드포인트를 서버에 배포하면 환경변수 유무, 연결 상태, resultCode를
 실제 Vercel 환경에서 한 번에 확인 가능. 로컬 추측보다 훨씬 빠르게 원인을 좁힐 수 있음.
