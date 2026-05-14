@@ -3,6 +3,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { NextRequest, NextResponse } from 'next/server'
 import { sendBidAwardEmail, sendBidRejectedEmail } from '@/lib/email'
+import { sendBidAwardAlimtalk, sendBidRejectedAlimtalk } from '@/lib/alimtalk'
 import { createNotification } from '@/lib/notify'
 import { decryptBidPrice } from '@/lib/crypto'
 
@@ -17,8 +18,9 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
   const submission = await prisma.bidSubmission.findUnique({
     where: { id: bidId },
     include: {
-      notice: { select: { id: true, title: true, authorId: true, companyId: true, constructionStart: true, constructionEnd: true, status: true } },
-      bidder: { select: { email: true, name: true } },
+      notice:  { select: { id: true, title: true, authorId: true, companyId: true, constructionStart: true, constructionEnd: true, status: true } },
+      bidder:  { select: { email: true, name: true } },
+      company: { select: { phone: true } },
     },
   })
 
@@ -56,10 +58,18 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
       })
       contractId = created.id
     }
+    const awardName = submission.bidder.name ?? submission.bidder.email
     await Promise.all([
       submission.bidder.email && contractId
         ? sendBidAwardEmail(submission.bidder.email, {
-            userName: submission.bidder.name ?? submission.bidder.email,
+            userName: awardName,
+            noticeTitle: submission.notice.title,
+            contractId,
+          })
+        : null,
+      submission.company.phone && contractId
+        ? sendBidAwardAlimtalk(submission.company.phone, {
+            userName: awardName,
             noticeTitle: submission.notice.title,
             contractId,
           })
@@ -75,10 +85,17 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
   }
 
   if (status === 'REJECTED') {
+    const rejectName = submission.bidder.name ?? submission.bidder.email
     await Promise.all([
       submission.bidder.email
         ? sendBidRejectedEmail(submission.bidder.email, {
-            userName: submission.bidder.name ?? submission.bidder.email,
+            userName: rejectName,
+            noticeTitle: submission.notice.title,
+          })
+        : null,
+      submission.company.phone
+        ? sendBidRejectedAlimtalk(submission.company.phone, {
+            userName: rejectName,
             noticeTitle: submission.notice.title,
           })
         : null,
