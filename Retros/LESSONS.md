@@ -215,6 +215,10 @@ Vercel Function Log의 "External APIs" 섹션은 함수에서 호출한 외부 H
 낙찰 처리처럼 상태 변경 API가 Contract 같은 파생 레코드를 자동 생성할 때, PATCH가 두 번 호출되면 `@unique` 제약으로 P2002 에러가 발생.
 사이드 이펙트 실행 전 `findUnique`로 이미 존재하는지 확인하거나, `upsert`를 쓰면 멱등성을 보장할 수 있음.
 
+### `prisma db push`는 이미 동기화된 경우 안전 — 매 배포 전 확인 습관 권장 #coding #prisma #deployment
+`prisma db push`가 "The database is already in sync with your Prisma schema."를 출력하면 아무 변경도 없음 — 멱등적으로 실행 가능.
+스키마 변경이 있었는지 불확실할 때도 부담 없이 실행하면 됨. 단, `.env.local` 환경변수를 직접 인라인으로 넘겨야 Claude Code Bash 환경에서 DATABASE_URL을 인식함.
+
 ### 서버 사이드 API 연동 오류는 진단 엔드포인트 노출이 가장 빠름 #coding #debugging
 GET /api/[route] 진단 엔드포인트를 서버에 배포하면 환경변수 유무, 연결 상태, resultCode를
 실제 Vercel 환경에서 한 번에 확인 가능. 로컬 추측보다 훨씬 빠르게 원인을 좁힐 수 있음.

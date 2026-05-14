@@ -2,27 +2,32 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** 세션 33 완료 — 법적 페이지·UX 마감·관리자 대시보드 강화. 운영 배포 직전 단계.
+- **상태:** Week 3 완료 — SC 포트폴리오·GC→SC 리뷰 시스템 구현 + 프로덕션 배포 완료.
 - **주요 기능:**
   - 랜딩 페이지, 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
   - 회원가입 4단계: 이메일 OTP → 유형선택 → 정보입력 + 약관동의
-  - DB: Company, CompanyVerification, License, TermsConsent, BidNotice(isHidden), BidAttachment, BidSubmission, WorkCategory, Contract, ContractSign, Notification, NoticeBookmark, BidQnA, **Announcement**
+  - DB: Company, CompanyVerification, License, TermsConsent, BidNotice(isHidden), BidAttachment, BidSubmission, WorkCategory, Contract, ContractSign, Notification, NoticeBookmark, BidQnA, Announcement, **Portfolio, CompanyReview**
   - 사업자 인증, 건설업등록증 인증, 관리자 승인 큐
   - 공고 게시판·등록·수정·상세, 입찰 제출·낙찰 처리
   - 계약 시스템, 트랜잭션 이메일 7종, Vercel Cron 2개(개찰 흐름)
   - 인앱 알림, 관심공고, Q&A
-  - **[세션 33] 법적 페이지**: `/terms`, `/privacy`, `/legal` (이용약관·개인정보처리방침·통신판매업 정보)
-  - **[세션 33] UX 마감**: 파비콘(SVG), OG 메타태그, FAQ 10문항 아코디언, 1:1 문의 폼(`/contact`), EmptyState UI, loading/error 경계, GNB CTA 버튼, 랜딩 CTA `/signup` 링크 수정
-  - **[세션 33] 관리자 대시보드**: 통계·승인대기·공고관리(isHidden)·회원관리(상태변경)·공지사항 CRUD — 5탭 AdminDashboard
+  - 법적 페이지(`/terms`, `/privacy`, `/legal`), FAQ, 1:1 문의 폼, 관리자 대시보드 5탭
+  - **[Week 3] SC 포트폴리오**: `/dashboard/portfolio` 관리 페이지, CRUD API, PDF 업로드(Vercel Blob)
+  - **[Week 3] GC→SC 리뷰**: 계약 상세 리뷰 섹션, `/company/[companyId]` 공개 프로필(기본정보·포트폴리오·리뷰 탭)
 - **알려진 이슈:**
   - `CRON_SECRET` Vercel 환경변수 미등록 → Cron 인증 실패 가능
-  - `BLOB_READ_WRITE_TOKEN` 미설정 → 첨부파일 `__mock__` URL 폴백
+  - `BLOB_READ_WRITE_TOKEN` 미설정 → 첨부파일·포트폴리오 PDF `__mock__` URL 폴백
   - 이메일 미수신: `cozicon.co.kr` 도메인 미구매 → Resend SPF/DKIM 미설정
   - NTS API 15초 타임아웃 미해결
   - `public/og-image.png` (1200×630) 수동 제작 필요
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-14 (Week 3 — SC 포트폴리오·GC→SC 리뷰 시스템)
+- git pull로 Week 3 구현 코드 수신; DB 이미 동기화(Neon), 미들웨어 `/dashboard/:path*` 와일드카드로 커버 확인
+- TypeScript·ESLint 검증 통과, 사용자 dev 테스트 완료
+- Deploy Hook으로 Vercel 프로덕션 배포 트리거 (commit 75a815b, job IoLmNJd7ud1IyUWRIMdJ)
 
 ### 2026-05-13 (세션 33 — 법적 페이지·UX 마감·관리자 대시보드 강화)
 - **법적 페이지**: `/terms`(이용약관 11조), `/privacy`(개인정보처리방침 9항), `/legal`(통신판매업 정보); AppFooter 컴포넌트, 랜딩 Footer 링크 실제 경로 교체
