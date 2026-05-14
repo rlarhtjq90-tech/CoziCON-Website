@@ -2,7 +2,7 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** Week 4 진행 중 — 랜딩 UX 개선·RBAC 보안 점검 완료. Sentry 환경변수 등록 미완.
+- **상태:** Week 4 마무리 중 — Sentry 에러 모니터링 연결 완료. 도메인·이메일·알림톡 남음.
 - **주요 기능:**
   - 랜딩 페이지, 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
   - 회원가입 4단계: 이메일 OTP → 유형선택 → 정보입력 + 약관동의
@@ -16,13 +16,18 @@
   - **[Week 4] OG 이미지** (`public/og-image.png` 1200×630) 생성 완료
   - **[Week 4] 랜딩 UX**: GNB 모바일 햄버거 메뉴, 히어로 CTA 버튼, 아코디언→카드
   - **[Week 4] RBAC**: 개찰 전 낙찰 차단, DRAFT 공개 차단, PENDING GC 공고 등록 차단, 계약 상태 전환 검증
+  - **[Week 4] Sentry**: 에러 모니터링 환경변수 4개 등록 + Production 배포 완료
 - **알려진 이슈:**
-  - Sentry 환경변수 미등록 (`NEXT_PUBLIC_SENTRY_DSN` 등 4개) → 에러 모니터링 비활성
   - 이메일 미수신: `cozicon.co.kr` 도메인 미구매 → Resend SPF/DKIM 미설정
   - 알림톡(NHN/Aligo) 미연동
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-14 (세션 36 — Sentry 에러 모니터링 연결)
+- Chrome 자동화로 cozi-con.sentry.io에서 DSN 확인 + Personal Token(`CoziCON Vercel Build`) 신규 생성 (Project·Release Admin, Org Read)
+- Vercel 환경변수 4개 업데이트: `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN`
+- Production Redeploy 완료 (2m 4s), 빌드 로그에서 `@sentry/nextjs` 텔레메트리 연결 확인
 
 ### 2026-05-14 (세션 35 — Week 4 랜딩 UX·RBAC 보안)
 - OG 이미지 생성(`public/og-image.png` 1200×630, PowerShell System.Drawing) + 커밋/푸시
