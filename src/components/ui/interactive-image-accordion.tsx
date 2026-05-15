@@ -24,7 +24,7 @@ export const accordionItems: AccordionItemData[] = [
   {
     id: 1,
     title: '서비스소개',
-    subtitle: 'CoziCON이 하는 일',
+    subtitle: 'CastBid이 하는 일',
     imageUrl: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=1974&auto=format&fit=crop',
     href: '#features',
   },

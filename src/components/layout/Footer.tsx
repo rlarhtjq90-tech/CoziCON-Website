@@ -25,10 +25,10 @@ export default function Footer() {
         <div className="grid grid-cols-1 tablet:grid-cols-2 laptop:grid-cols-4 gap-10 laptop:gap-12">
           {/* Brand Column */}
           <div className="tablet:col-span-2 laptop:col-span-1">
-            <div className="text-t6 font-bold text-white">CoziCON</div>
+            <div className="text-t6 font-bold text-white">CastBid</div>
             <p className="text-p14 text-brand-slate-400 mt-2">건설 입찰 디지털화의 시작</p>
             <div className="mt-6 text-p12 text-brand-slate-400 leading-relaxed space-y-1">
-              <p>(주)CoziCON &nbsp;|&nbsp; 대표: 홍길동</p>
+              <p>(주)CastBid &nbsp;|&nbsp; 대표: 홍길동</p>
               <p>사업자등록번호: 000-00-00000</p>
               <p>통신판매업신고: 제2025-서울강남-00000호</p>
               <p>서울특별시 강남구 테헤란로 000</p>
@@ -83,7 +83,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-white/10 mt-12 pt-8 flex flex-col tablet:flex-row justify-between items-center gap-4">
           <p className="text-p13 text-brand-slate-400">
-            © 2025 CoziCON. All rights reserved.
+            © 2025 CastBid. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             {[

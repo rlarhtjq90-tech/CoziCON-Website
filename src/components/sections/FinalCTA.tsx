@@ -10,7 +10,7 @@ export default function FinalCTA() {
 
           {/* Headline */}
           <h2 className="text-t3 tablet:text-t2 font-bold text-white mt-4 max-w-2xl">
-            CoziCON으로 더 스마트한
+            CastBid으로 더 스마트한
             <br />
             건설 입찰을 경험하세요
           </h2>

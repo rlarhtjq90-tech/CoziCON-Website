@@ -107,7 +107,7 @@ export default async function DashboardPage() {
           <h1 className="text-t4 font-bold text-ink-700">
             안녕하세요, {session.user?.name ?? session.user?.email}님
           </h1>
-          <p className="mt-2 text-p16 text-ink-500">CoziCON 대시보드에 오신 것을 환영합니다.</p>
+          <p className="mt-2 text-p16 text-ink-500">CastBid 대시보드에 오신 것을 환영합니다.</p>
         </div>
 
         {/* 통계 카드 */}

@@ -32,7 +32,7 @@ export default function ContactPage() {
     <div className="min-h-screen bg-brand-slate-100">
       <header className="bg-white border-b border-ink-200">
         <div className="container-content h-16 flex items-center justify-between">
-          <Link href="/" className="text-t6 font-bold text-primary tracking-tight">CoziCON</Link>
+          <Link href="/" className="text-t6 font-bold text-primary tracking-tight">CastBid</Link>
           <div className="flex items-center gap-4 text-p14">
             <Link href="/login" className="text-ink-500 hover:text-primary transition-colors">로그인</Link>
             <Link href="/signup" className="px-4 py-2 bg-primary text-white rounded-full font-medium hover:bg-primary-600 transition-colors">
@@ -67,7 +67,7 @@ export default function ContactPage() {
                   <Mail className="w-4 h-4 text-primary" />
                 </div>
                 <p className="text-p14 font-semibold text-ink-700">이메일</p>
-                <p className="text-p14 text-primary mt-1">support@cozicon.co.kr</p>
+                <p className="text-p14 text-primary mt-1">support@CastBid.co.kr</p>
                 <p className="text-p13 text-ink-400 mt-1">24시간 접수, 영업일 내 답변</p>
               </div>
             </div>
@@ -115,7 +115,7 @@ export default function ContactPage() {
                       name="company"
                       value={form.company}
                       onChange={handleChange}
-                      placeholder="(주)CoziCON"
+                      placeholder="(주)CastBid"
                       className="w-full px-4 py-2.5 border border-ink-300 rounded-lg text-p14 text-ink-700 placeholder-ink-400 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
                     />
                   </div>
@@ -172,7 +172,7 @@ export default function ContactPage() {
 
       <footer className="border-t border-ink-200 bg-white mt-8">
         <div className="container-content py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-p13 text-ink-400">
-          <p>© 2025 CoziCON. All rights reserved.</p>
+          <p>© 2025 CastBid. All rights reserved.</p>
           <nav className="flex items-center gap-4">
             <Link href="/terms" className="hover:text-primary transition-colors">이용약관</Link>
             <Link href="/privacy" className="hover:text-primary transition-colors">개인정보처리방침</Link>

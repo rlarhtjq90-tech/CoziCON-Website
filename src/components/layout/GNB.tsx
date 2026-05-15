@@ -42,7 +42,7 @@ export default function GNB() {
 
           {/* 로고 */}
           <a href="/" className="text-t6 font-bold text-primary tracking-tight">
-            CoziCON
+            CastBid
           </a>
 
           {/* 데스크탑 네비게이션 — 스크롤 시 등장 */}

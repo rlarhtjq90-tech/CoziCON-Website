@@ -13,7 +13,7 @@ export default function Hero() {
             공사 발주부터 낙찰까지
             <br />
             스마트하게,{' '}
-            <span className="text-primary-500">CoziCON</span>
+            <span className="text-primary-500">CastBid</span>
           </h1>
 
           {/* Sub Copy */}

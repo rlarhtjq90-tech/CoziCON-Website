@@ -140,7 +140,7 @@ export default function SignupPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="text-t6 font-bold text-primary tracking-tight">
-            CoziCON
+            CastBid
           </Link>
           <p className="mt-2 text-p14 text-ink-500">건설 입찰의 새로운 기준</p>
         </div>

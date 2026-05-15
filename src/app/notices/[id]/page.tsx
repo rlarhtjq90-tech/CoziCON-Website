@@ -57,7 +57,7 @@ export default async function NoticeDetailPage({ params }: Params) {
     <div className="min-h-screen bg-brand-slate-100">
       <header className="bg-white border-b border-ink-200 shadow-sm">
         <div className="container-content flex items-center justify-between h-16">
-          <a href="/" className="text-t6 font-bold text-primary tracking-tight">CoziCON</a>
+          <a href="/" className="text-t6 font-bold text-primary tracking-tight">CastBid</a>
           <div className="flex items-center gap-4">
             <span className="text-p14 text-ink-500">{session.user?.email}</span>
             <LogoutButton />

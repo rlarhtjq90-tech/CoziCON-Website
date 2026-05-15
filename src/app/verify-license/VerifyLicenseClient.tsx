@@ -106,7 +106,7 @@ export default function VerifyLicenseClient({
     <div className="min-h-screen bg-brand-slate-100 flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-lg">
         <div className="text-center mb-8">
-          <Link href="/" className="text-t6 font-bold text-primary tracking-tight">CoziCON</Link>
+          <Link href="/" className="text-t6 font-bold text-primary tracking-tight">CastBid</Link>
           <p className="mt-2 text-p14 text-ink-500">건설업등록증 인증</p>
         </div>
 

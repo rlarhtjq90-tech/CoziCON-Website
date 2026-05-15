@@ -47,7 +47,7 @@ export default function DualAudience() {
           <SectionHeader
             badge="이용 대상"
             headline="발주사와 수주사 모두를 위한 플랫폼"
-            description="CoziCON은 건설 생태계의 두 축을 하나로 연결합니다."
+            description="CastBid은 건설 생태계의 두 축을 하나로 연결합니다."
           />
         </div>
 

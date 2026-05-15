@@ -1,5 +1,5 @@
 const ALIGO_URL = 'https://kakaoapi.aligo.in/akv10/alimtalk/send/'
-const APP_URL = process.env.NEXTAUTH_URL ?? 'https://cozi-con-website-2ano.vercel.app'
+const APP_URL = process.env.NEXTAUTH_URL ?? 'https://www.castbid.co.kr'
 
 interface AligoResponse {
   code: number
@@ -85,7 +85,7 @@ export async function sendBidAwardAlimtalk(phone: string, data: {
     receiver: phone,
     subject: '낙찰 안내',
     message:
-      `[CoziCON] 낙찰 안내\n\n` +
+      `[CastBid] 낙찰 안내\n\n` +
       `안녕하세요, ${data.userName}님.\n\n` +
       `${data.noticeTitle} 공고에 낙찰되셨습니다.\n\n` +
       `계약서를 확인하고 서명을 진행해주세요.`,
@@ -108,7 +108,7 @@ export async function sendBidRejectedAlimtalk(phone: string, data: {
     receiver: phone,
     subject: '입찰 결과 안내',
     message:
-      `[CoziCON] 입찰 결과 안내\n\n` +
+      `[CastBid] 입찰 결과 안내\n\n` +
       `안녕하세요, ${data.userName}님.\n\n` +
       `${data.noticeTitle} 공고 입찰 결과,\n` +
       `이번에는 선정되지 않았습니다.\n\n` +
@@ -128,7 +128,7 @@ export async function sendBidOpenedAlimtalk(phone: string, data: {
     receiver: phone,
     subject: '개찰 안내',
     message:
-      `[CoziCON] 개찰 안내\n\n` +
+      `[CastBid] 개찰 안내\n\n` +
       `안녕하세요, ${data.userName}님.\n\n` +
       `${data.noticeTitle} 공고의 개찰이 완료되었습니다.\n\n` +
       `입찰 결과를 확인해주세요.`,
@@ -152,7 +152,7 @@ export async function sendContractSignAlimtalk(phone: string, data: {
     receiver: phone,
     subject: '계약 서명 요청',
     message:
-      `[CoziCON] 계약 서명 요청\n\n` +
+      `[CastBid] 계약 서명 요청\n\n` +
       `안녕하세요, ${data.userName}님.\n\n` +
       `${data.noticeTitle} 계약서 서명이 필요합니다.\n\n` +
       `아래 버튼을 눌러 서명을 완료해주세요.`,

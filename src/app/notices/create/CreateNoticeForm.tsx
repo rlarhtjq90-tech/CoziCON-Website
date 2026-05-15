@@ -168,7 +168,7 @@ export default function CreateNoticeForm({ categories }: { categories: Category[
     <div className="min-h-screen bg-brand-slate-100">
       <header className="bg-white border-b border-ink-200 shadow-sm">
         <div className="container-content flex items-center justify-between h-16">
-          <a href="/" className="text-t6 font-bold text-primary tracking-tight">CoziCON</a>
+          <a href="/" className="text-t6 font-bold text-primary tracking-tight">CastBid</a>
         </div>
       </header>
 

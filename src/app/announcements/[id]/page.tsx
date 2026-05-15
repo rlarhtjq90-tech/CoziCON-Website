@@ -10,7 +10,7 @@ type Props = { params: Promise<{ id: string }> }
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
   const item = await prisma.announcement.findUnique({ where: { id }, select: { title: true } })
-  return { title: item ? `${item.title} | CoziCON 공지사항` : '공지사항' }
+  return { title: item ? `${item.title} | CastBid 공지사항` : '공지사항' }
 }
 
 function formatDate(d: Date) {
@@ -28,7 +28,7 @@ export default async function AnnouncementDetailPage({ params }: Props) {
     <div className="min-h-screen bg-brand-slate-100 flex flex-col">
       <header className="bg-white border-b border-ink-200">
         <div className="container-content h-16 flex items-center justify-between">
-          <Link href="/" className="text-t6 font-bold text-primary tracking-tight">CoziCON</Link>
+          <Link href="/" className="text-t6 font-bold text-primary tracking-tight">CastBid</Link>
           <nav className="flex items-center gap-4 text-p14">
             <Link href="/login" className="text-ink-500 hover:text-primary transition-colors">로그인</Link>
             <Link href="/signup" className="px-4 py-2 bg-primary text-white rounded-full font-medium hover:bg-primary-600 transition-colors">

@@ -3,17 +3,17 @@ import Link from 'next/link'
 import { Building2, Phone, MapPin, FileText } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: '통신판매업 정보 | CoziCON',
+  title: '통신판매업 정보 | CastBid',
 }
 
 const BIZ_INFO = [
-  { label: '상호', value: '주식회사 CoziCON' },
+  { label: '상호', value: 'CastBid' },
   { label: '대표자', value: '홍길동' },
   { label: '사업자등록번호', value: '000-00-00000' },
   { label: '통신판매업 신고번호', value: '제2025-서울강남-00000호' },
   { label: '사업장 주소', value: '서울특별시 강남구 테헤란로 000' },
   { label: '고객센터', value: '1600-0000 (평일 09:00 – 18:00)' },
-  { label: '이메일', value: 'support@cozicon.co.kr' },
+  { label: '이메일', value: 'support@CastBid.co.kr' },
   { label: '호스팅 사업자', value: 'Vercel Inc.' },
 ]
 
@@ -49,7 +49,7 @@ export default function LegalPage() {
     <div className="min-h-screen bg-brand-slate-100">
       <header className="bg-white border-b border-ink-200">
         <div className="container-content h-16 flex items-center justify-between">
-          <Link href="/" className="text-t6 font-bold text-primary tracking-tight">CoziCON</Link>
+          <Link href="/" className="text-t6 font-bold text-primary tracking-tight">CastBid</Link>
           <Link href="/dashboard" className="text-p14 text-ink-400 hover:text-primary transition-colors">
             대시보드로 돌아가기
           </Link>
@@ -128,7 +128,7 @@ export default function LegalPage() {
 
       <footer className="border-t border-ink-200 bg-white mt-4">
         <div className="container-content py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-p13 text-ink-400">
-          <p>© 2025 CoziCON. All rights reserved.</p>
+          <p>© 2025 CastBid. All rights reserved.</p>
           <nav className="flex items-center gap-4">
             <Link href="/terms" className="hover:text-primary transition-colors">이용약관</Link>
             <Link href="/privacy" className="hover:text-primary transition-colors">개인정보처리방침</Link>

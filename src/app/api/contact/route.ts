@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     if (apiKey && from && adminEmail) {
       const resend = new Resend(apiKey)
       await resend.emails.send({
-        from: `CoziCON <${from}>`,
+        from: `CastBid <${from}>`,
         to: adminEmail,
         subject: `[1:1 문의] ${subject} — ${name}`,
         html: `<div style="font-family:sans-serif;max-width:480px">

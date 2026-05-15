@@ -14,7 +14,7 @@ export default async function ChangePasswordPage() {
 
         <div className="text-center mb-8">
           <Link href="/" className="text-t6 font-bold text-primary tracking-tight">
-            CoziCON
+            CastBid
           </Link>
           <p className="mt-2 text-p14 text-ink-500">비밀번호를 변경합니다</p>
         </div>

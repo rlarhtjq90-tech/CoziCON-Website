@@ -552,7 +552,7 @@ export default function AdminDashboard({ stats, pendingUsers, notices, members, 
       <header className="bg-white border-b border-ink-200 shadow-sm">
         <div className="container-content flex items-center justify-between h-16">
           <div className="flex items-center gap-3">
-            <a href="/" className="text-t6 font-bold text-primary tracking-tight">CoziCON</a>
+            <a href="/" className="text-t6 font-bold text-primary tracking-tight">CastBid</a>
             <span className="flex items-center gap-1 px-2 py-0.5 bg-red-100 text-red-600 text-p12 font-semibold rounded">
               <Shield className="w-3 h-3" />관리자
             </span>

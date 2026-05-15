@@ -2,13 +2,13 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: '이용약관 | CoziCON',
+  title: '이용약관 | CastBid',
 }
 
 const SECTIONS = [
   {
     title: '제1조 (목적)',
-    content: `이 약관은 주식회사 CoziCON(이하 "회사")이 운영하는 건설 입찰 플랫폼 CoziCON(이하 "서비스")의 이용과 관련하여 회사와 이용자 간의 권리·의무 및 책임사항, 기타 필요한 사항을 규정함을 목적으로 합니다.`,
+    content: `이 약관은 CastBid(이하 "회사")이 운영하는 건설 입찰 플랫폼 CastBid(이하 "서비스")의 이용과 관련하여 회사와 이용자 간의 권리·의무 및 책임사항, 기타 필요한 사항을 규정함을 목적으로 합니다.`,
   },
   {
     title: '제2조 (정의)',
@@ -88,7 +88,7 @@ export default function TermsPage() {
     <div className="min-h-screen bg-brand-slate-100">
       <header className="bg-white border-b border-ink-200">
         <div className="container-content h-16 flex items-center justify-between">
-          <Link href="/" className="text-t6 font-bold text-primary tracking-tight">CoziCON</Link>
+          <Link href="/" className="text-t6 font-bold text-primary tracking-tight">CastBid</Link>
           <Link href="/dashboard" className="text-p14 text-ink-400 hover:text-primary transition-colors">
             대시보드로 돌아가기
           </Link>
@@ -113,7 +113,7 @@ export default function TermsPage() {
 
           <div className="mt-10 pt-8 border-t border-ink-200">
             <p className="text-p13 text-ink-400">
-              주식회사 CoziCON &nbsp;|&nbsp; 사업자등록번호: 000-00-00000
+              CastBid &nbsp;|&nbsp; 사업자등록번호: 000-00-00000
               &nbsp;|&nbsp; 대표: 홍길동
             </p>
             <p className="text-p13 text-ink-400 mt-1">
@@ -125,7 +125,7 @@ export default function TermsPage() {
 
       <footer className="border-t border-ink-200 bg-white mt-4">
         <div className="container-content py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-p13 text-ink-400">
-          <p>© 2025 CoziCON. All rights reserved.</p>
+          <p>© 2025 CastBid. All rights reserved.</p>
           <nav className="flex items-center gap-4">
             <Link href="/terms" className="text-primary font-medium">이용약관</Link>
             <Link href="/privacy" className="hover:text-primary transition-colors">개인정보처리방침</Link>

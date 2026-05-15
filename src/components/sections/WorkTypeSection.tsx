@@ -19,7 +19,7 @@ export default function WorkTypeSection() {
             <p className="text-p18 text-ink-500 leading-relaxed max-w-sm">
               토목·건축·인테리어·설비·조경까지,
               다양한 공종의 발주·수주를
-              CoziCON 플랫폼 하나로 해결합니다.
+              CastBid 플랫폼 하나로 해결합니다.
             </p>
 
             <ul className="flex flex-col gap-2.5 text-left">

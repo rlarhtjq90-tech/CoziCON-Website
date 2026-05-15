@@ -1,17 +1,17 @@
 import { Resend } from 'resend'
 
-const APP_URL = process.env.NEXTAUTH_URL ?? 'https://cozi-con-website-lvsh.vercel.app'
+const APP_URL = process.env.NEXTAUTH_URL ?? 'https://www.castbid.co.kr'
 
 function getClient() {
   const apiKey = process.env.RESEND_API_KEY
   const from = process.env.RESEND_FROM_EMAIL
   if (!apiKey || !from) throw new Error('[email] RESEND_API_KEY 또는 RESEND_FROM_EMAIL 미설정')
-  return { resend: new Resend(apiKey), from: `CoziCON <${from}>` }
+  return { resend: new Resend(apiKey), from: `CastBid <${from}>` }
 }
 
 function layout(body: string) {
   return `<div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:40px 24px;color:#222">
-  <div style="margin-bottom:24px"><span style="font-size:20px;font-weight:800;color:#1a2dff">CoziCON</span></div>
+  <div style="margin-bottom:24px"><span style="font-size:20px;font-weight:800;color:#1a2dff">CastBid</span></div>
   ${body}
   <hr style="border:none;border-top:1px solid #eee;margin:32px 0">
   <p style="color:#aaa;font-size:12px;line-height:1.6">본인이 요청하지 않은 경우 무시하세요.</p>
@@ -46,7 +46,7 @@ async function send(to: string, subject: string, html: string) {
 }
 
 export async function sendOtpEmail(to: string, otp: string) {
-  await send(to, '[CoziCON] 이메일 인증번호', layout(`
+  await send(to, '[CastBid] 이메일 인증번호', layout(`
     <h2 style="margin-bottom:8px">이메일 인증</h2>
     <p style="color:#555">아래 인증번호를 3분 이내에 입력해주세요.</p>
     ${otpBox(otp)}
@@ -54,7 +54,7 @@ export async function sendOtpEmail(to: string, otp: string) {
 }
 
 export async function sendPasswordResetEmail(to: string, otp: string) {
-  await send(to, '[CoziCON] 비밀번호 재설정 인증번호', layout(`
+  await send(to, '[CastBid] 비밀번호 재설정 인증번호', layout(`
     <h2 style="margin-bottom:8px">비밀번호 재설정</h2>
     <p style="color:#555">아래 인증번호를 3분 이내에 입력해주세요.</p>
     ${otpBox(otp)}
@@ -66,7 +66,7 @@ export async function sendBidAwardEmail(to: string, data: {
   noticeTitle: string
   contractId: string
 }) {
-  await send(to, '[CoziCON] 낙찰 축하 알림', layout(`
+  await send(to, '[CastBid] 낙찰 축하 알림', layout(`
     <h2 style="margin-bottom:8px">낙찰을 축하합니다!</h2>
     <p style="color:#555"><strong>${data.userName}</strong>님의 입찰이 낙찰되었습니다.</p>
     ${infoBox('공고명', data.noticeTitle)}
@@ -79,7 +79,7 @@ export async function sendBidRejectedEmail(to: string, data: {
   userName: string
   noticeTitle: string
 }) {
-  await send(to, '[CoziCON] 입찰 결과 안내', layout(`
+  await send(to, '[CastBid] 입찰 결과 안내', layout(`
     <h2 style="margin-bottom:8px">입찰 결과 안내</h2>
     <p style="color:#555"><strong>${data.userName}</strong>님, 이번 입찰에는 선정되지 않았습니다.</p>
     ${infoBox('공고명', data.noticeTitle, '#e5e7eb')}
@@ -95,7 +95,7 @@ export async function sendContractSignRequestEmail(to: string, data: {
   signerRole: 'GC' | 'SC'
 }) {
   const who = data.signerRole === 'GC' ? '발주사' : '수주사'
-  await send(to, '[CoziCON] 계약 서명 요청', layout(`
+  await send(to, '[CastBid] 계약 서명 요청', layout(`
     <h2 style="margin-bottom:8px">계약 서명 요청</h2>
     <p style="color:#555"><strong>${data.userName}</strong>님, ${who} 측이 서명을 완료했습니다. 귀하의 서명이 필요합니다.</p>
     ${infoBox('공고명', data.noticeTitle)}
@@ -108,7 +108,7 @@ export async function sendContractActiveEmail(to: string, data: {
   noticeTitle: string
   contractId: string
 }) {
-  await send(to, '[CoziCON] 계약 성립 완료', layout(`
+  await send(to, '[CastBid] 계약 성립 완료', layout(`
     <h2 style="margin-bottom:8px">계약이 성립되었습니다</h2>
     <p style="color:#555"><strong>${data.userName}</strong>님, 양측 서명이 완료되어 계약이 정식 성립되었습니다.</p>
     ${infoBox('공고명', data.noticeTitle, '#22c55e')}
@@ -117,7 +117,7 @@ export async function sendContractActiveEmail(to: string, data: {
 }
 
 export async function sendAdminApprovalEmail(to: string, data: { userName: string }) {
-  await send(to, '[CoziCON] 회원 승인 완료', layout(`
+  await send(to, '[CastBid] 회원 승인 완료', layout(`
     <h2 style="margin-bottom:8px">회원 승인이 완료되었습니다</h2>
     <p style="color:#555"><strong>${data.userName}</strong>님의 가입 심사가 완료되었습니다. 이제 서비스를 정상적으로 이용하실 수 있습니다.</p>
     ${cta(`${APP_URL}/dashboard`, '대시보드 바로가기')}
@@ -129,7 +129,7 @@ export async function sendNewNoticeEmail(to: string, data: {
   noticeTitle: string
   noticeId: string
 }) {
-  await send(to, '[CoziCON] 새 입찰공고 알림', layout(`
+  await send(to, '[CastBid] 새 입찰공고 알림', layout(`
     <h2 style="margin-bottom:8px">관심 키워드 새 공고</h2>
     <p style="color:#555"><strong>${data.userName}</strong>님, 구독하신 키워드와 일치하는 공고가 등록됐습니다.</p>
     ${infoBox('공고명', data.noticeTitle)}
@@ -139,7 +139,7 @@ export async function sendNewNoticeEmail(to: string, data: {
 }
 
 export async function sendAdminRejectionEmail(to: string, data: { userName: string; reason?: string }) {
-  await send(to, '[CoziCON] 회원 심사 반려 안내', layout(`
+  await send(to, '[CastBid] 회원 심사 반려 안내', layout(`
     <h2 style="margin-bottom:8px">회원 심사 결과 안내</h2>
     <p style="color:#555"><strong>${data.userName}</strong>님, 제출하신 서류를 검토한 결과 가입 심사가 반려되었습니다.</p>
     ${data.reason ? infoBox('반려 사유', data.reason, '#f97316') : ''}

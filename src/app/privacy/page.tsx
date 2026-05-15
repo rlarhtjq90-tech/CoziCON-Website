@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: '개인정보처리방침 | CoziCON',
+  title: '개인정보처리방침 | CastBid',
 }
 
 const SECTIONS = [
@@ -92,7 +92,7 @@ const SECTIONS = [
 ▶ 개인정보 보호책임자
 - 성명: 홍길동
 - 직책: 대표이사
-- 연락처: privacy@cozicon.co.kr
+- 연락처: privacy@CastBid.co.kr
 
 정보주체는 개인정보보호법 제35조에 따른 개인정보의 열람 청구를 아래의 기관에 할 수 있습니다.
 ▶ 개인정보보호위원회: www.pipc.go.kr / 국번없이 182
@@ -105,7 +105,7 @@ export default function PrivacyPage() {
     <div className="min-h-screen bg-brand-slate-100">
       <header className="bg-white border-b border-ink-200">
         <div className="container-content h-16 flex items-center justify-between">
-          <Link href="/" className="text-t6 font-bold text-primary tracking-tight">CoziCON</Link>
+          <Link href="/" className="text-t6 font-bold text-primary tracking-tight">CastBid</Link>
           <Link href="/dashboard" className="text-p14 text-ink-400 hover:text-primary transition-colors">
             대시보드로 돌아가기
           </Link>
@@ -118,7 +118,7 @@ export default function PrivacyPage() {
             <h1 className="text-t4 font-bold text-ink-700 mb-2">개인정보처리방침</h1>
             <p className="text-p14 text-ink-400">시행일: 2025년 1월 1일 &nbsp;|&nbsp; 최종 수정: 2025년 5월 1일</p>
             <p className="text-p14 text-ink-500 mt-3 leading-relaxed">
-              주식회사 CoziCON(이하 &quot;회사&quot;)은 개인정보보호법 제30조에 따라 정보주체의 개인정보를 보호하고 이와 관련한 고충을 신속하고 원활하게 처리할 수 있도록 다음과 같이 개인정보처리방침을 수립·공개합니다.
+              CastBid(이하 &quot;회사&quot;)은 개인정보보호법 제30조에 따라 정보주체의 개인정보를 보호하고 이와 관련한 고충을 신속하고 원활하게 처리할 수 있도록 다음과 같이 개인정보처리방침을 수립·공개합니다.
             </p>
           </div>
 
@@ -133,7 +133,7 @@ export default function PrivacyPage() {
 
           <div className="mt-10 pt-8 border-t border-ink-200">
             <p className="text-p13 text-ink-400">
-              주식회사 CoziCON &nbsp;|&nbsp; 사업자등록번호: 000-00-00000
+              CastBid &nbsp;|&nbsp; 사업자등록번호: 000-00-00000
               &nbsp;|&nbsp; 대표: 홍길동
             </p>
             <p className="text-p13 text-ink-400 mt-1">
@@ -145,7 +145,7 @@ export default function PrivacyPage() {
 
       <footer className="border-t border-ink-200 bg-white mt-4">
         <div className="container-content py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-p13 text-ink-400">
-          <p>© 2025 CoziCON. All rights reserved.</p>
+          <p>© 2025 CastBid. All rights reserved.</p>
           <nav className="flex items-center gap-4">
             <Link href="/terms" className="hover:text-primary transition-colors">이용약관</Link>
             <Link href="/privacy" className="text-primary font-medium">개인정보처리방침</Link>

@@ -95,7 +95,7 @@ export default function ForgotPasswordPage() {
       <div className="min-h-screen bg-brand-slate-100 flex items-center justify-center px-4">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <Link href="/" className="text-t6 font-bold text-primary tracking-tight">CoziCON</Link>
+            <Link href="/" className="text-t6 font-bold text-primary tracking-tight">CastBid</Link>
           </div>
           <div className="bg-white rounded-2xl shadow-card-md p-8 text-center">
             <CheckCircle2 className="w-16 h-16 text-emerald-500 mx-auto mb-4" />
@@ -119,7 +119,7 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen bg-brand-slate-100 flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Link href="/" className="text-t6 font-bold text-primary tracking-tight">CoziCON</Link>
+          <Link href="/" className="text-t6 font-bold text-primary tracking-tight">CastBid</Link>
           <p className="mt-2 text-p14 text-ink-500">비밀번호를 재설정합니다</p>
         </div>
 

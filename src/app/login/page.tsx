@@ -38,7 +38,7 @@ export default function LoginPage() {
 
         <div className="text-center mb-8">
           <Link href="/" className="text-t6 font-bold text-primary tracking-tight">
-            CoziCON
+            CastBid
           </Link>
           <p className="mt-2 text-p14 text-ink-500">서비스를 이용하려면 로그인하세요</p>
         </div>
