@@ -29,7 +29,7 @@ export default async function PortfolioManagePage() {
   return (
     <div className="min-h-screen bg-brand-slate-100 flex flex-col">
       <AppHeader userId={session.user.id} userEmail={session.user.email ?? ''} companyName={session.user.companyName ?? null} />
-      <main className="container-content py-10 flex-1">
+      <main className="container-content py-10 flex-1 w-full">
         <div className="mb-6 flex items-center gap-3">
           <Link href="/dashboard" className="flex items-center gap-1.5 text-p14 text-ink-400 hover:text-primary transition-colors">
             <ArrowLeft className="w-4 h-4" />

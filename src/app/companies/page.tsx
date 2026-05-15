@@ -37,7 +37,7 @@ export default async function CompaniesPage({ searchParams }: Props) {
     <div className="min-h-screen bg-brand-slate-100 flex flex-col">
       <AppHeader userId={session.user.id} userEmail={session.user.email ?? ''} companyName={session.user.companyName ?? null} />
 
-      <main className="flex-1 container-content py-8">
+      <main className="flex-1 container-content py-8 w-full">
         <div className="mb-6">
           <h1 className="text-t4 font-bold text-ink-700">전문건설사 디렉토리</h1>
           <p className="text-p15 text-ink-400 mt-1">인증된 전문건설사를 검색하고 포트폴리오를 확인하세요.</p>

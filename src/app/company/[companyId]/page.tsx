@@ -63,7 +63,7 @@ export default async function CompanyPublicPage({ params, searchParams }: Props)
   return (
     <div className="min-h-screen bg-brand-slate-100 flex flex-col">
       <AppHeader userId={session.user.id} userEmail={session.user.email ?? ''} companyName={session.user.companyName ?? null} />
-      <main className="container-content py-10 flex-1">
+      <main className="container-content py-10 flex-1 w-full">
         <CompanyPublicClient
           company={{
             ...company,

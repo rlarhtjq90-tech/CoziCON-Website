@@ -2,8 +2,6 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db'
-import AppHeader from '@/components/AppHeader'
-import AppFooter from '@/components/layout/AppFooter'
 import NotificationPrefsClient from './NotificationPrefsClient'
 
 export default async function NotificationSettingsPage() {
@@ -21,12 +19,12 @@ export default async function NotificationSettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-brand-slate-100 flex flex-col">
-      <AppHeader userId={session.user.id} userEmail={session.user.email ?? ''} companyName={session.user.companyName ?? null} />
-      <main className="flex-1 container-content py-8 max-w-2xl">
-        <NotificationPrefsClient initial={initial} />
-      </main>
-      <AppFooter />
+    <div>
+      <div className="mb-6">
+        <h1 className="text-t5 font-bold text-ink-700">알림 수신</h1>
+        <p className="mt-1 text-p14 text-ink-400">알림 수신 채널을 설정하세요.</p>
+      </div>
+      <NotificationPrefsClient initial={initial} />
     </div>
   )
 }

@@ -5,7 +5,7 @@ import { prisma } from '@/lib/db'
 import { ContractStatus } from '@prisma/client'
 import Link from 'next/link'
 import AppHeader from '@/components/AppHeader'
-import { AlertTriangle, CheckCircle2, Clock, Building2, FileText, Gavel, Settings, Shield, FileSignature, Bell, BellRing } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, Clock, Building2, FileText, Gavel, Settings, Shield, FileSignature, Bell, MessageSquare } from 'lucide-react'
 import AppFooter from '@/components/layout/AppFooter'
 
 function isAdmin(email: string | null | undefined): boolean {
@@ -66,7 +66,7 @@ export default async function DashboardPage() {
     <div className="min-h-screen bg-brand-slate-100 flex flex-col">
       <AppHeader userId={session.user.id} userEmail={session.user.email ?? ''} companyName={user?.company?.name ?? null} />
 
-      <main className="container-content py-12 flex-1">
+      <main className="container-content py-12 flex-1 w-full">
         {/* 사업자 인증 배너 */}
         {!hasCompany && (
           <div className="mb-6 flex items-start gap-3 px-5 py-4 bg-amber-50 border border-amber-200 rounded-xl">
@@ -126,23 +126,7 @@ export default async function DashboardPage() {
         )}
 
         <div className="grid gap-4 tablet:grid-cols-3">
-          {hasCompany && (
-            <Link
-              href="/company/profile"
-              className="bg-white rounded-2xl p-6 shadow-card-md hover:shadow-card-lg transition-shadow group"
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <Building2 className="w-4 h-4 text-primary" />
-                </div>
-                <p className="text-p14 text-ink-400 font-medium">회사 프로필</p>
-              </div>
-              <p className="text-p15 font-semibold text-ink-700 group-hover:text-primary transition-colors">
-                {user?.company?.name ?? '—'}
-              </p>
-              <p className="mt-1 text-p12 text-primary font-medium">정보 보기 →</p>
-            </Link>
-          )}
+          {/* 입찰공고 */}
           <Link
             href="/notices"
             className="bg-white rounded-2xl p-6 shadow-card-md hover:shadow-card-lg transition-shadow group"
@@ -158,6 +142,8 @@ export default async function DashboardPage() {
             </p>
             <p className="mt-1 text-p12 text-primary font-medium">바로가기 →</p>
           </Link>
+
+          {/* 내 입찰 (SC) */}
           {user?.userType === 'SPECIALTY_CONTRACTOR' && (
             <Link
               href="/my-bids"
@@ -175,6 +161,8 @@ export default async function DashboardPage() {
               <p className="mt-1 text-p12 text-primary font-medium">바로가기 →</p>
             </Link>
           )}
+
+          {/* 관심공고 */}
           <Link
             href="/my-bookmarks"
             className="bg-white rounded-2xl p-6 shadow-card-md hover:shadow-card-lg transition-shadow group"
@@ -190,6 +178,8 @@ export default async function DashboardPage() {
             </p>
             <p className="mt-1 text-p12 text-yellow-500 font-medium">관심 목록 →</p>
           </Link>
+
+          {/* 공고 등록 (GC) */}
           {user?.userType === 'GENERAL_CONTRACTOR' && (
             <Link
               href="/notices/create"
@@ -207,6 +197,8 @@ export default async function DashboardPage() {
               <p className="mt-1 text-p12 text-primary font-medium">바로가기 →</p>
             </Link>
           )}
+
+          {/* 계약 현황 */}
           {hasCompany && !isPending && (
             <Link
               href="/contracts"
@@ -224,52 +216,27 @@ export default async function DashboardPage() {
               <p className="mt-1 text-p12 text-primary font-medium">바로가기 →</p>
             </Link>
           )}
-          {user?.userType === 'SPECIALTY_CONTRACTOR' && (
+
+          {/* 회사 게시판 */}
+          {hasCompany && !isPending && (
             <Link
-              href="/dashboard/subscriptions"
+              href="/dashboard/notice-board"
               className="bg-white rounded-2xl p-6 shadow-card-md hover:shadow-card-lg transition-shadow group"
             >
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <BellRing className="w-4 h-4 text-primary" />
+                  <MessageSquare className="w-4 h-4 text-primary" />
                 </div>
-                <p className="text-p14 text-ink-400 font-medium">공고 알림</p>
+                <p className="text-p14 text-ink-400 font-medium">회사 게시판</p>
               </div>
               <p className="text-p15 font-semibold text-ink-700 group-hover:text-primary transition-colors">
-                키워드 구독
+                사내 공지 · 자료
               </p>
-              <p className="mt-1 text-p12 text-primary font-medium">알림 설정 →</p>
+              <p className="mt-1 text-p12 text-primary font-medium">게시판 →</p>
             </Link>
           )}
-          {user?.userType === 'SPECIALTY_CONTRACTOR' && hasCompany && !isPending && (
-            <Link
-              href="/dashboard/portfolio"
-              className="bg-white rounded-2xl border border-ink-200 p-6 hover:border-primary hover:shadow-sm transition-all"
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center">
-                  <FileText className="w-5 h-5 text-primary" />
-                </div>
-                <h3 className="text-p15 font-semibold text-ink-700">내 포트폴리오</h3>
-              </div>
-              <p className="text-p13 text-ink-400">시공 실적을 등록하고 관리하세요.</p>
-            </Link>
-          )}
-          <Link
-            href="/change-password"
-            className="bg-white rounded-2xl p-6 shadow-card-md hover:shadow-card-lg transition-shadow group"
-          >
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-9 h-9 rounded-xl bg-ink-100 flex items-center justify-center">
-                <Settings className="w-4 h-4 text-ink-500" />
-              </div>
-              <p className="text-p14 text-ink-400 font-medium">계정 설정</p>
-            </div>
-            <p className="text-p15 font-semibold text-ink-700 group-hover:text-primary transition-colors">
-              비밀번호 변경
-            </p>
-            <p className="mt-1 text-p12 text-primary font-medium">설정 →</p>
-          </Link>
+
+          {/* 알림 */}
           <Link
             href="/dashboard/settings/notifications"
             className="bg-white rounded-2xl p-6 shadow-card-md hover:shadow-card-lg transition-shadow group"
@@ -278,13 +245,32 @@ export default async function DashboardPage() {
               <div className="w-9 h-9 rounded-xl bg-ink-100 flex items-center justify-center">
                 <Bell className="w-4 h-4 text-ink-500" />
               </div>
-              <p className="text-p14 text-ink-400 font-medium">알림 설정</p>
+              <p className="text-p14 text-ink-400 font-medium">알림</p>
             </div>
             <p className="text-p15 font-semibold text-ink-700 group-hover:text-primary transition-colors">
-              이메일 · 알림톡
+              수신 설정
             </p>
-            <p className="mt-1 text-p12 text-primary font-medium">수신 설정 →</p>
+            <p className="mt-1 text-p12 text-primary font-medium">설정 →</p>
           </Link>
+
+          {/* 통합 설정 */}
+          <Link
+            href="/dashboard/settings"
+            className="bg-white rounded-2xl p-6 shadow-card-md hover:shadow-card-lg transition-shadow group"
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-9 h-9 rounded-xl bg-ink-100 flex items-center justify-center">
+                <Settings className="w-4 h-4 text-ink-500" />
+              </div>
+              <p className="text-p14 text-ink-400 font-medium">설정</p>
+            </div>
+            <p className="text-p15 font-semibold text-ink-700 group-hover:text-primary transition-colors">
+              회사정보 · 계정 보안
+            </p>
+            <p className="mt-1 text-p12 text-primary font-medium">설정 →</p>
+          </Link>
+
+          {/* 관리자 패널 */}
           {adminUser && (
             <Link
               href="/admin"

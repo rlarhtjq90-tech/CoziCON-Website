@@ -62,6 +62,7 @@ model User {
   bookmarks            NoticeBookmark[]
   qnaQuestions         BidQnA[]
   noticeSubscription   NoticeSubscription?
+  companyPosts         CompanyPost[]
 }
 
 model Account {
@@ -132,6 +133,7 @@ model Company {
   portfolios      Portfolio[]
   reviewsGiven    CompanyReview[] @relation("ReviewsGiven")
   reviewsReceived CompanyReview[] @relation("ReviewsReceived")
+  posts           CompanyPost[]
 }
 
 // =============================================
@@ -478,4 +480,25 @@ model CompanyReview {
   contract        Contract @relation(fields: [contractId], references: [id])
   reviewerCompany Company  @relation("ReviewsGiven",    fields: [reviewerCompanyId], references: [id])
   targetCompany   Company  @relation("ReviewsReceived", fields: [targetCompanyId],   references: [id])
+}
+
+// =============================================
+// 회사 게시판
+// =============================================
+
+model CompanyPost {
+  id        String   @id @default(cuid())
+  companyId String
+  authorId  String
+  category  String   @default("일반") // "공지" | "일반" | "자료"
+  title     String
+  content   String   @db.Text
+  viewCount Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  author  User    @relation(fields: [authorId], references: [id])
+
+  @@index([companyId, createdAt(sort: Desc)])
 }

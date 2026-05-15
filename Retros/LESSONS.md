@@ -149,6 +149,11 @@ PowerShell은 `&`를 명령 연결자로 해석해 `sslmode=require&channel_bind
 
 ## Next.js / React
 
+### flex-1이 flex-col 부모 안에 있으면 width가 content 크기로 줄어든다 #coding #next-js #css
+`min-h-screen flex flex-col` 부모 안에서 `flex-1` 자식의 width는 `100%`가 아니라 내용 크기로 수축함.
+`container-content`처럼 `max-width + margin: auto`를 쓰는 요소엔 반드시 `w-full`을 함께 붙여야 함.
+증상: viewport가 1920px인데 main이 698px — `w-full` 한 줄 추가로 해결됨.
+
 ### App Router 목록 필터는 URL searchParams + 서버 Prisma 쿼리 조합이 최선 #coding #next-js
 클라이언트 상태로 필터를 관리하면 URL 공유·북마크·SSR이 모두 별도 구현 필요.
 `searchParams` prop을 받아 Prisma `where` 절에 바로 전달하면 공짜로 해결됨.
@@ -173,6 +178,11 @@ Prisma 응답을 그대로 NextResponse.json()에 넣으면 BigInt 필드가 있
 ### Windows에서 `npm install` 후 브랜치 전환 전 `package-lock.json` 복원 필요 #coding #git #windows
 `npm install`을 실행하면 `package-lock.json`이 로컬에서 변경됨. 이 상태에서 `git checkout`을 시도하면 "Your local changes would be overwritten" 오류로 전환 실패.
 브랜치 전환 전에 `git restore package-lock.json`으로 먼저 되돌려야 함.
+
+### 백그라운드 dev 서버는 누적 실행되면 포트 충돌·DLL 잠금 동시에 발생 #coding #windows #tooling
+`npx next dev`를 여러 번 백그라운드로 실행하면 node 프로세스가 누적되어 포트 충돌 + Prisma DLL 잠금이 동시에 발생함.
+`tasklist | findstr node` 또는 `Get-Process node`로 상태 확인 후, `Stop-Process -Name node -Force`로 전체 종료한 뒤 재시작해야 함.
+`prisma generate` 전에도 동일하게 node 프로세스를 모두 종료해야 EPERM 없이 성공함.
 
 ### Windows dev 서버 실행 중 `prisma generate`는 EPERM으로 실패 — `--no-engine`으로 우회 #coding #prisma #windows
 `prisma db push`나 `prisma generate`는 내부적으로 query_engine-windows.dll.node를 rename함.

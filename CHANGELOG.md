@@ -2,11 +2,11 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** 브랜드명 CastBid 확정 + 전체 리브랜딩 완료. 로그인 상태 UX 개선 완료 (2026-05-15).
+- **상태:** 통합 설정 허브 + 회사 게시판 추가 완료. 전체 페이지 너비 버그 수정 (2026-05-15).
 - **주요 기능:**
   - 랜딩 페이지, 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
   - 회원가입 4단계: 이메일 OTP → 유형선택 → 정보입력 + 약관동의
-  - DB: Company, CompanyVerification, License, TermsConsent, BidNotice, BidAttachment, BidSubmission, WorkCategory, Contract, ContractSign, Notification, NoticeBookmark, BidQnA, Announcement, Portfolio, CompanyReview, **NoticeSubscription, AuditLog**
+  - DB: Company, CompanyVerification, License, TermsConsent, BidNotice, BidAttachment, BidSubmission, WorkCategory, Contract, ContractSign, Notification, NoticeBookmark, BidQnA, Announcement, Portfolio, CompanyReview, NoticeSubscription, AuditLog, **CompanyPost**
   - 사업자 인증, 건설업등록증 인증, 관리자 승인 큐 (면허 배지 + KISCON 조회 링크)
   - 공고 게시판·등록·수정·상세, 입찰 제출·낙찰 처리
   - 계약 시스템, 트랜잭션 이메일 7종+1(공고알림), Vercel Cron 2개(개찰 흐름)
@@ -16,7 +16,8 @@
   - **[P0/P1/P2]** 파일 스캔, 알림 수신 설정, 키워드 구독, 디렉토리, 공지사항, 감사 로그, 에러 경계
   - **[Week 4]** OG 이미지, RBAC, Sentry, 입찰가 AES-256-GCM 암호화, 알림톡
   - **[리브랜딩]** CoziCON → CastBid 전체 치환, Vercel 프로젝트명 `castbid`, OG 이미지 재생성
-  - **[세션 41]** GNB 세션 분기 (로그인 시 사업자명+대시보드+로그아웃), JWT에 companyName 추가, 전체 9개 페이지 적용
+  - **[세션 41]** GNB 세션 분기 (로그인 시 사업자명+대시보드+로그아웃), JWT에 companyName 추가
+  - **[세션 42]** `/dashboard/settings` 통합 허브 (좌측 사이드바), `/dashboard/notice-board` 회사 게시판 CRUD, 전체 페이지 너비 픽스
 - **보류 중 (도메인 미구매):**
   - `castbid.co.kr` 도메인 구매 → Resend SPF/DKIM 설정
   - Sentry Display Name / Project 이름 변경 (`cast-bid.sentry.io` 직접 접속 필요)
@@ -25,6 +26,11 @@
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-15 (세션 42 — 통합 설정 허브 + 회사 게시판 + 너비 버그 수정)
+- `/dashboard/settings` 통합 허브: 좌측 사이드바(회사정보·알림수신·키워드구독·포트폴리오·계정보안) + 모바일 드롭다운, 기존 설정 페이지들 재구성
+- `/dashboard/notice-board` 회사 게시판: `CompanyPost` Prisma 모델 추가(prisma db push + generate), 테이블 목록·검색·카테고리 필터·글쓰기 모달·상세·인라인 수정/삭제, API 4개(GET목록/POST작성/PATCH수정/DELETE삭제)
+- `flex-1` + `flex flex-col` 조합으로 main이 698px로 좁아지는 버그 수정: 6개 페이지에 `w-full` 추가, `container-content` max-width 1136px → 1400px 변경
 
 ### 2026-05-15 (세션 41 — 로그인 상태 유지 + 사업자명 표시)
 - `auth.ts`: `authorize()`에서 company 포함 조회 → JWT/Session에 `companyName` 추가
