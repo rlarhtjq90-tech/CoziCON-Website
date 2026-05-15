@@ -9,6 +9,10 @@
 ### Vercel 빌드 실패 시 로컬 성공해도 의심할 것 — 새 의존성이 원인일 수 있음 #coding #vercel
 로컬 `next build`가 통과해도 Vercel 빌드는 실패할 수 있음. 새 npm 패키지 추가 직후 실패하면 해당 패키지의 Vercel 환경 호환성을 먼저 확인. `npx vercel inspect <deployment-id> --logs` (Vercel CLI 로그인 필요) 또는 Vercel 대시보드 Build Logs 탭이 가장 빠른 진단 경로.
 
+### 외부 서비스 slug 변경 시 Chrome 확장 도메인 권한을 즉시 재확보할 것 #coding #tooling
+Sentry org slug처럼 서브도메인이 바뀌면(`cozi-con.sentry.io` → `cast-bid.sentry.io`) claude-in-chrome 확장 권한이 새 도메인에 자동 이전되지 않음.
+slug 저장 직후 새 도메인 탭에서 확장 아이콘 → "이 사이트에서 허용"을 눌러 MCP 탭 그룹 내에서 권한을 재부여해야 자동화가 이어짐.
+
 ### claude-in-chrome MCP는 `claude --chrome`로 시작한 세션에서만 활성화 #coding #tooling
 Chrome에 Claude 확장이 설치돼 있어도, Claude Code 세션이 `--chrome` 플래그 없이 시작됐으면 `claude-in-chrome` MCP 서버가 주입되지 않음. Chrome 자동화가 필요하면 세션 시작 시 `claude --chrome`을 사용하거나, CDP(remote-debugging-port) 방식으로 대체.
 
@@ -20,6 +24,11 @@ NEXTAUTH_URL을 구 URL로 방치하면 로그인 요청이 전부 실패함.
 ### npm install 시 메이저 버전 명시 필수 (Prisma 등) #coding #tooling
 `npm install prisma`로 설치하면 최신 메이저(현재 v7)가 설치되어 schema 포맷이 완전히 바뀔 수 있음.
 안정적인 Next.js 14 환경에서는 `prisma@5`처럼 메이저 버전을 고정해서 설치해야 함.
+
+### Vercel 폼 Save 버튼은 포커스 이동 후 좌표 클릭이 안정적 #coding #browser-automation
+Vercel 설정 폼에서 입력 후 ref 클릭으로 Save 시 응답 없이 초기화되는 경우 있음.
+Tab키로 포커스를 버튼으로 이동한 뒤 좌표 클릭하면 안정적으로 저장됨.
+ref가 폼 상태 변화로 re-render돼 무효화되는 것이 원인으로 추정.
 
 ### Vercel CLI 한글 계정명 버그 #coding #vercel
 Vercel CLI v52에서 계정명에 한글 등 비ASCII 문자가 포함되면 HTTP 헤더 인코딩 오류 발생.

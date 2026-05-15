@@ -2,7 +2,7 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** 4주 계획 전 기능 완료 — DailyPlan P0/P1/P2 전 항목 처리. 브랜드명 확정 후 도메인·알림톡 채널 등록만 남음.
+- **상태:** 브랜드명 CastBid 확정 + 전체 리브랜딩 완료 (2026-05-15). 도메인 구매·알림톡 채널 등록만 남음.
 - **주요 기능:**
   - 랜딩 페이지, 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
   - 회원가입 4단계: 이메일 OTP → 유형선택 → 정보입력 + 약관동의
@@ -13,21 +13,22 @@
   - 인앱 알림, 관심공고, Q&A
   - 법적 페이지(`/terms`, `/privacy`, `/legal`), FAQ, 1:1 문의 폼, 관리자 대시보드 5탭
   - SC 포트폴리오 CRUD, GC→SC 리뷰, `/company/[companyId]` 공개 프로필
-  - **[P0] 파일 스캔**: magic byte 기반 실행파일 차단 (`src/lib/file-scan.ts`)
-  - **[P0] 알림 수신 설정**: 이메일·알림톡 on/off (`/dashboard/settings/notifications`)
-  - **[P1] 공고 키워드 구독**: 공종·지역 구독 + 신규 공고 시 이메일 발송 (`/dashboard/subscriptions`)
-  - **[P1] 모바일 반응형** 주요 화면 그리드 수정 완료
-  - **[P1] SC 업체 디렉토리** `/companies`, 공지사항 `/announcements`
-  - **[P2] 감사 로그**: AuditLog 모델 + logAudit() 8개 액션 전 API 연동
-  - **[P2] 에러 경계**: 글로벌 error.tsx, not-found.tsx, my-bids/contracts 라우트별 error.tsx
-  - **[Week 4] OG 이미지**, **RBAC**, **Sentry**, **입찰가 AES-256-GCM 암호화**, **알림톡**
-- **보류 중 (브랜드명 확정 후):**
-  - 도메인 구매 → Resend SPF/DKIM 설정
+  - **[P0/P1/P2]** 파일 스캔, 알림 수신 설정, 키워드 구독, 디렉토리, 공지사항, 감사 로그, 에러 경계
+  - **[Week 4]** OG 이미지, RBAC, Sentry, 입찰가 AES-256-GCM 암호화, 알림톡
+  - **[리브랜딩]** CoziCON → CastBid 전체 치환, Vercel 프로젝트명 `castbid`, OG 이미지 재생성
+- **보류 중 (도메인 미구매):**
+  - `castbid.co.kr` 도메인 구매 → Resend SPF/DKIM 설정
+  - Sentry Display Name / Project 이름 변경 (`cast-bid.sentry.io` 직접 접속 필요)
   - 카카오 채널 개설 → Aligo 발신프로필 등록 → 템플릿 심사
   - 첫 실사용자 영입
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-15 (세션 40 — 브랜드명 CastBid 전체 리브랜딩)
+- CoziCON → CastBid 전체 치환: src/ 38파일, package.json, .env.example, OG 이미지 재생성 (castbid.co.kr 도메인)
+- Vercel 프로젝트명 `cozi-con-website-2ano` → `castbid`, 환경변수 `SENTRY_ORG`=`cast-bid` / `SENTRY_PROJECT`=`castbid` 업데이트 + Redeploy
+- Sentry org slug `cozi-con` → `cast-bid` 변경 완료; Display Name·Project 이름은 `cast-bid.sentry.io` 직접 변경 필요
 
 ### 2026-05-15 (세션 39 — DailyPlan P0/P1/P2 전체 완료)
 - **P0**: 파일 magic byte 스캔(`file-scan.ts`), 알림 수신 설정 토글(`notifEmail`·`notifAlimtalk`), FAQ 페이지, 알림 설정 대시보드 카드
