@@ -52,7 +52,7 @@ export default async function NoticesPage({ searchParams }: { searchParams: Sear
 
   return (
     <div className="min-h-screen bg-brand-slate-100">
-      <AppHeader userId={session.user.id} userEmail={session.user.email ?? ''} />
+      <AppHeader userId={session.user.id} userEmail={session.user.email ?? ''} companyName={session.user.companyName ?? null} />
 
       <main className="container-content py-10">
         <div className="mb-6 flex items-center gap-3">

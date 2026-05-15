@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Menu, X } from 'lucide-react'
+import { useSession, signOut } from 'next-auth/react'
 
 const NAV_LINKS = [
   { label: '서비스소개', href: '#features' },
@@ -13,6 +14,7 @@ const NAV_LINKS = [
 export default function GNB() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { data: session, status } = useSession()
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > window.innerHeight * 0.6)
@@ -25,6 +27,9 @@ export default function GNB() {
     else document.body.style.overflow = ''
     return () => { document.body.style.overflow = '' }
   }, [mobileOpen])
+
+  const isAuthenticated = status === 'authenticated'
+  const companyName = session?.user?.companyName
 
   return (
     <>
@@ -65,17 +70,41 @@ export default function GNB() {
             ))}
           </ul>
 
-          {/* 데스크탑 로그인 + 시작하기 */}
+          {/* 데스크탑 우측 영역 */}
           <div className="hidden laptop:flex items-center gap-3">
-            <a href="/login" className="text-p14 font-medium text-ink-600 hover:text-primary transition-colors">
-              로그인
-            </a>
-            <a
-              href="/signup"
-              className="inline-flex items-center rounded-full bg-primary text-white px-5 py-2 text-p14 font-semibold shadow-btn-glow hover:bg-primary-600 transition-colors"
-            >
-              무료 시작하기
-            </a>
+            {status === 'loading' ? (
+              <div className="h-8 w-40 rounded-full bg-ink-100 animate-pulse" />
+            ) : isAuthenticated ? (
+              <>
+                {companyName && (
+                  <span className="text-p14 font-semibold text-ink-700">{companyName}</span>
+                )}
+                <a
+                  href="/dashboard"
+                  className="text-p14 font-medium text-ink-600 hover:text-primary transition-colors"
+                >
+                  대시보드
+                </a>
+                <button
+                  onClick={() => signOut({ callbackUrl: '/' })}
+                  className="inline-flex items-center rounded-full border border-ink-300 text-ink-600 px-5 py-2 text-p14 font-medium hover:border-primary hover:text-primary transition-colors"
+                >
+                  로그아웃
+                </button>
+              </>
+            ) : (
+              <>
+                <a href="/login" className="text-p14 font-medium text-ink-600 hover:text-primary transition-colors">
+                  로그인
+                </a>
+                <a
+                  href="/signup"
+                  className="inline-flex items-center rounded-full bg-primary text-white px-5 py-2 text-p14 font-semibold shadow-btn-glow hover:bg-primary-600 transition-colors"
+                >
+                  무료 시작하기
+                </a>
+              </>
+            )}
           </div>
 
           {/* 모바일 햄버거 버튼 */}
@@ -112,18 +141,41 @@ export default function GNB() {
               ))}
             </ul>
             <div className="flex flex-col gap-3">
-              <a
-                href="/signup"
-                className="inline-flex items-center justify-center rounded-full bg-primary text-white px-6 py-3 text-p15 font-semibold shadow-btn-glow hover:bg-primary-600 transition-colors"
-              >
-                무료 시작하기
-              </a>
-              <a
-                href="/login"
-                className="inline-flex items-center justify-center rounded-full border border-ink-300 text-ink-600 px-6 py-3 text-p15 font-medium hover:border-primary hover:text-primary transition-colors"
-              >
-                로그인
-              </a>
+              {isAuthenticated ? (
+                <>
+                  {companyName && (
+                    <p className="text-p15 font-semibold text-ink-700 text-center">{companyName}</p>
+                  )}
+                  <a
+                    href="/dashboard"
+                    onClick={() => setMobileOpen(false)}
+                    className="inline-flex items-center justify-center rounded-full bg-primary text-white px-6 py-3 text-p15 font-semibold shadow-btn-glow hover:bg-primary-600 transition-colors"
+                  >
+                    대시보드
+                  </a>
+                  <button
+                    onClick={() => { setMobileOpen(false); signOut({ callbackUrl: '/' }) }}
+                    className="inline-flex items-center justify-center rounded-full border border-ink-300 text-ink-600 px-6 py-3 text-p15 font-medium hover:border-primary hover:text-primary transition-colors"
+                  >
+                    로그아웃
+                  </button>
+                </>
+              ) : (
+                <>
+                  <a
+                    href="/signup"
+                    className="inline-flex items-center justify-center rounded-full bg-primary text-white px-6 py-3 text-p15 font-semibold shadow-btn-glow hover:bg-primary-600 transition-colors"
+                  >
+                    무료 시작하기
+                  </a>
+                  <a
+                    href="/login"
+                    className="inline-flex items-center justify-center rounded-full border border-ink-300 text-ink-600 px-6 py-3 text-p15 font-medium hover:border-primary hover:text-primary transition-colors"
+                  >
+                    로그인
+                  </a>
+                </>
+              )}
             </div>
           </div>
         </div>

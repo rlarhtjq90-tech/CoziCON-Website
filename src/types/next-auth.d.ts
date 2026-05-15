@@ -11,6 +11,7 @@ declare module 'next-auth' {
       userType?: string | null
       status?: string | null
       companyId?: string | null
+      companyName?: string | null
       isAdmin?: boolean | null
     }
   }
@@ -22,6 +23,7 @@ declare module 'next-auth/jwt' {
     userType?: string | null
     status?: string | null
     companyId?: string | null
+    companyName?: string | null
     isAdmin?: boolean
   }
 }

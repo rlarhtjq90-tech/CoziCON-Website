@@ -17,7 +17,7 @@ export default async function SubscriptionsPage() {
 
   return (
     <div className="min-h-screen bg-brand-slate-100 flex flex-col">
-      <AppHeader userId={session.user.id} userEmail={session.user.email ?? ''} />
+      <AppHeader userId={session.user.id} userEmail={session.user.email ?? ''} companyName={session.user.companyName ?? null} />
       <main className="flex-1 container-content py-8 max-w-2xl">
         <SubscriptionClient initial={sub ?? null} />
       </main>

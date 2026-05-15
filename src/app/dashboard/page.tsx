@@ -64,7 +64,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-brand-slate-100 flex flex-col">
-      <AppHeader userId={session.user.id} userEmail={session.user.email ?? ''} />
+      <AppHeader userId={session.user.id} userEmail={session.user.email ?? ''} companyName={user?.company?.name ?? null} />
 
       <main className="container-content py-12 flex-1">
         {/* 사업자 인증 배너 */}

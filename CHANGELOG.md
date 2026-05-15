@@ -2,7 +2,7 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** 브랜드명 CastBid 확정 + 전체 리브랜딩 완료 (2026-05-15). 도메인 구매·알림톡 채널 등록만 남음.
+- **상태:** 브랜드명 CastBid 확정 + 전체 리브랜딩 완료. 로그인 상태 UX 개선 완료 (2026-05-15).
 - **주요 기능:**
   - 랜딩 페이지, 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
   - 회원가입 4단계: 이메일 OTP → 유형선택 → 정보입력 + 약관동의
@@ -16,6 +16,7 @@
   - **[P0/P1/P2]** 파일 스캔, 알림 수신 설정, 키워드 구독, 디렉토리, 공지사항, 감사 로그, 에러 경계
   - **[Week 4]** OG 이미지, RBAC, Sentry, 입찰가 AES-256-GCM 암호화, 알림톡
   - **[리브랜딩]** CoziCON → CastBid 전체 치환, Vercel 프로젝트명 `castbid`, OG 이미지 재생성
+  - **[세션 41]** GNB 세션 분기 (로그인 시 사업자명+대시보드+로그아웃), JWT에 companyName 추가, 전체 9개 페이지 적용
 - **보류 중 (도메인 미구매):**
   - `castbid.co.kr` 도메인 구매 → Resend SPF/DKIM 설정
   - Sentry Display Name / Project 이름 변경 (`cast-bid.sentry.io` 직접 접속 필요)
@@ -24,6 +25,11 @@
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-15 (세션 41 — 로그인 상태 유지 + 사업자명 표시)
+- `auth.ts`: `authorize()`에서 company 포함 조회 → JWT/Session에 `companyName` 추가
+- `GNB.tsx`: `useSession()` 도입 — 로그인 시 사업자명+대시보드+로그아웃 표시, 비로그인 시 기존 버튼, 로딩 시 스켈레톤
+- `AppHeader.tsx`: `companyName` prop 추가; `dashboard/page.tsx` + 8개 보호 페이지 전체 적용 (DB 추가 쿼리 없이 세션값 재사용)
 
 ### 2026-05-15 (세션 40 — 브랜드명 CastBid 전체 리브랜딩)
 - CoziCON → CastBid 전체 치환: src/ 38파일, package.json, .env.example, OG 이미지 재생성 (castbid.co.kr 도메인)

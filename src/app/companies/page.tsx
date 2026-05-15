@@ -35,7 +35,7 @@ export default async function CompaniesPage({ searchParams }: Props) {
 
   return (
     <div className="min-h-screen bg-brand-slate-100 flex flex-col">
-      <AppHeader userId={session.user.id} userEmail={session.user.email ?? ''} />
+      <AppHeader userId={session.user.id} userEmail={session.user.email ?? ''} companyName={session.user.companyName ?? null} />
 
       <main className="flex-1 container-content py-8">
         <div className="mb-6">

@@ -31,7 +31,7 @@ export default async function MyBookmarksPage() {
 
   return (
     <div className="min-h-screen bg-brand-slate-100">
-      <AppHeader userId={session.user.id} userEmail={session.user.email ?? ''} />
+      <AppHeader userId={session.user.id} userEmail={session.user.email ?? ''} companyName={session.user.companyName ?? null} />
 
       <main className="container-content py-10 max-w-3xl">
         <div className="mb-6">
