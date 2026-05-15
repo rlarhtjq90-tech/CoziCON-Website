@@ -4,6 +4,7 @@ import { prisma } from '@/lib/db'
 import { NextRequest, NextResponse } from 'next/server'
 import { sendContractSignRequestEmail, sendContractActiveEmail } from '@/lib/email'
 import { createNotification } from '@/lib/notify'
+import { logAudit, getClientIp } from '@/lib/audit'
 
 type RouteContext = { params: Promise<{ contractId: string }> }
 
@@ -56,6 +57,7 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
     })
 
     const noticeTitle = contract.notice.title
+    logAudit({ userId: session.user.id, action: 'CONTRACT_SIGN', targetId: contractId, detail: { role, nextStatus }, ip: getClientIp(req) }).catch(() => {})
 
     if (nextStatus === 'ACTIVE') {
       const [gcUser, scUser] = await Promise.all([

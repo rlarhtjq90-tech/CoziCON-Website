@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { createNotification } from '@/lib/notify'
 import { sendNewNoticeEmail } from '@/lib/email'
+import { logAudit, getClientIp } from '@/lib/audit'
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const session = await getServerSession(authOptions)
@@ -119,6 +120,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         : undefined,
     },
   })
+
+  logAudit({ userId: session.user.id, action: 'NOTICE_CREATE', targetId: notice.id, detail: { title, status }, ip: getClientIp(req) }).catch(() => {})
 
   // 공고 상태가 OPEN이면 매칭 구독자에게 알림 발송 (best-effort)
   if ((notice.status as string) === 'OPEN') {

@@ -5,6 +5,7 @@ import { prisma } from '@/lib/db'
 import { Prisma } from '@prisma/client'
 import { sendAdminRejectionEmail } from '@/lib/email'
 import { createNotification } from '@/lib/notify'
+import { logAudit, getClientIp } from '@/lib/audit'
 
 function isAdmin(email: string | null | undefined): boolean {
   if (!email) return false
@@ -37,6 +38,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     await Promise.all([
       user.email ? sendAdminRejectionEmail(user.email, { userName: user.name ?? user.email, reason: body.reason }) : null,
       createNotification(body.userId, 'ADMIN_REJECTED', '회원 승인 반려', body.reason ? `반려 사유: ${body.reason}` : '회원 승인이 반려되었습니다. 서류를 확인 후 재신청해주세요.', '/dashboard'),
+      logAudit({ userId: session.user.id, action: 'ADMIN_REJECT', targetId: body.userId, detail: { reason: body.reason }, ip: getClientIp(req) }),
     ])
     return NextResponse.json({ success: true })
   } catch (err) {

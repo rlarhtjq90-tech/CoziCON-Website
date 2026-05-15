@@ -5,6 +5,7 @@ import { prisma } from '@/lib/db'
 import { Prisma } from '@prisma/client'
 import { sendAdminApprovalEmail } from '@/lib/email'
 import { createNotification } from '@/lib/notify'
+import { logAudit, getClientIp } from '@/lib/audit'
 
 function isAdmin(email: string | null | undefined): boolean {
   if (!email) return false
@@ -37,6 +38,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     await Promise.all([
       user.email ? sendAdminApprovalEmail(user.email, { userName: user.name ?? user.email }) : null,
       createNotification(body.userId, 'ADMIN_APPROVED', '회원 승인 완료', '관리자가 회원 승인을 완료했습니다. 이제 모든 기능을 이용하실 수 있습니다.', '/dashboard'),
+      logAudit({ userId: session.user.id, action: 'ADMIN_APPROVE', targetId: body.userId, ip: getClientIp(req) }),
     ])
     return NextResponse.json({ success: true })
   } catch (err) {

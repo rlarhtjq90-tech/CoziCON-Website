@@ -4,6 +4,7 @@ import { prisma } from '@/lib/db'
 import { NextRequest, NextResponse } from 'next/server'
 import { createNotification } from '@/lib/notify'
 import { encryptBidPrice, decryptBidPrice } from '@/lib/crypto'
+import { logAudit, getClientIp } from '@/lib/audit'
 
 type RouteContext = { params: Promise<{ id: string }> }
 
@@ -43,6 +44,8 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
       description: description ?? null,
     },
   })
+
+  logAudit({ userId: session.user.id, action: 'BID_SUBMIT', targetId: submission.id, detail: { noticeId }, ip: getClientIp(req) }).catch(() => {})
 
   // GC에게 새 입찰 접수 알림
   await createNotification(

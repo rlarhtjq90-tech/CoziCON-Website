@@ -381,6 +381,24 @@ model Notification {
 }
 
 // =============================================
+// 감사 로그
+// =============================================
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String   // NOTICE_CREATE | BID_SUBMIT | BID_AWARD | BID_REJECT | CONTRACT_SIGN | ADMIN_APPROVE | ADMIN_REJECT | USER_LOGIN
+  targetId  String?
+  detail    Json?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+// =============================================
 // 키워드 알림 구독
 // =============================================
 

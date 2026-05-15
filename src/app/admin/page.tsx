@@ -22,7 +22,13 @@ export default async function AdminPage() {
 
       prisma.user.findMany({
         where: { status: 'PENDING', companyId: { not: null } },
-        include: { company: true },
+        include: {
+          company: {
+            include: {
+              licenses: { select: { licenseType: true, licenseNo: true } },
+            },
+          },
+        },
         orderBy: { createdAt: 'asc' },
       }),
 
@@ -78,6 +84,7 @@ export default async function AdminPage() {
         company: u.company
           ? { name: u.company.name, bizNo: u.company.bizNo, type: u.company.type, bizDocUrl: u.company.bizDocUrl }
           : null,
+        licenses: u.company?.licenses.map(l => ({ licenseType: l.licenseType, licenseNo: l.licenseNo })) ?? [],
       }))}
       notices={allNotices.map(n => ({
         ...n,

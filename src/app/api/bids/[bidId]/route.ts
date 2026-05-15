@@ -7,6 +7,7 @@ import { sendBidAwardAlimtalk, sendBidRejectedAlimtalk } from '@/lib/alimtalk'
 import { createNotification } from '@/lib/notify'
 import { decryptBidPrice } from '@/lib/crypto'
 import { getUserNotifPrefs } from '@/lib/notif-prefs'
+import { logAudit, getClientIp } from '@/lib/audit'
 
 type RouteContext = { params: Promise<{ bidId: string }> }
 
@@ -60,6 +61,7 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
       contractId = created.id
     }
     const awardName = submission.bidder.name ?? submission.bidder.email
+    logAudit({ userId: session.user.id, action: 'BID_AWARD', targetId: bidId, detail: { noticeId: submission.noticeId } }).catch(() => {})
     const awardPrefs = await getUserNotifPrefs(submission.bidderId)
     await Promise.all([
       awardPrefs.notifEmail && submission.bidder.email && contractId
@@ -88,6 +90,7 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
 
   if (status === 'REJECTED') {
     const rejectName = submission.bidder.name ?? submission.bidder.email
+    logAudit({ userId: session.user.id, action: 'BID_REJECT', targetId: bidId, detail: { noticeId: submission.noticeId } }).catch(() => {})
     const rejectPrefs = await getUserNotifPrefs(submission.bidderId)
     await Promise.all([
       rejectPrefs.notifEmail && submission.bidder.email

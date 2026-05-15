@@ -23,6 +23,7 @@ type PendingUser = {
   email: string | null
   createdAt: string
   company: { name: string; bizNo: string; type: string; bizDocUrl: string | null } | null
+  licenses: { licenseType: string; licenseNo: string | null }[]
 }
 
 type AdminNotice = {
@@ -183,6 +184,23 @@ function ApprovalTab({ initialUsers }: { initialUsers: PendingUser[] }) {
                       첨부 서류 보기 →
                     </a>
                   )}
+                  {user.licenses.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {user.licenses.map((l, i) => (
+                        <span key={i} className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-600 text-p12 rounded-full">
+                          {l.licenseType}{l.licenseNo ? ` · ${l.licenseNo}` : ''}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  <a
+                    href={`https://www.kiscon.net/intro.asp`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-p12 text-ink-400 hover:text-primary hover:underline mt-1 inline-block"
+                  >
+                    KISCON 면허 조회 →
+                  </a>
                 </div>
                 <div className="flex gap-2 shrink-0">
                   <button onClick={() => approve(user.id)} disabled={processing === user.id}
