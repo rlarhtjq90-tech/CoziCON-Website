@@ -5,7 +5,7 @@ import { prisma } from '@/lib/db'
 import { ContractStatus } from '@prisma/client'
 import Link from 'next/link'
 import AppHeader from '@/components/AppHeader'
-import { AlertTriangle, CheckCircle2, Clock, Building2, FileText, Gavel, Settings, Shield, FileSignature } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, Clock, Building2, FileText, Gavel, Settings, Shield, FileSignature, Bell } from 'lucide-react'
 import AppFooter from '@/components/layout/AppFooter'
 
 function isAdmin(email: string | null | undefined): boolean {
@@ -252,6 +252,21 @@ export default async function DashboardPage() {
               비밀번호 변경
             </p>
             <p className="mt-1 text-p12 text-primary font-medium">설정 →</p>
+          </Link>
+          <Link
+            href="/dashboard/settings/notifications"
+            className="bg-white rounded-2xl p-6 shadow-card-md hover:shadow-card-lg transition-shadow group"
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-9 h-9 rounded-xl bg-ink-100 flex items-center justify-center">
+                <Bell className="w-4 h-4 text-ink-500" />
+              </div>
+              <p className="text-p14 text-ink-400 font-medium">알림 설정</p>
+            </div>
+            <p className="text-p15 font-semibold text-ink-700 group-hover:text-primary transition-colors">
+              이메일 · 알림톡
+            </p>
+            <p className="mt-1 text-p12 text-primary font-medium">수신 설정 →</p>
           </Link>
           {adminUser && (
             <Link

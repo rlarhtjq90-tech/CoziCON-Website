@@ -6,6 +6,7 @@ import { sendBidAwardEmail, sendBidRejectedEmail } from '@/lib/email'
 import { sendBidAwardAlimtalk, sendBidRejectedAlimtalk } from '@/lib/alimtalk'
 import { createNotification } from '@/lib/notify'
 import { decryptBidPrice } from '@/lib/crypto'
+import { getUserNotifPrefs } from '@/lib/notif-prefs'
 
 type RouteContext = { params: Promise<{ bidId: string }> }
 
@@ -59,15 +60,16 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
       contractId = created.id
     }
     const awardName = submission.bidder.name ?? submission.bidder.email
+    const awardPrefs = await getUserNotifPrefs(submission.bidderId)
     await Promise.all([
-      submission.bidder.email && contractId
+      awardPrefs.notifEmail && submission.bidder.email && contractId
         ? sendBidAwardEmail(submission.bidder.email, {
             userName: awardName,
             noticeTitle: submission.notice.title,
             contractId,
           })
         : null,
-      submission.company.phone && contractId
+      awardPrefs.notifAlimtalk && submission.company.phone && contractId
         ? sendBidAwardAlimtalk(submission.company.phone, {
             userName: awardName,
             noticeTitle: submission.notice.title,
@@ -86,14 +88,15 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
 
   if (status === 'REJECTED') {
     const rejectName = submission.bidder.name ?? submission.bidder.email
+    const rejectPrefs = await getUserNotifPrefs(submission.bidderId)
     await Promise.all([
-      submission.bidder.email
+      rejectPrefs.notifEmail && submission.bidder.email
         ? sendBidRejectedEmail(submission.bidder.email, {
             userName: rejectName,
             noticeTitle: submission.notice.title,
           })
         : null,
-      submission.company.phone
+      rejectPrefs.notifAlimtalk && submission.company.phone
         ? sendBidRejectedAlimtalk(submission.company.phone, {
             userName: rejectName,
             noticeTitle: submission.notice.title,

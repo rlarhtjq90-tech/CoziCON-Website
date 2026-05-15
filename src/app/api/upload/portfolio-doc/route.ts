@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { put } from '@vercel/blob'
+import { scanFile } from '@/lib/file-scan'
 
 export const maxDuration = 30
 
@@ -24,6 +25,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
   if (file.size > MAX_SIZE) {
     return NextResponse.json({ error: '파일 크기는 20MB 이하여야 합니다.' }, { status: 400 })
+  }
+
+  const scan = await scanFile(file)
+  if (!scan.safe) {
+    return NextResponse.json({ error: scan.reason ?? '허용되지 않는 파일입니다.' }, { status: 400 })
   }
 
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
