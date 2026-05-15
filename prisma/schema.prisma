@@ -50,17 +50,18 @@ model User {
   notifEmail    Boolean  @default(true)
   notifAlimtalk Boolean  @default(true)
 
-  accounts       Account[]
-  sessions       Session[]
-  company        Company?              @relation(fields: [companyId], references: [id])
-  termsConsents  TermsConsent[]
-  verifications  CompanyVerification[]
-  bidNotices     BidNotice[]
-  bidSubmissions BidSubmission[]
-  contractSigns  ContractSign[]
-  notifications  Notification[]
-  bookmarks      NoticeBookmark[]
-  qnaQuestions   BidQnA[]
+  accounts             Account[]
+  sessions             Session[]
+  company              Company?              @relation(fields: [companyId], references: [id])
+  termsConsents        TermsConsent[]
+  verifications        CompanyVerification[]
+  bidNotices           BidNotice[]
+  bidSubmissions       BidSubmission[]
+  contractSigns        ContractSign[]
+  notifications        Notification[]
+  bookmarks            NoticeBookmark[]
+  qnaQuestions         BidQnA[]
+  noticeSubscription   NoticeSubscription?
 }
 
 model Account {
@@ -377,6 +378,22 @@ model Notification {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, read])
+}
+
+// =============================================
+// 키워드 알림 구독
+// =============================================
+
+model NoticeSubscription {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  workTypes String[] // 빈 배열 = 전체 공종
+  regions   String[] // 빈 배열 = 전체 지역
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // =============================================

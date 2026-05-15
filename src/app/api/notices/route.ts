@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import { createNotification } from '@/lib/notify'
+import { sendNewNoticeEmail } from '@/lib/email'
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const session = await getServerSession(authOptions)
@@ -118,5 +120,47 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     },
   })
 
+  // 공고 상태가 OPEN이면 매칭 구독자에게 알림 발송 (best-effort)
+  if ((notice.status as string) === 'OPEN') {
+    notifySubscribers(notice.id, notice.title, notice.workTypes, notice.regions).catch(() => {})
+  }
+
   return NextResponse.json({ notice }, { status: 201 })
+}
+
+async function notifySubscribers(
+  noticeId: string,
+  noticeTitle: string,
+  workTypes: string[],
+  regions: string[],
+) {
+  const subs = await prisma.noticeSubscription.findMany({
+    where: { active: true },
+    include: { user: { select: { id: true, email: true, name: true } } },
+  })
+
+  const matched = subs.filter((sub) => {
+    const typeMatch = sub.workTypes.length === 0 || sub.workTypes.some((t) => workTypes.includes(t))
+    const regionMatch = sub.regions.length === 0 || sub.regions.some((r) => regions.includes(r))
+    return typeMatch && regionMatch
+  })
+
+  await Promise.all(
+    matched.map(async (sub) => {
+      await createNotification(
+        sub.user.id,
+        'NEW_BID',
+        '새 공고가 등록됐습니다',
+        `관심 키워드와 일치하는 공고: ${noticeTitle}`,
+        `/notices/${noticeId}`,
+      )
+      if (sub.user.email) {
+        await sendNewNoticeEmail(sub.user.email, {
+          userName: sub.user.name ?? sub.user.email,
+          noticeTitle,
+          noticeId,
+        })
+      }
+    }),
+  )
 }

@@ -5,7 +5,7 @@ import { prisma } from '@/lib/db'
 import { ContractStatus } from '@prisma/client'
 import Link from 'next/link'
 import AppHeader from '@/components/AppHeader'
-import { AlertTriangle, CheckCircle2, Clock, Building2, FileText, Gavel, Settings, Shield, FileSignature, Bell } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, Clock, Building2, FileText, Gavel, Settings, Shield, FileSignature, Bell, BellRing } from 'lucide-react'
 import AppFooter from '@/components/layout/AppFooter'
 
 function isAdmin(email: string | null | undefined): boolean {
@@ -112,7 +112,7 @@ export default async function DashboardPage() {
 
         {/* 통계 카드 */}
         {stats.length > 0 && (
-          <div className="grid grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-3 sm:grid-cols-3 gap-3 mb-6">
             {stats.map((s) => (
               <div key={s.label} className="bg-white rounded-2xl p-6 shadow-card-md">
                 <p className="text-p13 text-ink-400 font-medium mb-1">{s.label}</p>
@@ -222,6 +222,23 @@ export default async function DashboardPage() {
                 계약 현황
               </p>
               <p className="mt-1 text-p12 text-primary font-medium">바로가기 →</p>
+            </Link>
+          )}
+          {user?.userType === 'SPECIALTY_CONTRACTOR' && (
+            <Link
+              href="/dashboard/subscriptions"
+              className="bg-white rounded-2xl p-6 shadow-card-md hover:shadow-card-lg transition-shadow group"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <BellRing className="w-4 h-4 text-primary" />
+                </div>
+                <p className="text-p14 text-ink-400 font-medium">공고 알림</p>
+              </div>
+              <p className="text-p15 font-semibold text-ink-700 group-hover:text-primary transition-colors">
+                키워드 구독
+              </p>
+              <p className="mt-1 text-p12 text-primary font-medium">알림 설정 →</p>
             </Link>
           )}
           {user?.userType === 'SPECIALTY_CONTRACTOR' && hasCompany && !isPending && (

@@ -262,7 +262,7 @@ export default function CreateNoticeForm({ categories }: { categories: Category[
           </div>
 
           {/* 마감일시 / 개찰일시 */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <DateTimeInput label="마감일시" value={deadline} onChange={setDeadline} min={nowLocal} required />
             <DateTimeInput label="개찰일시" value={openingAt} onChange={setOpeningAt} min={deadline || nowLocal} hint="(선택)" />
           </div>
@@ -270,7 +270,7 @@ export default function CreateNoticeForm({ categories }: { categories: Category[
           {/* 공사기간 */}
           <div>
             <label className="block text-p14 font-medium text-ink-700 mb-2">공사기간 <span className="text-p13 text-ink-400 font-normal">(선택)</span></label>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <p className="text-p13 text-ink-400 mb-1">착공 예정일</p>
                 <input type="date" value={constructionStart} onChange={(e) => setConstructionStart(e.target.value)}

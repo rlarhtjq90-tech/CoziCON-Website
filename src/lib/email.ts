@@ -124,6 +124,20 @@ export async function sendAdminApprovalEmail(to: string, data: { userName: strin
   `))
 }
 
+export async function sendNewNoticeEmail(to: string, data: {
+  userName: string
+  noticeTitle: string
+  noticeId: string
+}) {
+  await send(to, '[CoziCON] 새 입찰공고 알림', layout(`
+    <h2 style="margin-bottom:8px">관심 키워드 새 공고</h2>
+    <p style="color:#555"><strong>${data.userName}</strong>님, 구독하신 키워드와 일치하는 공고가 등록됐습니다.</p>
+    ${infoBox('공고명', data.noticeTitle)}
+    ${cta(`${APP_URL}/notices/${data.noticeId}`, '공고 확인하기')}
+    <p style="color:#aaa;font-size:12px">수신 거부: 대시보드 → 알림 설정에서 이메일 알림을 끌 수 있습니다.</p>
+  `))
+}
+
 export async function sendAdminRejectionEmail(to: string, data: { userName: string; reason?: string }) {
   await send(to, '[CoziCON] 회원 심사 반려 안내', layout(`
     <h2 style="margin-bottom:8px">회원 심사 결과 안내</h2>

@@ -122,7 +122,7 @@ export default async function ContractDetailPage({ params }: Props) {
               <Building2 className="w-4 h-4 text-primary" />
               <h2 className="text-p15 font-semibold text-ink-700">계약 당사자</h2>
             </div>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
                 <p className="text-p12 text-ink-400 mb-1">발주사 (종합건설사)</p>
                 <p className="text-p15 font-semibold text-ink-700">{contract.gcCompany.name}</p>
@@ -144,7 +144,7 @@ export default async function ContractDetailPage({ params }: Props) {
               <CalendarDays className="w-4 h-4 text-primary" />
               <h2 className="text-p15 font-semibold text-ink-700">계약 내용</h2>
             </div>
-            <dl className="grid grid-cols-2 gap-x-8 gap-y-3 text-p14">
+            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-p14">
               <div>
                 <dt className="text-ink-400 mb-0.5">계약금액</dt>
                 <dd className="font-semibold text-ink-700">{formatPrice(contract.contractAmount)}</dd>
@@ -173,7 +173,7 @@ export default async function ContractDetailPage({ params }: Props) {
           {/* 서명 현황 */}
           <div className="p-6">
             <h2 className="text-p15 font-semibold text-ink-700 mb-4">서명 현황</h2>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className={`p-4 rounded-lg border ${gcSign ? 'border-green-200 bg-green-50' : 'border-ink-200 bg-ink-50'}`}>
                 <p className="text-p12 text-ink-500 mb-1">발주사</p>
                 <p className="text-p14 font-semibold text-ink-700">{contract.gcCompany.name}</p>

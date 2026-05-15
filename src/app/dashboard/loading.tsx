@@ -15,7 +15,7 @@ export default function DashboardLoading() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-3 gap-3 mb-6">
           {[1, 2, 3].map((i) => (
             <div key={i} className="bg-white rounded-2xl p-6 shadow-card-md">
               <div className="h-4 w-20 bg-ink-200/60 rounded mb-3" />

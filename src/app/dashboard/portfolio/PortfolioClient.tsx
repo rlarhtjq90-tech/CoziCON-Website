@@ -236,7 +236,7 @@ export default function PortfolioClient({ initialPortfolios }: { initialPortfoli
                   placeholder="예: (주)OO건설"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-p13 font-medium text-ink-600 mb-1">시작일 *</label>
                   <input
@@ -258,7 +258,7 @@ export default function PortfolioClient({ initialPortfolios }: { initialPortfoli
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-p13 font-medium text-ink-600 mb-1">공사금액 (원)</label>
                   <input
