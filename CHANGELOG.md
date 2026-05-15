@@ -2,23 +2,25 @@
 
 ## 현재 상태
 <!-- /wrap이 매 세션 이 섹션을 업데이트합니다 -->
-- **상태:** Week 4 코드 완료 — 브랜드명 확정 후 도메인·알림톡 채널 등록만 남음.
+- **상태:** 4주 계획 전 기능 완료 — DailyPlan P0/P1/P2 전 항목 처리. 브랜드명 확정 후 도메인·알림톡 채널 등록만 남음.
 - **주요 기능:**
   - 랜딩 페이지, 로그인/회원가입/대시보드 (NextAuth v4 + Prisma + Neon)
   - 회원가입 4단계: 이메일 OTP → 유형선택 → 정보입력 + 약관동의
-  - DB: Company, CompanyVerification, License, TermsConsent, BidNotice, BidAttachment, BidSubmission, WorkCategory, Contract, ContractSign, Notification, NoticeBookmark, BidQnA, Announcement, Portfolio, CompanyReview
-  - 사업자 인증, 건설업등록증 인증, 관리자 승인 큐
+  - DB: Company, CompanyVerification, License, TermsConsent, BidNotice, BidAttachment, BidSubmission, WorkCategory, Contract, ContractSign, Notification, NoticeBookmark, BidQnA, Announcement, Portfolio, CompanyReview, **NoticeSubscription, AuditLog**
+  - 사업자 인증, 건설업등록증 인증, 관리자 승인 큐 (면허 배지 + KISCON 조회 링크)
   - 공고 게시판·등록·수정·상세, 입찰 제출·낙찰 처리
-  - 계약 시스템, 트랜잭션 이메일 7종, Vercel Cron 2개(개찰 흐름)
+  - 계약 시스템, 트랜잭션 이메일 7종+1(공고알림), Vercel Cron 2개(개찰 흐름)
   - 인앱 알림, 관심공고, Q&A
   - 법적 페이지(`/terms`, `/privacy`, `/legal`), FAQ, 1:1 문의 폼, 관리자 대시보드 5탭
   - SC 포트폴리오 CRUD, GC→SC 리뷰, `/company/[companyId]` 공개 프로필
-  - **[Week 4] OG 이미지** (`public/og-image.png` 1200×630) 생성 완료
-  - **[Week 4] 랜딩 UX**: GNB 모바일 햄버거 메뉴, 히어로 CTA 버튼, 아코디언→카드
-  - **[Week 4] RBAC**: 개찰 전 낙찰 차단, DRAFT 공개 차단, PENDING GC 공고 등록 차단, 계약 상태 전환 검증
-  - **[Week 4] Sentry**: 에러 모니터링 환경변수 4개 등록 + Production 배포 완료
-  - **[Week 4] 입찰가 암호화**: AES-256-GCM, `BID_PRICE_ENCRYPTION_KEY` Vercel 등록, DB 컬럼 String 마이그레이션
-  - **[Week 4] 알림톡**: Aligo API 연동 코드 완료 (`src/lib/alimtalk.ts`), env 등록 시 즉시 활성화
+  - **[P0] 파일 스캔**: magic byte 기반 실행파일 차단 (`src/lib/file-scan.ts`)
+  - **[P0] 알림 수신 설정**: 이메일·알림톡 on/off (`/dashboard/settings/notifications`)
+  - **[P1] 공고 키워드 구독**: 공종·지역 구독 + 신규 공고 시 이메일 발송 (`/dashboard/subscriptions`)
+  - **[P1] 모바일 반응형** 주요 화면 그리드 수정 완료
+  - **[P1] SC 업체 디렉토리** `/companies`, 공지사항 `/announcements`
+  - **[P2] 감사 로그**: AuditLog 모델 + logAudit() 8개 액션 전 API 연동
+  - **[P2] 에러 경계**: 글로벌 error.tsx, not-found.tsx, my-bids/contracts 라우트별 error.tsx
+  - **[Week 4] OG 이미지**, **RBAC**, **Sentry**, **입찰가 AES-256-GCM 암호화**, **알림톡**
 - **보류 중 (브랜드명 확정 후):**
   - 도메인 구매 → Resend SPF/DKIM 설정
   - 카카오 채널 개설 → Aligo 발신프로필 등록 → 템플릿 심사
@@ -26,6 +28,11 @@
 
 ## 세션 로그
 <!-- ⚠️ APPEND ONLY — 아래 항목을 절대 삭제/수정하지 마세요. 새 항목은 이 줄 바로 아래에 추가합니다. -->
+
+### 2026-05-15 (세션 39 — DailyPlan P0/P1/P2 전체 완료)
+- **P0**: 파일 magic byte 스캔(`file-scan.ts`), 알림 수신 설정 토글(`notifEmail`·`notifAlimtalk`), FAQ 페이지, 알림 설정 대시보드 카드
+- **P1**: 공고 키워드 구독(공종·지역, `NoticeSubscription`), 신규 공고→구독자 이메일 발송, `/companies` SC 디렉토리, `/announcements` 공지 목록·상세, 모바일 반응형 그리드 수정
+- **P2**: `AuditLog` 스키마 + `logAudit()` 8액션 전 API 연동, `/api/admin/audit-logs`, 에러 경계 4개(global/not-found/my-bids/contracts), 관리자 승인 화면 면허 배지 + KISCON 조회 링크
 
 ### 2026-05-14 (세션 37 — 입찰가 AES-256-GCM 암호화 + DB 백업)
 - `src/lib/crypto.ts` 신규: AES-256-GCM `encryptBidPrice` / `decryptBidPrice` (IV 12B + AuthTag 16B + Ciphertext → Base64)

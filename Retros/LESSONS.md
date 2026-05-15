@@ -231,6 +231,15 @@ Vercel Function Log의 "External APIs" 섹션은 함수에서 호출한 외부 H
 `npx prisma db push`는 `.env`만 읽고 `.env.local`은 무시함. Next.js가 `.env.local`을 특별 취급하는 것과 달리 Prisma CLI는 표준 dotenv만 지원.
 `npx --yes dotenv-cli -e .env.local -- npx prisma db push`로 우회하거나, `DATABASE_URL`을 `.env`에도 복사해두면 됨.
 
+### Prisma include는 관계가 선언된 모델에서만 중첩 가능 #coding #prisma #typescript
+`licenses`가 `Company`에 선언돼 있으면 `User.include`에 바로 `licenses`를 넣을 수 없음 — TypeScript 컴파일 오류 발생.
+`user.include: { company: { include: { licenses: ... } } }` 형태로 중첩해야 하며, 매핑 시에도 `u.company?.licenses`로 접근해야 함.
+API 추가 전에 schema.prisma에서 어느 모델에 관계가 정의됐는지 먼저 확인할 것.
+
+### Prisma Json 컬럼에 `Record<string, unknown>` 직접 전달 시 타입 오류 #coding #prisma #typescript
+`prisma.model.create({ data: { detail: params.detail } })`에서 `detail`이 `Record<string, unknown>` 타입이면 `NullableJsonNullValueInput | InputJsonValue` 불일치 오류 발생.
+`params.detail as Prisma.InputJsonValue | undefined`로 캐스팅하거나 data 객체에서 명시적으로 분리해서 전달해야 함. `@prisma/client`에서 `Prisma` 네임스페이스를 import해야 함.
+
 ### 암호화된 컬럼은 DB 레벨 `orderBy` 불가 — 복호화 후 메모리 정렬 #coding #prisma #security
 `proposedPrice`를 AES-256-GCM으로 암호화하면 DB에는 opaque Base64 문자열이 저장되므로 Prisma `orderBy: { proposedPrice: 'asc' }`가 의미 없어짐.
 복호화 후 JavaScript `Array.sort()`로 정렬해야 함. 대용량이 아니면 성능 문제 없음.
